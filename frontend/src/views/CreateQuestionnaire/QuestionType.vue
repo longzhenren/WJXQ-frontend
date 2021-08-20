@@ -7,7 +7,7 @@
     <div class="TypeList" >
       <ul ref="typelist">
         <li v-for="(item,index) in QuesTypes">
-          <div class="TypeIcon"></div>
+          <div class="TypeIcon"></div>
           <div class="type">
             <div class="title">{{ item.title }}</div>
             <div class="intro">{{ item.intro }}</div>
@@ -158,6 +158,9 @@ export default {
   grid-template-columns: repeat(3,1fr);
   column-gap: 10px;
   row-gap: 10px;
+  /*display: flex;*/
+  /*justify-content: space-around;*/
+  /*align-items: center;*/
   width: 70%;
   height: 95%;
 }
@@ -174,6 +177,10 @@ export default {
 
 .TypeList ul li .TypeIcon {
   /*background-color: greenyellow;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
 }
 
 .TypeList ul li .type {
