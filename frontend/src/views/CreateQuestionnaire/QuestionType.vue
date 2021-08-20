@@ -4,21 +4,216 @@
 
     </nav>
 
-    <div class="TypeList">
-      <slot name="Types">
+    <div class="TypeList" >
+      <ul ref="typelist">
+        <li v-for="(item,index) in QuesTypes">
+          <div class="TypeIcon"></div>
+          <div class="type">
+            <div class="title">{{ item.title }}</div>
+            <div class="intro">{{ item.intro }}</div>
+            <div class="confirm" @click="CreateNewQues">创建</div>
+          </div>
+        </li>
 
-      </slot>
+      </ul>
     </div>
 
+
+    <el-dialog title="创建调查问卷" :visible.sync="dialogFormVisible">
+      <el-form :model="QuesForm">
+        <el-form-item label="问卷标题">
+          <el-input v-model="QuesForm.title" autocomplete="off" placeholder="请输入标题"></el-input>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="Confirm">立即创建</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+
+
 export default {
-  name: "QuestionType"
+  name: "QuestionType",
+  components: {
+
+  },
+  data(){
+    return {
+      // 控制鼠标是否移动到问卷项上
+      isCreate: false,
+
+      // 是否显示问卷标题输入框
+      dialogFormVisible: false,
+
+
+
+      QuesForm: {
+        title: '',
+      },
+
+      QuesTypes: [
+        {
+          title: '调查',
+          intro: '丰富题型，强大逻辑' +
+              '问卷密码，红包抽奖',
+
+        },
+        // {
+        //   title: '考试',
+        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+        //
+        // },
+        // {
+        //   title: '投票',
+        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+        //
+        // },
+        // {
+        //   title: '表单',
+        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+        //
+        // },
+        // {
+        //   title: '测评',
+        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+        //
+        // },
+        // {
+        //   title: '评估',
+        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+        // },
+      ],
+    }
+  },
+  mounted() {
+    // let typelist = document.querySelector(".TypeList");
+    let typelist = this.$refs.typelist;
+    console.log(typelist)
+    let ul = typelist.children;
+    console.log(ul)
+    for (let i = 0; i < ul.length; i++) {
+      let ulElement = ul[i];
+      ulElement.addEventListener('mouseover',function () {
+        let intro = ulElement.querySelector(".intro");
+        let create = ulElement.querySelector(".confirm");
+        intro.style.display = 'none';
+        create.style.display = 'block';
+      })
+
+      ulElement.addEventListener('mouseout',function () {
+        let intro = ulElement.querySelector(".intro");
+        let create = ulElement.querySelector(".confirm");
+        intro.style.display = 'block';
+        create.style.display = 'none';
+      })
+    }
+  },
+  methods: {
+    CreateNewQues(){
+
+      this.dialogFormVisible=true
+      console.log(this.dialogFormVisible)
+    },
+
+
+    Confirm(){
+      this.$router.push('/design');
+    }
+  }
 }
 </script>
 
 <style scoped>
+
+.QueType {
+  width: 100vw;
+  height: 100vh;
+  background-color: #F2F2F2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+  .TypeNav {
+    background-color: white;
+    width: 100%;
+    height: 20%;
+  }
+
+  .TypeList {
+    width: 100%;
+    height: 75vh;
+    /*background-color: pink;*/
+    display: flex;
+    justify-content: center;
+    align-items: start;
+  }
+
+.TypeList ul {
+  display: grid;
+  grid-template-rows: repeat(2,1fr);
+  grid-template-columns: repeat(3,1fr);
+  column-gap: 10px;
+  row-gap: 10px;
+  width: 70%;
+  height: 95%;
+}
+
+.TypeList ul li {
+  /*background-color: blue;*/
+  background-color: white;
+  position: relative;
+  box-shadow: 0 0 10px rgba(164,164,164,.7);
+  /*border: 1px solid #BDBDBD;*/
+  display: grid;
+  grid-template-rows: 55fr 45fr;
+}
+
+.TypeList ul li .TypeIcon {
+  /*background-color: greenyellow;*/
+}
+
+.TypeList ul li .type {
+  /*background-color: red;*/
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.TypeList ul li .type .title {
+  font-size: 20px;
+  color: #1C1C1C;
+}
+
+.TypeList ul li .type .intro {
+  font-size: 16px;
+  color: #6E6E6E;
+  display: block;
+  white-space: normal;
+  width: 45%;
+  height: 50%;
+  transition: .4s;
+  /*background-color: skyblue;*/
+}
+.TypeList ul li .type .confirm {
+  display: none;
+  background-color: skyblue;
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  line-height: 60px;
+  width: 90%;
+  height: 60px;
+  transition: .4s;
+}
+
+.TypeList ul li .type .confirm:hover {
+  cursor: pointer;
+}
+
 
 </style>

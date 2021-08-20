@@ -1,14 +1,14 @@
 <template>
-  <button class="createques" @click="">+创建项目</button>
+  <button class="createques" @click="chooseType">+创建项目</button>
 </template>
 
 <script>
 export default {
   name: "CreateQuestion",
   methods: {
-    CreateNewQue(){
+    chooseType(){
       console.log('to Type')
-      this.$router.push('')
+      this.$router.push('/questype')
     }
   }
 }
