@@ -16,28 +16,10 @@
 <!--        题型组件库-->
         <div class="components" v-if="ShowNum===0">
 
-          <div class="choices">
-            <div class="title"> 选择题</div>
+          <div class="choices" v-for="(item,index) in QuesTypeList">
+            <div class="title"> {{ item.type }}</div>
             <ul>
-              <li> 单选题</li>
-              <li> 多选题</li>
-              <li> 下拉列表</li>
-            </ul>
-          </div>
-
-
-          <div class="write">
-            <div class="title"> 填空题</div>
-            <ul>
-              <li> 单项</li>
-              <li> 多项</li>
-            </ul>
-          </div>
-
-          <div class="comments">
-            <div class="title"> 评分题</div>
-            <ul>
-              <li> 评分</li>
+              <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
             </ul>
           </div>
 
@@ -61,6 +43,7 @@
           <div class="QuesBase">
             <div class="QuesTitle">{{ QuesTitle }}</div>
           </div>
+
         <vue-scroll ref="vs"
             :ops="ops" >
           <ul class="QuesList">
@@ -71,7 +54,19 @@
                   @dragenter="handleDragEnter($event,item)"
                   @dragend="handleDragEnd($event,item)">
                 {{ item.name }}
+                <SingleChoose v-if="item.name==='SingleChoose'"></SingleChoose>
+                <div class="options">
+                  <ul>
+                    <li>编辑</li>
+                    <li>删除</li>
+                    <li>上移</li>
+                    <li>下移</li>
+                    <li>最前</li>
+                    <li>最后</li>
+                  </ul>
+                </div>
               </li>
+
           </ul>
         </vue-scroll>
 
@@ -83,10 +78,13 @@
 </template>
 
 <script>
-
+import SingleChoose from "../../components/QuestionTemplates/SingleChoose";
 
 export default {
   name: "DesignPage",
+  components:{
+    SingleChoose
+  },
   data(){
     return {
       ops: {
@@ -95,6 +93,34 @@ export default {
         rail: {},
         bar: {}
       },
+
+      // 问题类型列表
+      QuesTypeList: [
+        // 选择
+        {
+          type: '选择',
+          details: [
+              '单选',
+              '多选',
+              '下拉列表',
+              '日期'
+          ]
+        },
+        {
+          type: '填空',
+          details: [
+            '单项',
+            '多项'
+          ]
+        },
+        {
+          type: '评分',
+          details: [
+            '评价',
+          ]
+        },
+
+      ],
 
 
       ShowNum: 0,
@@ -150,6 +176,49 @@ export default {
   },
   methods: {
 
+    // 增加题目
+    addNewQues(type,QuesNum){
+      // 增加选择题
+      if (type===0){
+        switch (QuesNum) {
+          // 增加单选
+          case 0:
+            let Opt = {
+              name: 'SingleChoose',
+              idx: this.QuesList.length
+            }
+            this.QuesList.push(Opt);
+            break;
+
+            // 增加多选
+          case 1:
+            console.log('增加多选')
+            break;
+
+            // 增加下拉菜单
+          case 2:
+            console.log('增加下拉菜单')
+            break;
+        }
+      }
+      // 增加填空题
+      else if (type===1){
+        switch (QuesNum) {
+            // 增加单项
+          case 0:
+
+            break;
+
+            // 增加多项
+          case 1:
+            break;
+        }
+      }
+    },
+
+
+
+    // 快速导航
     IndexNav(index){
       // let dest =
       let QuesItems = document.querySelector(".QuesList").children;
@@ -188,7 +257,7 @@ export default {
         return
       }
       const newItems = [...this.QuesList]
-      console.log(newItems)
+      // console.log(newItems)
       const src = newItems.indexOf(this.dragging)
       const dst = newItems.indexOf(item)
 
@@ -203,7 +272,20 @@ export default {
 
   },
   mounted() {
-
+    let QuesList = document.querySelector(".QuesList").children;
+    console.log(QuesList)
+    for (let i = 0; i < QuesList.length; i++) {
+      let QuesItem = QuesList[i];
+      QuesItem.addEventListener("mouseover",function () {
+        let options = QuesItem.querySelector(".options");
+        options.style.display = 'flex'
+        options.style.justifyContent = 'space-around'
+      })
+      QuesItem.addEventListener('mouseout',function () {
+        let options = QuesItem.querySelector(".options");
+        options.style.display = 'none'
+      })
+    }
   }
 }
 </script>
@@ -321,13 +403,13 @@ export default {
 
   .designContent .designComponent .components .choices {
     /*background-color: pink;*/
-    height: 20%;
+    /*height: 20%;*/
   }
 
   .designContent .designComponent .components .choices .title {
     width: 100%;
     /*background-color: blue;*/
-    height: 30%;
+    height: 50px;
     text-align: left;
     font-weight: 600;
     display: flex;
@@ -337,12 +419,13 @@ export default {
   .designContent .designComponent .components .choices ul {
     display: flex;
     justify-content: space-around;
-    height: 70%;
+    /*height: 70%;*/
     flex-direction: column;
     /*align-content: space-around;*/
   }
   .designContent .designComponent .components .choices ul li {
-    width: 40%;
+    width: 100%;
+    height: 40px;
     /*background-color: red;*/
     text-align: left;
     margin-left: 20px;
@@ -350,76 +433,6 @@ export default {
   }
 
   .designContent .designComponent .components .choices ul li:hover {
-    color: #58ACFA;
-    cursor: pointer;
-  }
-
-  .designContent .designComponent .components .write {
-    /*background-color: pink;*/
-    height: 20%;
-  }
-
-  .designContent .designComponent .components .write .title {
-    width: 100%;
-    /*background-color: blue;*/
-    height: 30%;
-    text-align: left;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-  }
-
-  .designContent .designComponent .components .write ul {
-    display: flex;
-    justify-content: space-around;
-    height: 70%;
-    flex-direction: column;
-    /*align-content: space-around;*/
-  }
-  .designContent .designComponent .components .write ul li {
-    width: 40%;
-    /*background-color: red;*/
-    text-align: left;
-    margin-left: 20px;
-
-  }
-
-  .designContent .designComponent .components .write ul li:hover {
-    color: #58ACFA;
-    cursor: pointer;
-  }
-
-  .designContent .designComponent .components .comments {
-    /*background-color: pink;*/
-    height: 20%;
-  }
-
-  .designContent .designComponent .components .comments .title {
-    width: 100%;
-    /*background-color: blue;*/
-    height: 30%;
-    text-align: left;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-  }
-
-  .designContent .designComponent .components .comments ul {
-    display: flex;
-    justify-content: space-around;
-    height: 70%;
-    flex-direction: column;
-    /*align-content: space-around;*/
-  }
-  .designContent .designComponent .components .comments ul li {
-    width: 40%;
-    /*!*background-color: red;*/
-    text-align: left;
-    margin-left: 20px;
-
-  }
-
-  .designContent .designComponent .components .comments ul li:hover {
     color: #58ACFA;
     cursor: pointer;
   }
@@ -441,6 +454,7 @@ export default {
     background-color: blue;
     box-sizing: border-box;
     height: 92vh;
+    /*position: relative;*/
     overflow: hidden;
     box-shadow: 0 0 10px rgba(0,0,0,.2);
   }
@@ -460,22 +474,65 @@ export default {
     font-size: 22px;
     color: #A4A4A4;
     font-weight: 600;
-
   }
 
 
   .designContent .designPreview .QuesList {
     /*overflow: hidden;*/
-    overflow-x: scroll;
-    white-space: nowrap;
+    /*overflow-x: scroll;*/
+    /*white-space: nowrap;*/
+    /*position: absolute;*/
+    width: 100%;
+    /*bottom: 0;*/
+    padding-bottom: 138px;
   }
 
   .designContent .designPreview .QuesList .QuesItem {
     width: 100%;
-    height: 100px;
+    height: 150px;
     background-color: white;
     border-bottom: 1px solid #BDBDBD;
-    z-index: 44;
+    position: relative;
+
+    /*z-index: 44;*/
+  }
+
+  .designContent .designPreview .QuesList .QuesItem .options {
+    /*background-color: #58ACFA;*/
+    width: 100%;
+    height: 30%;
+    position: absolute;
+    bottom: 0;
+    display: none;
+    /*display: flex;*/
+    /*justify-content: space-around;*/
+  }
+
+  .designContent .designPreview .QuesList .QuesItem .options ul {
+    width: 70%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-left: 350px;
+  }
+
+  .designContent .designPreview .QuesList .QuesItem .options ul li {
+    height: 25px;
+    width: 10%;
+    display: inline-block;
+    /*margin: 0;*/
+    /*padding: 0;*/
+    line-height: 25px;
+    /*background-color: pink;*/
+    font-size: 14px;
+    color: #A4A4A4;
+    border: 1px solid #A4A4A4;
+    z-index: 200;
+  }
+
+  .designContent .designPreview .QuesList .QuesItem .options ul li:hover {
+    cursor: pointer;
+    border: 1px solid #2E9AFE;
   }
 
   .designContent .designPreview .QuesList .QuesItem:hover {

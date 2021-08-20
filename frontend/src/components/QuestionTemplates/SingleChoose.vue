@@ -1,6 +1,3 @@
-
-
-
 <template>
   <div style="alignment: left;display: block">
     <button content="新增选项" @click="add">新建选项</button>
