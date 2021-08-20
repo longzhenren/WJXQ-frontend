@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import CreateQuestion from "../views/CreateQuestionnaire/CreateQuestion";
+import QuestionType from "../views/CreateQuestionnaire/QuestionType";
+import DesignPage from "../views/DesignQues/DesignPage";
 
 Vue.use(VueRouter)
 
@@ -13,7 +15,18 @@ const routes = [
     path: '/createques',
     name: 'CreateQuestion',
     component: CreateQuestion
+  },
+  {
+    path: '/questype',
+    name: 'QuestionType',
+    component: QuestionType
+  },
+  {
+    path: '/design',
+    name: 'DesignPage',
+    component: DesignPage
   }
+
 
 ]
 
