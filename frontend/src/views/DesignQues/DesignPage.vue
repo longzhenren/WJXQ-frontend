@@ -16,73 +16,43 @@
 <!--        题型组件库-->
         <div class="components" v-if="ShowNum===0">
 
-<!--&lt;!&ndash;          选择题型&ndash;&gt;-->
-<!--          <div class="choices">-->
-<!--            <div class="choiceTitle"></div>-->
-<!--            <div class="choiceOpts">-->
+          <div class="choices">
+            <div class="title"> 选择题</div>
+            <ul>
+              <li> 单选题</li>
+              <li> 多选题</li>
+              <li> 下拉列表</li>
+            </ul>
+          </div>
 
-<!--            </div>-->
-<!--          </div>-->
 
-<!--&lt;!&ndash;          文本题型&ndash;&gt;-->
-<!--          <div class="texts"></div>-->
+          <div class="write">
+            <div class="title"> 填空题</div>
+            <ul>
+              <li> 单项</li>
+              <li> 多项</li>
+            </ul>
+          </div>
 
-<!--&lt;!&ndash;          评分题型&ndash;&gt;-->
-<!--          <div class="comments"></div>-->
-          <el-menu
-              default-active="2"
-              class="el-menu-vertical-demo"
-              @open="handleOpen"
-              @close="handleClose"
-              background-color="#545c64"
-              text-color="#fff"
-              active-text-color="#ffd04b">
-            <el-submenu index="1">
-
-              <template slot="title">
-                <span>  </span>
-                <span>选择题</span>
-              </template>
-
-                <el-menu-item index="1-1" > 单选题</el-menu-item>
-                <el-menu-item index="1-2" > 多选题</el-menu-item>
-                <el-menu-item index="1-3" > 下拉列表</el-menu-item>
-            </el-submenu>
-
-            <el-submenu index="2">
-
-              <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>填空题</span>
-              </template>
-
-              <el-menu-item index="2-1"> 单项填空</el-menu-item>
-              <el-menu-item index="2-2"> 多项填空</el-menu-item>
-            </el-submenu>
-
-            <el-submenu index="3">
-
-              <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>评分</span>
-              </template>
-
-              <el-menu-item index="3-1"> 评价题</el-menu-item>
-            </el-submenu>
-
-          </el-menu>
+          <div class="comments">
+            <div class="title"> 评分题</div>
+            <ul>
+              <li> 评分</li>
+            </ul>
+          </div>
 
         </div>
 
 
 <!--        该问卷的大纲-->
-        <div class="outline" v-if="ShowNum===1" >
+        <div class="outline" v-else >
           <ul ref="outline_nav">
             <li v-for="(item,index) in QuesList" class="outlineItem" @click="IndexNav(index)">
                 {{ item.name }}
             </li>
           </ul>
         </div>
+
       </div>
 
 
@@ -231,8 +201,6 @@ export default {
       this.QuesList = newItems
     }
 
-
-
   },
   mounted() {
 
@@ -347,14 +315,115 @@ export default {
   }
 
   .designContent .designComponent .components {
-    background-color: greenyellow;
+    /*background-color: greenyellow;*/
     height: 90%;
   }
 
   .designContent .designComponent .components .choices {
-    background-color: pink;
+    /*background-color: pink;*/
+    height: 20%;
+  }
+
+  .designContent .designComponent .components .choices .title {
+    width: 100%;
+    /*background-color: blue;*/
+    height: 30%;
+    text-align: left;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+  }
+
+  .designContent .designComponent .components .choices ul {
+    display: flex;
+    justify-content: space-around;
+    height: 70%;
+    flex-direction: column;
+    /*align-content: space-around;*/
+  }
+  .designContent .designComponent .components .choices ul li {
+    width: 40%;
+    /*background-color: red;*/
+    text-align: left;
+    margin-left: 20px;
 
   }
+
+  .designContent .designComponent .components .choices ul li:hover {
+    color: #58ACFA;
+    cursor: pointer;
+  }
+
+  .designContent .designComponent .components .write {
+    /*background-color: pink;*/
+    height: 20%;
+  }
+
+  .designContent .designComponent .components .write .title {
+    width: 100%;
+    /*background-color: blue;*/
+    height: 30%;
+    text-align: left;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+  }
+
+  .designContent .designComponent .components .write ul {
+    display: flex;
+    justify-content: space-around;
+    height: 70%;
+    flex-direction: column;
+    /*align-content: space-around;*/
+  }
+  .designContent .designComponent .components .write ul li {
+    width: 40%;
+    /*background-color: red;*/
+    text-align: left;
+    margin-left: 20px;
+
+  }
+
+  .designContent .designComponent .components .write ul li:hover {
+    color: #58ACFA;
+    cursor: pointer;
+  }
+
+  .designContent .designComponent .components .comments {
+    /*background-color: pink;*/
+    height: 20%;
+  }
+
+  .designContent .designComponent .components .comments .title {
+    width: 100%;
+    /*background-color: blue;*/
+    height: 30%;
+    text-align: left;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+  }
+
+  .designContent .designComponent .components .comments ul {
+    display: flex;
+    justify-content: space-around;
+    height: 70%;
+    flex-direction: column;
+    /*align-content: space-around;*/
+  }
+  .designContent .designComponent .components .comments ul li {
+    width: 40%;
+    /*!*background-color: red;*/
+    text-align: left;
+    margin-left: 20px;
+
+  }
+
+  .designContent .designComponent .components .comments ul li:hover {
+    color: #58ACFA;
+    cursor: pointer;
+  }
+
 
   .designContent .designComponent .outline {
     /*background-color: skyblue;*/
