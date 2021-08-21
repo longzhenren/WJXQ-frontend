@@ -57,24 +57,30 @@
 
         <vue-scroll ref="vs"
             :ops="ops" >
-          <ul class="QuesList">
+          <ul class="QuesList" v-if="QuesList.length!==0">
 
-              <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="true"
+              <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="item.isDraggable"
                   @dragstart="handleDragStart($event,item)"
                   @dragover.prevent="handleDragOver($event)"
                   @dragenter="handleDragEnter($event,item)"
                   @dragend="handleDragEnd($event,item)">
                 <span v-if="isShowQuesNum">{{ item.idx + 1 }}</span>
                 {{ item.name }}
-                <SingleChoose v-if="item.name==='SingleChoose'"></SingleChoose>
+
+                <div class="componentsItem" @mouseover="OverDrag(index,item)" @mouseleave="LeaveDrag(index,item)">
+                  <SingleChoose v-if="item.type==='singleChoice'"
+                                @saveSingleData="SingleChoiceSave($event,item)"
+                                :father-data="item.subData"></SingleChoose>
+                </div>
+
 
                 <div class="options">
                   <ul>
-                    <li>编辑</li>
+<!--                    <li>编辑</li>-->
                     <li @click="deleteQues(index)">删除</li>
                     <li @click="moveUp(index)">上移</li>
                     <li @click="moveDown(index)">下移</li>
-                    <li>最前</li>
+                    <li @click="ShowItem(item)">最前</li>
                     <li>最后</li>
                   </ul>
                 </div>
@@ -152,38 +158,65 @@ export default {
         {
           name: 'aaa',
           idx: 0,
+          isDraggable: true,
+          subData: {},
+          type: ''
         },
         {
           name: 'bbb',
           idx: 1,
+          isDraggable: true,
+          subData: {},
+          type: ''
         },
         {
           name: 'bbb',
           idx: 2,
+          isDraggable: true,
+          subData: {},
+          type: ''
         },
         {
           name: 'bbb',
           idx: 3,
+          isDraggable: true,
+          subData: {},
+          type: ''
         },
         {
           name: 'bbb',
           idx: 4,
+          isDraggable: true,
+          subData: {},
+          type: ''
         },
         {
           name: 'bbb',
           idx: 5,
+          isDraggable: true,
+          subData: {},
+          type: ''
         },
         {
           name: 'bbb',
           idx: 6,
+          isDraggable: true,
+          subData: {},
+          type: ''
         },
         {
           name: 'bbb',
           idx: 7,
+          isDraggable: true,
+          subData: {},
+          type: ''
         },
         {
           name: 'bbb',
           idx: 8,
+          isDraggable: true,
+          subData: {},
+          type: ''
         },
 
       ],
@@ -194,6 +227,19 @@ export default {
     }
   },
   methods: {
+    ShowItem(item){
+      console.log(item)
+    },
+
+    // 单选题数据保存
+    SingleChoiceSave(val,item){
+      // console.log(item);
+      // console.log(item)
+      console.log(val)
+      item.subData = val;
+      item.name=val.
+      console.log(item)
+    },
 
     // 增加题目
     addNewQues(type,QuesNum){
@@ -203,8 +249,11 @@ export default {
           // 增加单选
           case 0:
             let Opt = {
-              name: 'SingleChoose',
-              idx: this.QuesList.length
+              name: '单选题标题',
+              idx: this.QuesList.length,
+              isDraggable: true,
+              subData: {},
+              type: 'singleChoice'
             }
             this.addNewQuesToQuesList(Opt);
 
@@ -244,7 +293,7 @@ export default {
       let length = this.QuesList.length;
       this.QuesList.splice(length,0,SubjectObj);
       let QuesItems = document.querySelector(".QuesList").children;
-      console.log(QuesItems);
+      // console.log(QuesItems);
       let node = QuesItems[0].cloneNode();
 
     },
@@ -269,7 +318,10 @@ export default {
 
     // 上移
     moveUp(index){
+      // let QuesList = document.querySelector(".QuesList").children;
+      // console.log(QuesList)
       let quesList = this.QuesList;
+      // console.log(QuesList[index])
       if (index===0){
         this.$message({
           showClose: true,
@@ -278,11 +330,17 @@ export default {
         });
         return;
       }
+
       let src = quesList[index];
       let dest = quesList[index-1];
-      console.log(dest);
+      // let quesList = Array.from(QuesList);
+      // console.log(quesList)
+      // // console.log(dest);
       quesList.splice(index,1,dest);
       quesList.splice(index-1,1,src);
+      // for (let i = 0; i < QuesList.length; i++) {
+      //   QuesList[i]=quesList[i];
+      // }
       for (let i = 0; i < quesList.length; i++) {
         quesList[i].idx=i;
       }
@@ -301,7 +359,7 @@ export default {
       }
       let src = quesList[index];
       let dest = quesList[index+1];
-      console.log(dest);
+      // console.log(dest);
       quesList.splice(index,1,dest);
       quesList.splice(index+1,1,src);
       for (let i = 0; i < quesList.length; i++) {
@@ -325,6 +383,17 @@ export default {
 
     },
 
+
+    // 判断鼠标是否经过子组件
+    OverDrag(index,item){
+      item.isDraggable=false;
+    },
+
+
+    // 判断鼠标离开组件
+    LeaveDrag(index,item){
+      item.isDraggable=true;
+    },
 
     // 切换工具栏
     changeDesignTools(idx){
@@ -363,9 +432,9 @@ export default {
 
     // js实现样式更改
     ShowOptions(){
-      console.log('111')
+      // console.log('111')
       let QuesList = document.querySelector(".QuesList").children;
-      console.log(QuesList)
+      // console.log(QuesList)
       for (let i = 0; i < QuesList.length; i++) {
         let QuesItem = QuesList[i];
         QuesItem.addEventListener("mouseover",function () {
@@ -383,7 +452,7 @@ export default {
     }
   },
   mounted() {
-    this.ShowOptions();
+    // this.ShowOptions();
   },
   watch: {
     QuesList(newList,oldList){
@@ -596,7 +665,10 @@ export default {
 
   .designContent .designPreview .QuesList .QuesItem {
     width: 100%;
-    height: 150px;
+    min-height: 130px;
+    padding-top: 20px;
+    padding-bottom: 16%;
+    /*margin: 20px 0;*/
     background-color: white;
     border-bottom: 1px solid #BDBDBD;
     position: relative;
@@ -607,7 +679,7 @@ export default {
   .designContent .designPreview .QuesList .QuesItem .options {
     /*background-color: #58ACFA;*/
     width: 100%;
-    height: 30%;
+    height: 15%;
     position: absolute;
     bottom: 0;
     display: none;
@@ -634,7 +706,7 @@ export default {
     font-size: 14px;
     color: #A4A4A4;
     border: 1px solid #A4A4A4;
-    z-index: 200;
+    /*z-index: 200;*/
   }
 
   .designContent .designPreview .QuesList .QuesItem .options ul li:hover {
