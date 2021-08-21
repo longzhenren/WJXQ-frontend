@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import CreateQuestion from "../views/CreateQuestionnaire/CreateQuestion";
 import QuestionType from "../views/CreateQuestionnaire/QuestionType";
 import DesignPage from "../views/DesignQues/DesignPage";
+import QuestionnaireRelease from "../views/QuestionnaireRelease/QuestionnaireRelease";
 
 Vue.use(VueRouter)
 
@@ -25,7 +26,12 @@ const routes = [
     path: '/design',
     name: 'DesignPage',
     component: DesignPage
-  }
+  },
+  {
+    path: '/release',
+    name: 'QuestionnaireRelease',
+    component: QuestionnaireRelease
+  },
 
 
 ]

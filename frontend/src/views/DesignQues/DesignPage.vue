@@ -3,7 +3,7 @@
     <nav class="designNav">
       <div class="QuesPreview"> 预览</div>
 
-      <div class="release"> 编辑完成</div>
+      <div class="release" @click="designDone"> 编辑完成</div>
     </nav>
 
     <div class="designContent">
@@ -89,7 +89,10 @@
           </ul>
 
           <div class="None" v-else>
-            <div>空空如也~</div>
+            <div class="empty_pic">
+              <img src="../../assets/imgs/empty.png">
+            </div>
+            <div class="empty_font">空空如也~</div>
           </div>
 
 <!--          <div class="QuesTail">-->
@@ -106,6 +109,7 @@
 
 <script>
 import SingleChoose from "../../components/QuestionTemplates/SingleChoose";
+import bus from "../../assets/utils/bus";
 
 export default {
   name: "DesignPage",
@@ -163,78 +167,39 @@ export default {
 
       // 问卷问题列表
       QuesList: [
-        // {
-        //   name: 'aaa',
-        //   idx: 0,
-        //   isDraggable: true,
-        //   subData: {},
-        //   type: ''
-        // },
-        // {
-        //   name: 'bbb',
-        //   idx: 1,
-        //   isDraggable: true,
-        //   subData: {},
-        //   type: ''
-        // },
-        // {
-        //   name: 'bbb',
-        //   idx: 2,
-        //   isDraggable: true,
-        //   subData: {},
-        //   type: ''
-        // },
-        // {
-        //   name: 'bbb',
-        //   idx: 3,
-        //   isDraggable: true,
-        //   subData: {},
-        //   type: ''
-        // },
-        // {
-        //   name: 'bbb',
-        //   idx: 4,
-        //   isDraggable: true,
-        //   subData: {},
-        //   type: ''
-        // },
-        // {
-        //   name: 'bbb',
-        //   idx: 5,
-        //   isDraggable: true,
-        //   subData: {},
-        //   type: ''
-        // },
-        // {
-        //   name: 'bbb',
-        //   idx: 6,
-        //   isDraggable: true,
-        //   subData: {},
-        //   type: ''
-        // },
-        // {
-        //   name: 'bbb',
-        //   idx: 7,
-        //   isDraggable: true,
-        //   subData: {},
-        //   type: ''
-        // },
-        // {
-        //   name: 'bbb',
-        //   idx: 8,
-        //   isDraggable: true,
-        //   subData: {},
-        //   type: ''
-        // },
-
       ],
+
+      // 问卷对象
+      Questionnaire: {
+        // 问卷标题
+        title: '',
+        // 问卷问题列表
+        ProblemList: [],
+        // 是否可发布
+        isReleaseable: false,
+        // 是否显示题号
+        isShowSubNum: false
+      },
 
       // 当前正在拖动的元素
       dragging: null,
 
     }
   },
+  beforeDestroy() {
+    bus.$emit('NewQuesDesigned',this.Questionnaire)
+  },
   methods: {
+    // 问卷编辑完成，转到问卷发布页面
+    designDone(){
+      this.Questionnaire.title = this.QuesTitle;
+      this.Questionnaire.ProblemList = this.QuesList;
+      this.Questionnaire.isShowSubNum = this.isShowQuesNum
+      this.$router.push('/release')
+    },
+
+
+
     ShowItem(item){
       console.log(item)
     },
@@ -322,10 +287,7 @@ export default {
 
     // 上移
     moveUp(index){
-      // let QuesList = document.querySelector(".QuesList").children;
-      // console.log(QuesList)
       let quesList = this.QuesList;
-      // console.log(QuesList[index])
       if (index===0){
         this.$message({
           showClose: true,
@@ -337,16 +299,8 @@ export default {
 
       let src = quesList[index];
       let dest = quesList[index-1];
-      // console.log(src);
-      // console.log(dest);
-      // let quesList = Array.from(QuesList);
-      // console.log(quesList)
-      // // console.log(dest);
       quesList.splice(index,1,dest);
       quesList.splice(index-1,1,src);
-      // for (let i = 0; i < QuesList.length; i++) {
-      //   QuesList[i]=quesList[i];
-      // }
       for (let i = 0; i < quesList.length; i++) {
         quesList[i].idx=i;
       }
@@ -461,10 +415,30 @@ export default {
           options.style.display = 'none'
         })
       }
+    },
+
+    // 接受输入的问卷标题
+    acceptQuesTitle(title){
+      this.QuesTitle=title;
+    },
+
+
+    // 从发布页面接受原先的问卷继续设计
+    continueDesign(Ques){
+      this.QuesTitle = Ques.title;
+      this.QuesList = Ques.ProblemList
+      console.log(Ques)
     }
   },
   mounted() {
     this.ShowOptions();
+  },
+  created() {
+    // 从创建页面转到设计页面
+    bus.$on('createNewQues',this.acceptQuesTitle)
+
+    // 从发布页面转会设计页面
+    bus.$on('backToDesign',this.continueDesign)
   },
   watch: {
     QuesList(newList,oldList){
@@ -670,18 +644,35 @@ export default {
   }
 
   .designContent .designPreview .None {
-    background-color: pink;
+    background-color: #F2F2F2;
     width: 100%;
     height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
 
   }
 
-  /*.designContent .designPreview .QuesTail {*/
-  /*  background-color: #F2F2F2;*/
-  /*  height: 2vh;*/
-  /*  width: 100%;*/
-  /*}*/
+  .designContent .designPreview .None .empty_pic {
+    width: 50%;
+    height: 50%;
 
+  }
+
+  .designContent .designPreview .None .empty_pic img {
+    width: 100%;
+    height: 100%;
+
+  }
+
+  .designContent .designPreview .None .empty_font {
+    width: 100%;
+    font-size: 30px;
+    font-weight: 600;
+    color: #6E6E6E;
+    height: 40%;
+  }
 
   .designContent .designPreview .QuesList {
     width: 100%;
@@ -704,7 +695,7 @@ export default {
   .designContent .designPreview .QuesList .QuesItem .options {
     /*background-color: #58ACFA;*/
     width: 100%;
-    height: 15%;
+    height: 10%;
     position: absolute;
     bottom: 0;
     display: none;
@@ -737,6 +728,8 @@ export default {
   .designContent .designPreview .QuesList .QuesItem .options ul li:hover {
     cursor: pointer;
     border: 1px solid #2E9AFE;
+    background-image: linear-gradient(to left,#00FFFF,#01A9DB);
+    color: white;
   }
 
   .designContent .designPreview .QuesList .QuesItem:hover {

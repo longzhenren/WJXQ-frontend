@@ -69,7 +69,7 @@ export default {
     return {
       singleChoice:{
         edit:1,
-        question:"12321",
+        question:"标题",
         choices:["",""],
         radio: 0
       }
