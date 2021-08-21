@@ -30,7 +30,8 @@
         <div class="outline" v-else >
           <ul ref="outline_nav">
             <li v-for="(item,index) in QuesList" class="outlineItem" @click="IndexNav(index)">
-                {{ item.name }}
+              <span v-if="isShowQuesNum">{{ item.idx + 1 }}</span>
+              {{ item.name }}
             </li>
           </ul>
         </div>
@@ -42,6 +43,16 @@
 
           <div class="QuesBase">
             <div class="QuesTitle">{{ QuesTitle }}</div>
+            <div class="AutoNumSwitch">
+              <el-switch
+                  style="display: block"
+                  v-model="isShowQuesNum"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-text="题号显示"
+                  inactive-text="题号隐藏">
+              </el-switch>
+            </div>
           </div>
 
         <vue-scroll ref="vs"
@@ -53,14 +64,16 @@
                   @dragover.prevent="handleDragOver($event)"
                   @dragenter="handleDragEnter($event,item)"
                   @dragend="handleDragEnd($event,item)">
+                <span v-if="isShowQuesNum">{{ item.idx + 1 }}</span>
                 {{ item.name }}
                 <SingleChoose v-if="item.name==='SingleChoose'"></SingleChoose>
+
                 <div class="options">
                   <ul>
                     <li>编辑</li>
-                    <li>删除</li>
-                    <li>上移</li>
-                    <li>下移</li>
+                    <li @click="deleteQues(index)">删除</li>
+                    <li @click="moveUp(index)">上移</li>
+                    <li @click="moveDown(index)">下移</li>
                     <li>最前</li>
                     <li>最后</li>
                   </ul>
@@ -94,6 +107,8 @@ export default {
         bar: {}
       },
 
+
+
       // 问题类型列表
       QuesTypeList: [
         // 选择
@@ -124,6 +139,10 @@ export default {
 
 
       ShowNum: 0,
+
+      // 以下为需要传给后端进行保存的数据
+      // 是否开启自动显示题号
+      isShowQuesNum: false,
 
       // 问卷标题
       QuesTitle: 'title',
@@ -187,7 +206,9 @@ export default {
               name: 'SingleChoose',
               idx: this.QuesList.length
             }
-            this.QuesList.push(Opt);
+            this.addNewQuesToQuesList(Opt);
+
+
             break;
 
             // 增加多选
@@ -218,9 +239,78 @@ export default {
 
 
 
+    // 增加新题目到列表中
+    addNewQuesToQuesList(SubjectObj){
+      let length = this.QuesList.length;
+      this.QuesList.splice(length,0,SubjectObj);
+      let QuesItems = document.querySelector(".QuesList").children;
+      console.log(QuesItems);
+      let node = QuesItems[0].cloneNode();
+
+    },
+
+    // 删除题目列表中的题目
+    deleteQues(index){
+      let quesList = this.QuesList;
+      if (quesList.length===0){
+        this.$message({
+          showClose: true,
+          message: '列表为空，不可操作',
+          type: 'error'
+        });
+        return;
+      }
+      quesList.splice(index,1);
+      for (let i = 0; i < quesList.length; i++) {
+        quesList[i].idx=i;
+      }
+    },
+
+
+    // 上移
+    moveUp(index){
+      let quesList = this.QuesList;
+      if (index===0){
+        this.$message({
+          showClose: true,
+          message: '已在最前，不可上移',
+          type: 'error'
+        });
+        return;
+      }
+      let src = quesList[index];
+      let dest = quesList[index-1];
+      console.log(dest);
+      quesList.splice(index,1,dest);
+      quesList.splice(index-1,1,src);
+      for (let i = 0; i < quesList.length; i++) {
+        quesList[i].idx=i;
+      }
+    },
+
+    // 下移
+    moveDown(index){
+      let quesList = this.QuesList;
+      if (index===quesList.length-1){
+        this.$message({
+          showClose: true,
+          message: '已在最后，不可下移',
+          type: 'error'
+        });
+        return;
+      }
+      let src = quesList[index];
+      let dest = quesList[index+1];
+      console.log(dest);
+      quesList.splice(index,1,dest);
+      quesList.splice(index+1,1,src);
+      for (let i = 0; i < quesList.length; i++) {
+        quesList[i].idx=i;
+      }
+    },
+
     // 快速导航
     IndexNav(index){
-      // let dest =
       let QuesItems = document.querySelector(".QuesList").children;
       let height = 0;
       for (let i = 0; i < index; i++) {
@@ -257,7 +347,7 @@ export default {
         return
       }
       const newItems = [...this.QuesList]
-      // console.log(newItems)
+
       const src = newItems.indexOf(this.dragging)
       const dst = newItems.indexOf(item)
 
@@ -268,23 +358,38 @@ export default {
       }
 
       this.QuesList = newItems
-    }
+    },
 
+
+    // js实现样式更改
+    ShowOptions(){
+      console.log('111')
+      let QuesList = document.querySelector(".QuesList").children;
+      console.log(QuesList)
+      for (let i = 0; i < QuesList.length; i++) {
+        let QuesItem = QuesList[i];
+        QuesItem.addEventListener("mouseover",function () {
+          let options = QuesItem.querySelector(".options");
+          options.style.display = 'flex'
+          // console.log('aaa');
+          options.style.justifyContent = 'space-around'
+        })
+        QuesItem.addEventListener('mouseout',function () {
+          // console.log('aaa');
+          let options = QuesItem.querySelector(".options");
+          options.style.display = 'none'
+        })
+      }
+    }
   },
   mounted() {
-    let QuesList = document.querySelector(".QuesList").children;
-    console.log(QuesList)
-    for (let i = 0; i < QuesList.length; i++) {
-      let QuesItem = QuesList[i];
-      QuesItem.addEventListener("mouseover",function () {
-        let options = QuesItem.querySelector(".options");
-        options.style.display = 'flex'
-        options.style.justifyContent = 'space-around'
-      })
-      QuesItem.addEventListener('mouseout',function () {
-        let options = QuesItem.querySelector(".options");
-        options.style.display = 'none'
-      })
+    this.ShowOptions();
+  },
+  watch: {
+    QuesList(newList,oldList){
+      this.QuesList=newList;
+      console.log(this.QuesList)
+      this.ShowOptions();
     }
   }
 }
@@ -467,6 +572,7 @@ export default {
     border-bottom: 1px solid #BDBDBD;
     box-shadow: 0 0 10px rgba(0,0,0,.2);
     padding-top: 20px ;
+    position: relative;
     box-sizing: border-box;
   }
 
@@ -476,14 +582,15 @@ export default {
     font-weight: 600;
   }
 
+  .designContent .designPreview  .QuesBase .AutoNumSwitch {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+  }
+
 
   .designContent .designPreview .QuesList {
-    /*overflow: hidden;*/
-    /*overflow-x: scroll;*/
-    /*white-space: nowrap;*/
-    /*position: absolute;*/
     width: 100%;
-    /*bottom: 0;*/
     padding-bottom: 138px;
   }
 
@@ -494,7 +601,7 @@ export default {
     border-bottom: 1px solid #BDBDBD;
     position: relative;
 
-    /*z-index: 44;*/
+    z-index: 44;
   }
 
   .designContent .designPreview .QuesList .QuesItem .options {
