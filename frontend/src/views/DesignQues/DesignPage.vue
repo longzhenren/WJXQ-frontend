@@ -87,6 +87,14 @@
               </li>
 
           </ul>
+
+          <div class="None" v-else>
+            <div>空空如也~</div>
+          </div>
+
+<!--          <div class="QuesTail">-->
+
+<!--          </div>-->
         </vue-scroll>
 
       </div>
@@ -155,69 +163,69 @@ export default {
 
       // 问卷问题列表
       QuesList: [
-        {
-          name: 'aaa',
-          idx: 0,
-          isDraggable: true,
-          subData: {},
-          type: ''
-        },
-        {
-          name: 'bbb',
-          idx: 1,
-          isDraggable: true,
-          subData: {},
-          type: ''
-        },
-        {
-          name: 'bbb',
-          idx: 2,
-          isDraggable: true,
-          subData: {},
-          type: ''
-        },
-        {
-          name: 'bbb',
-          idx: 3,
-          isDraggable: true,
-          subData: {},
-          type: ''
-        },
-        {
-          name: 'bbb',
-          idx: 4,
-          isDraggable: true,
-          subData: {},
-          type: ''
-        },
-        {
-          name: 'bbb',
-          idx: 5,
-          isDraggable: true,
-          subData: {},
-          type: ''
-        },
-        {
-          name: 'bbb',
-          idx: 6,
-          isDraggable: true,
-          subData: {},
-          type: ''
-        },
-        {
-          name: 'bbb',
-          idx: 7,
-          isDraggable: true,
-          subData: {},
-          type: ''
-        },
-        {
-          name: 'bbb',
-          idx: 8,
-          isDraggable: true,
-          subData: {},
-          type: ''
-        },
+        // {
+        //   name: 'aaa',
+        //   idx: 0,
+        //   isDraggable: true,
+        //   subData: {},
+        //   type: ''
+        // },
+        // {
+        //   name: 'bbb',
+        //   idx: 1,
+        //   isDraggable: true,
+        //   subData: {},
+        //   type: ''
+        // },
+        // {
+        //   name: 'bbb',
+        //   idx: 2,
+        //   isDraggable: true,
+        //   subData: {},
+        //   type: ''
+        // },
+        // {
+        //   name: 'bbb',
+        //   idx: 3,
+        //   isDraggable: true,
+        //   subData: {},
+        //   type: ''
+        // },
+        // {
+        //   name: 'bbb',
+        //   idx: 4,
+        //   isDraggable: true,
+        //   subData: {},
+        //   type: ''
+        // },
+        // {
+        //   name: 'bbb',
+        //   idx: 5,
+        //   isDraggable: true,
+        //   subData: {},
+        //   type: ''
+        // },
+        // {
+        //   name: 'bbb',
+        //   idx: 6,
+        //   isDraggable: true,
+        //   subData: {},
+        //   type: ''
+        // },
+        // {
+        //   name: 'bbb',
+        //   idx: 7,
+        //   isDraggable: true,
+        //   subData: {},
+        //   type: ''
+        // },
+        // {
+        //   name: 'bbb',
+        //   idx: 8,
+        //   isDraggable: true,
+        //   subData: {},
+        //   type: ''
+        // },
 
       ],
 
@@ -237,7 +245,7 @@ export default {
       // console.log(item)
       console.log(val)
       item.subData = val;
-      item.name=val.
+      item.name=val.question
       console.log(item)
     },
 
@@ -292,10 +300,6 @@ export default {
     addNewQuesToQuesList(SubjectObj){
       let length = this.QuesList.length;
       this.QuesList.splice(length,0,SubjectObj);
-      let QuesItems = document.querySelector(".QuesList").children;
-      // console.log(QuesItems);
-      let node = QuesItems[0].cloneNode();
-
     },
 
     // 删除题目列表中的题目
@@ -333,6 +337,8 @@ export default {
 
       let src = quesList[index];
       let dest = quesList[index-1];
+      // console.log(src);
+      // console.log(dest);
       // let quesList = Array.from(QuesList);
       // console.log(quesList)
       // // console.log(dest);
@@ -359,7 +365,6 @@ export default {
       }
       let src = quesList[index];
       let dest = quesList[index+1];
-      // console.log(dest);
       quesList.splice(index,1,dest);
       quesList.splice(index+1,1,src);
       for (let i = 0; i < quesList.length; i++) {
@@ -398,8 +403,10 @@ export default {
     // 切换工具栏
     changeDesignTools(idx){
       this.ShowNum=idx
-      console.log(this.ShowNum)
+      // console.log(this.ShowNum)
     },
+
+
     handleDragStart(e,item){
       this.dragging = item;
     },
@@ -412,9 +419,11 @@ export default {
     },
     handleDragEnter(e,item){
       e.dataTransfer.effectAllowed = "move"//为需要移动的元素设置dragstart事件
+
       if(item === this.dragging){
         return
       }
+
       const newItems = [...this.QuesList]
 
       const src = newItems.indexOf(this.dragging)
@@ -433,6 +442,9 @@ export default {
     // js实现样式更改
     ShowOptions(){
       // console.log('111')
+      if (document.querySelector(".QuesList")===null){
+        return
+      }
       let QuesList = document.querySelector(".QuesList").children;
       // console.log(QuesList)
       for (let i = 0; i < QuesList.length; i++) {
@@ -452,12 +464,12 @@ export default {
     }
   },
   mounted() {
-    // this.ShowOptions();
+    this.ShowOptions();
   },
   watch: {
     QuesList(newList,oldList){
       this.QuesList=newList;
-      console.log(this.QuesList)
+      // console.log(this.QuesList)
       this.ShowOptions();
     }
   }
@@ -625,7 +637,7 @@ export default {
   }
 
   .designContent .designPreview {
-    background-color: blue;
+    /*background-color: blue;*/
     box-sizing: border-box;
     height: 92vh;
     /*position: relative;*/
@@ -656,6 +668,19 @@ export default {
     bottom: 20px;
     right: 20px;
   }
+
+  .designContent .designPreview .None {
+    background-color: pink;
+    width: 100%;
+    height: 90vh;
+
+  }
+
+  /*.designContent .designPreview .QuesTail {*/
+  /*  background-color: #F2F2F2;*/
+  /*  height: 2vh;*/
+  /*  width: 100%;*/
+  /*}*/
 
 
   .designContent .designPreview .QuesList {

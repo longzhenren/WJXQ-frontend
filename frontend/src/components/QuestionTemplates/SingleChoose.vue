@@ -63,7 +63,7 @@
 <script>
 export default {
   props:{
-    FatherData: Object
+    FatherData: Object,
   },
   data () {
     return {
@@ -76,11 +76,6 @@ export default {
     };
   },
   mounted() {
-    // console.log('aaa')
-    console.log(this.FatherData.edit)
-    console.log(this.FatherData.question)
-    console.log(this.FatherData.choices)
-    console.log(this.FatherData.radio)
     if ( this.FatherData.edit!==null && this.FatherData.edit!=={} && this.FatherData.edit!==undefined ){
       this.singleChoice.edit = this.FatherData.edit;
       this.singleChoice.question = this.FatherData.question;
@@ -88,14 +83,18 @@ export default {
       this.singleChoice.radio = this.FatherData.radio;
       return
     }
+  },
+  watch: {
+    FatherData(newData,oldData){
+        this.singleChoice = newData;
 
-    // console.log(this.singleChoice)
-    // console.log()
+    }
   },
   methods: {
     add: function() {
       this.singleChoice.choices.push("")
       console.log(this.FatherData)
+      console.log(this.singleChoice)
     },
     save: function() {
       let find = false;
