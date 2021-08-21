@@ -34,7 +34,7 @@
 </template>
 
 <script>
-
+import bus from "../../assets/utils/bus";
 
 export default {
   name: "QuestionType",
@@ -60,7 +60,6 @@ export default {
           title: '调查',
           intro: '丰富题型，强大逻辑' +
               '问卷密码，红包抽奖',
-
         },
         // {
         //   title: '考试',
@@ -88,6 +87,9 @@ export default {
         // },
       ],
     }
+  },
+  beforeDestroy() {
+    bus.$emit('createNewQues',this.QuesForm.title)
   },
   mounted() {
     // let typelist = document.querySelector(".TypeList");
