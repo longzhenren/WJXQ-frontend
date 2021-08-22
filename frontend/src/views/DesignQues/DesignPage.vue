@@ -65,12 +65,16 @@
                   @dragenter="handleDragEnter($event,item)"
                   @dragend="handleDragEnd($event,item)">
                 <span v-if="isShowQuesNum">{{ item.idx + 1 }}</span>
-                {{ item.name }}
+                {{ item.Stem }}
 
                 <div class="componentsItem" @mouseover="OverDrag(index,item)" @mouseleave="LeaveDrag(index,item)">
                   <SingleChoose v-if="item.type==='singleChoice'"
                                 @saveSingleData="SingleChoiceSave($event,item)"
                                 :father-data="item.subData"></SingleChoose>
+
+                  <MultiChoose v-else-if="item.type==='multiChoose'"
+                               :father-data="item.subData"
+                               @saveMultiData="MultiChoiceSave($event,item)"></MultiChoose>
                 </div>
 
 
@@ -82,6 +86,7 @@
                     <li @click="moveDown(index)">下移</li>
                     <li @click="ShowItem(item)">最前</li>
                     <li>最后</li>
+
                   </ul>
                 </div>
               </li>
@@ -110,11 +115,14 @@
 <script>
 import SingleChoose from "../../components/QuestionTemplates/SingleChoose";
 import bus from "../../assets/utils/bus";
+import MultiChoose from "../../components/QuestionTemplates/MultiChoose";
+import {request} from "../../network/request";
 
 export default {
   name: "DesignPage",
   components:{
-    SingleChoose
+    SingleChoose,
+    MultiChoose
   },
   data(){
     return {
@@ -171,19 +179,28 @@ export default {
 
       // 问卷对象
       Questionnaire: {
+        // 创建者信息
+        CreateUser: '',
         // 问卷标题
-        title: '',
+        Text: '',
         // 问卷问题列表
-        ProblemList: [],
+        Question: [],
         // 是否可发布
         isReleaseable: false,
+        // 是否已开放
+        Open: false,
+        // 创建时间
+        CreateTime: '',
+        // 开启时间
+        UpdateTime: '',
+        // 发布时间
+        ReleaseTime: '',
         // 是否显示题号
         isShowSubNum: false
       },
 
       // 当前正在拖动的元素
       dragging: null,
-
     }
   },
   beforeDestroy() {
@@ -192,10 +209,83 @@ export default {
   methods: {
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
-      this.Questionnaire.title = this.QuesTitle;
-      this.Questionnaire.ProblemList = this.QuesList;
+      this.Questionnaire.Text = this.QuesTitle;
+      this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
+      this.sendAndSaveNewQues(this.Questionnaire)
       this.$router.push('/release')
+    },
+
+    // 创建问卷，向后端发送数据
+    sendAndSaveNewQues(Ques){
+      console.log(Ques);
+      let  FinalQuestionnaire = {
+        CreateUser: '',
+        CreateTime: '',
+        UpdateTime: '',
+        ReleaseTime: '',
+        Open: false,
+        Text: '',
+        Question: [],
+        Number: false,
+      }
+      FinalQuestionnaire.Text = Ques.Text;
+      FinalQuestionnaire.CreateTime = Ques.CreateTime;
+      FinalQuestionnaire.Open = Ques.Open;
+      FinalQuestionnaire.CreateUser = Ques.CreateUser;
+      FinalQuestionnaire.ReleaseTime = Ques.ReleaseTime;
+      FinalQuestionnaire.UpdateTime = Ques.UpdateTime;
+      FinalQuestionnaire.Number = Ques.isShowSubNum;
+      for (let i = 0; i < Ques.Question.length; i++) {
+        let QuesItem = Ques.Question[i];
+        if (QuesItem.type === 'singleChoice'){
+          let singleChoice = {
+            Stem: '',
+            Type: 1,
+            ChoiceCount: 1,
+            Choice: [],
+          }
+          singleChoice.Stem = QuesItem.Stem;
+          singleChoice.Choice = QuesItem.subData.choices;
+          FinalQuestionnaire.Question.push(singleChoice);
+        }
+        else if (QuesItem.type === 'multiChoose'){
+          let mutiChoice= {
+            Stem: '',
+            Type: 2,
+            maxCount: 1,
+            minCount: 1,
+            Choice: [],
+          }
+          mutiChoice.Stem = QuesItem.Stem;
+          mutiChoice.Choice = QuesItem.subData.choices;
+          mutiChoice.maxCount = QuesItem.subData.max;
+          mutiChoice.minCount = QuesItem.subData.min;
+          FinalQuestionnaire.Question.push(mutiChoice);
+        }
+      }
+
+
+      console.log(FinalQuestionnaire)
+      // request({
+      //   // url: '/question/getQuestionnaire',
+      //   // method: 'GET',
+      //   // data
+      // })
+    },
+
+
+
+    // 获得已创建设计未完成的问卷
+
+    getNeedDesignQuestionnaire(CreateUser,QuesId){
+      request({
+        url: '/question/getQuestionnaire',
+        method: 'GET',
+        params: {
+          CreateUser: CreateUser,
+        }
+      })
     },
 
 
@@ -210,19 +300,28 @@ export default {
       // console.log(item)
       console.log(val)
       item.subData = val;
-      item.name=val.question
+      item.Stem=val.question
       console.log(item)
     },
 
+
+    // 多选数据保存
+    MultiChoiceSave(val,item){
+      item.subData = val;
+      item.Stem=val.question
+    },
+
+
     // 增加题目
     addNewQues(type,QuesNum){
+      let Opt = {};
       // 增加选择题
       if (type===0){
         switch (QuesNum) {
           // 增加单选
           case 0:
-            let Opt = {
-              name: '单选题标题',
+             Opt = {
+               Stem: '单选题标题',
               idx: this.QuesList.length,
               isDraggable: true,
               subData: {},
@@ -236,6 +335,14 @@ export default {
             // 增加多选
           case 1:
             console.log('增加多选')
+             Opt = {
+               Stem: '多选题标题',
+              idx: this.QuesList.length,
+              isDraggable: true,
+              subData: {},
+              type: 'multiChoose'
+            }
+            this.addNewQuesToQuesList(Opt);
             break;
 
             // 增加下拉菜单
@@ -425,8 +532,9 @@ export default {
 
     // 从发布页面接受原先的问卷继续设计
     continueDesign(Ques){
-      this.QuesTitle = Ques.title;
-      this.QuesList = Ques.ProblemList
+      this.QuesTitle = Ques.Text;
+      this.QuesList = Ques.Question
+      this.isShowQuesNum = Ques.isShowSubNum
       console.log(Ques)
     }
   },
