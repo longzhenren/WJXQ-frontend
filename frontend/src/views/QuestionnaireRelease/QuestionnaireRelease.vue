@@ -50,21 +50,25 @@
       </ul>
 
       <div class="quesTitle">
-        {{DesignedQuestionnaire.Text}}
+        {{DesignedQuestionnaire.title}}
       </div>
     </div>
 
 
     <div class="release" v-if="leftMenuCurrent===0">
       <div class="status" v-if="topNavCurrent===0">
-        <div class="releasable" v-if="DesignedQuestionnaire.isReleaseable">
+        <div class="releasable" v-if="DesignedQuestionnaire.Open">
           此问卷已经设计完成,您可以开始
-          <button>开启问卷</button>
+          <button @click="sendQues">逐一发送问卷</button>
         </div>
 
         <div class="disreleasable" v-else>
           此问卷还未设计完成,如果准备就绪,您可以
-          <button @click="releaseMyQues">发布问卷</button>
+          <button @click="releaseMyQues">开启问卷</button>
+        </div>
+
+        <div class="warning">
+          根据中国相关法规和主管部门要求，不允许发布与政治、军事、宗教，信仰，民族，人权、民主、国家主权、国家统一、外交事件 等相关的 敏感话题调查，请您谅解！
         </div>
 
 
@@ -99,22 +103,55 @@
 
       </div>
     </div>
+
+
+    <div class="send" v-if="leftMenuCurrent===1">
+      <div class="link">
+        <div class="erweima">
+          <div class="intro">点击二维码即可下载分享</div>
+          <QRCode ref="Myqrcode"
+            :urlpath="QuesLink"
+            :code-height="150"
+            :code-width="150"></QRCode>
+        </div>
+
+        <div class="generateLink">
+          <div class="title">问卷链接</div>
+          <div class="quesLink">
+            <input id="links" type="text" v-model="QuesLink">
+            <div class="operations">
+              <button @click="copyLink">复制</button>
+              <button @click="openQuesLink">打开</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import bus from "../../assets/utils/bus";
 import {request} from "../../network/request";
+import QRCode from "../../components/QRCode";
 
 export default {
   name: "QuestionnaireRelease",
+  components:{
+    QRCode
+  },
   data(){
     return{
+
       // 得到的问卷
         DesignedQuestionnaire: {},
 
       // 顶部菜单计数器
       topNavCurrent: 0,
+
+      // 问卷链接
+      QuesLink: 'https://www.baidu.com/',
 
       // 侧边菜单计数器
       leftMenuCurrent: 0,
@@ -149,9 +186,45 @@ export default {
     }
   },
   methods: {
+    // 点击下载app二维码
+    // downloadE() {
+    //
+    //   let canvasData = this.$refs.Myqrcode.getElementsByTagName('canvas')
+    //   let a = document.createElement("a");
+    //   let event = new MouseEvent("click"); // 创建一个单击事件
+    //   a.href = canvasData[0].toDataURL("image/png");;
+    //   a.download = "drcQrcode";
+    //   a.dispatchEvent(event); // 触发a的单击事件
+    // },
+
+    // 打开问卷链接
+    openQuesLink(){
+      // this.$router.replace(this.QuesLink);
+      // this.$router.go(this.QuesLink);
+      // window.location = this.QuesLink
+      window.open(this.QuesLink,'_blank')
+    },
+
+    // 复制问卷链接
+    copyLink(){
+      let input = document.getElementById("links");
+      input.select();
+      document.execCommand('copy');
+      this.$message({
+        showClose: true,
+        message: '已复制',
+        type: 'success'
+      });
+    },
+
+    // 问卷可以发送
+    sendQues(){
+      this.leftMenuCurrent = 1;
+    },
+
     // 发布问卷
     releaseMyQues(){
-      this.DesignedQuestionnaire.isReleaseable = true
+      this.DesignedQuestionnaire.Open = true
     },
 
     // 切换顶部导航栏
@@ -340,7 +413,7 @@ export default {
     background-color: #FE9A2E;
     color: #F2F2F2;
     height: 30%;
-    width: 80px;
+    width: 100px;
     margin-left: 10px;
     transition: all .4s ease-in-out;
   }
@@ -348,6 +421,16 @@ export default {
   .release .status div button:hover {
     cursor: pointer;
     background-color: #FFBF00;
+  }
+
+  .release .status .warning {
+    background-color: white;
+    width: 100%;
+    height: 25%;
+    padding: 20px 30px;
+    /*padding: 30px 0;*/
+    text-align: left;
+    color: #A4A4A4;
   }
   .release .status .check {
     background-color: white;
@@ -380,6 +463,113 @@ export default {
   .release .status .check div span:first-child:hover {
     cursor: pointer;
   }
+
+  .send {
+    background-color: white;
+    width: 50%;
+    height: 80%;
+    position: absolute;
+    left: 50%;
+    top: 16%;
+    transform: translateX(-50%);
+  }
+
+  .send .link {
+    width: 100%;
+    /*background-color: pink;*/
+    height: 180px;
+    box-shadow: 0 0 5px rgba(0,0,0,.5);
+    display: flex;
+    flex-direction: row;
+  }
+
+  .send .link .generateLink {
+    /*background-color: blue;*/
+    width: 70%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding-left: 20px;
+    box-sizing: border-box;
+  }
+
+  .send .link .generateLink .title {
+    /*background-color: #58ACFA;*/
+    width: 100%;
+    height: 30%;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1C1C1C;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+  }
+
+  .send .link .generateLink .quesLink {
+    /*background-color: purple;*/
+    width: 100%;
+    height: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+  }
+
+  .send .link .generateLink .quesLink input {
+    border: 0;
+    outline: none;
+    width: 60%;
+    height: 30%;
+    margin-bottom: 20px;
+    background-color: #E6E6E6;
+    padding-left: 20px;
+  }
+
+  .send .link .generateLink .quesLink .operations {
+    /*background-color: #F2F2F2;*/
+    width: 70%;
+    height: 30%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .send .link .generateLink .quesLink .operations button {
+    border: 0;
+    outline: none;
+    background-image: linear-gradient(to left,#A9D0F5,#58FAF4);
+    width: 20%;
+    height: 80%;
+    border-radius: 999999999px;
+    color: #848484;
+  }
+
+  .send .link .generateLink .quesLink .operations button:hover {
+    /*background-image: linear-gradient(to left,,#58FAF4);
+    */
+    cursor: pointer;
+    background-image: none;
+    background-color: white;
+    box-shadow: 0 0 4px rgba(0,0,0,.2);
+    color: #58ACFA;
+  }
+
+  .send .link .erweima {
+    /*background-color: red;*/
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .send .link .erweima .intro {
+    display: flex;
+    justify-content: center;align-items: center;
+  }
+
 
 </style>
 

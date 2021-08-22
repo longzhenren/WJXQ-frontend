@@ -25,6 +25,10 @@
           <el-input v-model="QuesForm.title" autocomplete="off" placeholder="请输入标题"></el-input>
         </el-form-item>
 
+        <el-form-item label="问卷描述">
+          <el-input v-model="QuesForm.Text" autocomplete="off" placeholder="请输入标题"></el-input>
+        </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="Confirm">立即创建</el-button>
@@ -34,6 +38,7 @@
 </template>
 
 <script>
+import {request} from "../../network/request";
 import bus from "../../assets/utils/bus";
 
 export default {
@@ -50,9 +55,12 @@ export default {
       dialogFormVisible: false,
 
 
+      sendId: 0,
 
       QuesForm: {
+        id: 0,
         title: '',
+        Text: '',
       },
 
       QuesTypes: [
@@ -89,14 +97,14 @@ export default {
     }
   },
   beforeDestroy() {
-    bus.$emit('createNewQues',this.QuesForm.title)
+    bus.$emit('createNewQues',this.QuesForm)
   },
   mounted() {
     // let typelist = document.querySelector(".TypeList");
     let typelist = this.$refs.typelist;
-    console.log(typelist)
+    // console.log(typelist)
     let ul = typelist.children;
-    console.log(ul)
+    // console.log(ul)
     for (let i = 0; i < ul.length; i++) {
       let ulElement = ul[i];
       ulElement.addEventListener('mouseover',function () {
@@ -115,14 +123,39 @@ export default {
     }
   },
   methods: {
+
+
     CreateNewQues(){
 
       this.dialogFormVisible=true
-      console.log(this.dialogFormVisible)
+      let pra = {
+        Title: this.QuesForm.title,
+        Text: this.QuesForm.Text,
+        ShowNumber:false,
+        Open:false,
+      }
+      request({
+        url: '/question/createQuestionnaire',
+        method: 'post',
+        data: pra
+      }).then(res=>{
+        // console.log(res)
+        // if (res.data.message === 'Success'){
+        //
+        // }
+        this.QuesForm.id=res.data.id
+        // console.log(this.QuesForm.id)
+
+      }).catch(err=>{
+        // console.log(err)
+      })
+      // console.log(this.dialogFormVisible)
     },
 
 
     Confirm(){
+
+
       this.$router.push('/design');
     }
   }

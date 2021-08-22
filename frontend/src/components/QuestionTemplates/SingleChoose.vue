@@ -14,7 +14,7 @@
       </el-form-item>
     </el-form>
 
-  <el-radio-group v-model="singleChoice.radio"  style="display: block">
+  <el-radio-group v-model="singleChoice.radio"   class="InnerDiv" >
 
     <el-form  style="margin-left: 20px" label-width="80px" :inline="true" class="demo-form-inline" v-for="(choice,i) in singleChoice.choices"  >
       <el-form-item  ><label>{{i+1}}.</label></el-form-item>
@@ -32,21 +32,27 @@
     </el-form>
 
   </el-radio-group>
-    <el-divider content-position="left">
-    <div style=" text-align: left">
-     <el-button type="primary" @click="add" style=" display: inline;line-height: 20px" >新建选项</el-button>
-     <el-button type="success" @click="save" style="display: inline;line-height: 20px" >保存</el-button>
+
+    <div class="RightDiv">
+
+      <el-checkbox v-model="singleChoice.Must" class="RightElement" >必答题</el-checkbox>
+
+     <el-button type="primary" @click="add" class="RightElement"  >新建选项</el-button>
+     <el-button type="success" @click="save" class="RightElement" >保存</el-button>
+      <el-divider content-position="left">
+      </el-divider>
   </div>
-    </el-divider>
 
 
+
   </div>
-  <div v-else style="text-align: left" >
-      <div style="margin-left: 10px">
-              <label  >单选题{{singleChoice.question}}</label>
+  <div v-else  class="InnerDiv" >
+      <div >
+        <label v-if="singleChoice.Must==true" style="color: red" >*</label>
+              <label  >单选题 - {{singleChoice.question}}</label>
         <el-divider></el-divider>
       </div>
-    <el-radio-group v-model="singleChoice.radio"  >
+    <el-radio-group v-model="singleChoice.radio"  class="InnerDiv"  >
 
       <el-radio   v-for="(choice,i) in singleChoice.choices" :label="singleChoice.choices[i]"
                   style="margin-left: 60px;margin-bottom:10px;display: block"
@@ -54,28 +60,32 @@
       </el-radio>
     </el-radio-group>
 
-    <div style="text-align: left" >
-      <el-divider content-position="left"> <el-button  icon="el-icon-edit" type="primary" @click="edit" >修改</el-button></el-divider>
-  </div>
+    <div class="RightDiv">
+      <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement"  >修改</el-button></el-divider>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   props:{
-    FatherData: Object,
+    FatherData: Object
   },
   data () {
     return {
       singleChoice:{
+        id:"",
+        number:"",
         edit:1,
-        question:"标题",
+        question:"",
         choices:["",""],
-        radio: 0
+        radio: 0,
+        Must:true,
       }
     };
   },
   mounted() {
+    // console.log(this.FatherData)
     if ( this.FatherData.question!==null && this.FatherData.question!=={} && this.FatherData.question!==undefined ){
       this.singleChoice.edit = this.FatherData.edit;
       this.singleChoice.question = this.FatherData.question;
@@ -84,6 +94,7 @@ export default {
       return
     }
   },
+
   watch: {
     FatherData(newData,oldData){
 
@@ -91,19 +102,17 @@ export default {
         this.singleChoice = newData;
         return
       }
-    }
+    },
   },
   methods: {
     add: function() {
       this.singleChoice.choices.push("")
-      console.log(this.FatherData)
-      console.log(this.singleChoice)
     },
     save: function() {
       let find = false;
       for (let i = 0; i < this.singleChoice.choices.length; i++) {
         for (let j = i + 1; j < this.singleChoice.choices.length; j++) {
-          if (this.singleChoice.choices[i]=== this.singleChoice.choices[j] ) {
+          if (this.singleChoice.choices[i]== this.singleChoice.choices[j] ) {
             find = true; break;
           }
         }
@@ -129,7 +138,18 @@ export default {
   white-space: normal;
   alignment: left;
 }
-
+.InnerDiv{
+  text-align: left;
+  margin-left:10px;
+}
+.RightDiv{
+  text-align: right;
+  margin-left:70px;
+}
+.RightElement{
+  display: inline;
+  margin-left: 20px
+}
 
 </style>
 
