@@ -30,9 +30,9 @@
 
 <!--    顶部导航栏-->
     <div class="topNav">
-      <ul>
+      <ul v-if="leftMenuCurrent===0">
         <!--      问卷状态-->
-        <li v-for="(item,index) in topNavData"
+        <li v-for="(item,index) in releaseTopNavData"
             :class="{ active: topNavCurrent===index}"
             @click="changeTop(index)" >
           <span>{{ item.icon }}</span>
@@ -40,15 +40,22 @@
         </li>
       </ul>
 
-
+      <ul v-else-if="leftMenuCurrent===1">
+        <li v-for="(item,index) in sendTopNavData"
+            :class="{ active: topNavCurrent===index}"
+            @click="changeTop(index)" >
+          <span>{{ item.icon }}</span>
+          <div>{{ item.title }}</div>
+        </li>
+      </ul>
 
       <div class="quesTitle">
-        {{DesignedQuestionnaire.title}}
+        {{DesignedQuestionnaire.Text}}
       </div>
     </div>
 
 
-    <div class="release">
+    <div class="release" v-if="leftMenuCurrent===0">
       <div class="status" v-if="topNavCurrent===0">
         <div class="releasable" v-if="DesignedQuestionnaire.isReleaseable">
           此问卷已经设计完成,您可以开始
@@ -75,12 +82,29 @@
           </div>
         </div>
       </div>
+
+      <div class="settings" v-if="topNavCurrent===2">
+        <div class="baseSetting">
+
+        </div>
+
+        <div class="ansTimesSetting">
+
+        </div>
+
+        <div class="submitSetting">
+
+        </div>
+
+
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import bus from "../../assets/utils/bus";
+import {request} from "../../network/request";
 
 export default {
   name: "QuestionnaireRelease",
@@ -89,14 +113,13 @@ export default {
       // 得到的问卷
         DesignedQuestionnaire: {},
 
-
       // 顶部菜单计数器
       topNavCurrent: 0,
 
       // 侧边菜单计数器
       leftMenuCurrent: 0,
 
-      topNavData: [
+      releaseTopNavData: [
         {
           icon: '',
           title: '问卷状态',
@@ -109,6 +132,18 @@ export default {
           icon: '',
           title: '问卷设置',
         }
+      ],
+
+
+      sendTopNavData: [
+        {
+          icon: '',
+          title: '问卷链接',
+        },
+        {
+          icon: '',
+          title: '问卷预览',
+        },
       ]
 
     }
@@ -332,6 +367,10 @@ export default {
     flex-direction: column;
     justify-content: space-around;
     align-items: start;
+  }
+
+  .release .settings {
+
   }
 
   .release .status .check div span:first-child {

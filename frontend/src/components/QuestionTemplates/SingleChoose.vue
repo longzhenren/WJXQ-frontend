@@ -76,7 +76,7 @@ export default {
     };
   },
   mounted() {
-    if ( this.FatherData.edit!==null && this.FatherData.edit!=={} && this.FatherData.edit!==undefined ){
+    if ( this.FatherData.question!==null && this.FatherData.question!=={} && this.FatherData.question!==undefined ){
       this.singleChoice.edit = this.FatherData.edit;
       this.singleChoice.question = this.FatherData.question;
       this.singleChoice.choices = this.FatherData.choices;
@@ -86,8 +86,11 @@ export default {
   },
   watch: {
     FatherData(newData,oldData){
-        this.singleChoice = newData;
 
+      if ( newData.edit!==null && newData.edit!=={} && newData.edit!==undefined ){
+        this.singleChoice = newData;
+        return
+      }
     }
   },
   methods: {
