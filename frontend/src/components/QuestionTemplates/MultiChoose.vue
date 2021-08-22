@@ -17,7 +17,7 @@
       <el-form-item  ><label>{{i+1}}.</label></el-form-item>
       <el-form-item  >
         <el-input   v-model="multiChoice.choices[i]"
-                    placeholder="请输入选项"
+                    placeholder="作答区域"
                     type="textarea"
                     >
         </el-input>
@@ -30,30 +30,35 @@
     </el-radio-group>
     <div class="RightDiv">
       <el-form :inline="true"  class="demo-form-inline">
-        <el-form-item label="最少选择">
+        <el-form-item class="RightElement" >
+          <el-checkbox v-model="multiChoice.Must">必答题</el-checkbox>
+        </el-form-item>
+        <el-form-item label="最少选择" class="RightElement" >
           <el-select v-model="multiChoice.min" @change="changeMin">
             <el-option v-for="(choice,i) in multiChoice.choices" :label="i+1" :value="i+1"  v-if="i+1<=multiChoice.max" ></el-option>
             <el-option v-for="(choice,i) in multiChoice.choices" :label="i+1" :value="i+1"  v-if="i+1>multiChoice.max" :disabled="true" ></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="最多选择" >
+        </el-form-item >
+        <el-form-item label="最多选择" class="RightElement"  >
           <el-select v-model="multiChoice.max" @change="changeMax" >
             <el-option v-for="(choice,i) in multiChoice.choices" :label="i+1" :value="i+1"  v-if="i+1>=multiChoice.min" ></el-option>
             <el-option v-for="(choice,i) in multiChoice.choices" :label="i+1" :value="i+1"  v-if="i+1<multiChoice.min" :disabled="true" ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="add" style=" display: inline;line-height: 20px" >新建选项</el-button>
-          <el-button type="success" @click="save" style="display: inline;line-height: 20px" >保存</el-button>
+          <el-button type="primary" @click="add" class="RightElement" >新建选项</el-button>
+          <el-button type="success" @click="save" class="RightElement"  >保存</el-button>
         </el-form-item>
       </el-form>
       <el-divider content-position="left"></el-divider>
     </div>
   </div>
 
+
   <div v-else class="InnerDiv" >
-    <div class="InnerDiv">
-            <label>多选题 {{multiChoice.question }}</label>
+    <div >
+      <label v-if="multiChoice.Must==true" style="color: red" >*</label>
+      <label>多选题 - {{multiChoice.question }}</label>
       <el-divider></el-divider>
     </div>
     <el-checkbox-group  v-model="multiChoice.radio" class="InnerDiv"  >
@@ -63,7 +68,7 @@
       </el-checkbox>
     </el-checkbox-group >
     <div class="RightDiv">
-      <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" >修改</el-button></el-divider>
+      <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement" >修改</el-button></el-divider>
     </div>
   </div>
 
@@ -83,6 +88,7 @@ export default {
         radio:[],
         max:1,
         min:1,
+        Must:true,
       }
     };
   },
@@ -95,15 +101,18 @@ export default {
       this.multiChoice.choices = this.FatherData.choices;
       this.multiChoice.radio = this.FatherData.radio;
     }
+    // this.multiChoice.edit = this.FatherData.edit;
+    // this.multiChoice.question = this.FatherData.question;
+    // this.multiChoice.choices = this.FatherData.choices;
+    // this.multiChoice.radio = this.FatherData.radio;
   },
   watch: {
     FatherData(newData,oldData){
-
       if ( newData.edit!==null && newData.edit!=={} && newData.edit!==undefined ){
         this.multiChoice = newData;
         return
       }
-    }
+    },
   },
   methods: {
     changeMax: function(){
@@ -132,7 +141,7 @@ export default {
       let find = false;
       for (let i = 0; i < this.multiChoice.choices.length; i++) {
         for (let j = i + 1; j < this.multiChoice.choices.length; j++) {
-          if (this.multiChoice.choices[i]=== this.multiChoice.choices[j] ) {
+          if (this.multiChoice.choices[i]== this.multiChoice.choices[j] ) {
             find = true; break;
           }
         }
@@ -164,7 +173,11 @@ export default {
 }
 .RightDiv{
   text-align: right;
-  margin-left:10px;
+  margin-left:70px;
+}
+.RightElement{
+  display: inline;
+  margin-left: 20px
 }
 
 </style>
