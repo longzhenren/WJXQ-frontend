@@ -91,16 +91,25 @@ export default {
       this.singleChoice.question = this.FatherData.question;
       this.singleChoice.choices = this.FatherData.choices;
       this.singleChoice.radio = this.FatherData.radio;
-      return
+      // this.singleChoice = this.FatherData
     }
   },
 
   watch: {
     FatherData(newData,oldData){
-
       if ( newData.edit!==null && newData.edit!=={} && newData.edit!==undefined ){
         this.singleChoice = newData;
-        return
+      }
+      else  {
+        this.singleChoice = {
+          id:"",
+          number:"",
+          edit:1,
+          question:"",
+          choices:["",""],
+          radio: 0,
+          Must:true,
+        }
       }
     },
   },
@@ -112,7 +121,7 @@ export default {
       let find = false;
       for (let i = 0; i < this.singleChoice.choices.length; i++) {
         for (let j = i + 1; j < this.singleChoice.choices.length; j++) {
-          if (this.singleChoice.choices[i]== this.singleChoice.choices[j] ) {
+          if (this.singleChoice.choices[i]=== this.singleChoice.choices[j] ) {
             find = true; break;
           }
         }

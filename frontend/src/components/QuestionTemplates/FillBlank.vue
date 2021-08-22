@@ -73,6 +73,16 @@ export default {
         this.fillBlank = newData;
         return
       }
+      else  {
+        this.fillBlank = {
+          id:"",
+          Number:"",
+          edit:1,
+          Questionnaire:"",
+          Must: true,
+          Answer:""
+        }
+      }
     },
   },
   methods: {
