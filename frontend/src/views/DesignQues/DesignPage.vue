@@ -244,7 +244,7 @@ export default {
       this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
       this.Questionnaire.Text = this.QuesText
-      this.sendAndSaveNewQues(this.Questionnaire)
+      // this.sendAndSaveNewQues(this.Questionnaire)
       // this.$router.push('/release')
     },
 
@@ -313,15 +313,15 @@ export default {
 
 
       // console.log(FinalQuestionnaire)
-      request({
-        url: '/question/modifyQuestionnaire',
-        method: 'post',
-        data: FinalQuestionnaire
-      }).then(res=>{
-        console.log(res)
-      }).catch(err=>{
-        console.log(err)
-      })
+      // request({
+      //   url: '/question/modifyQuestionnaire',
+      //   method: 'post',
+      //   data: FinalQuestionnaire
+      // }).then(res=>{
+      //   console.log(res)
+      // }).catch(err=>{
+      //   console.log(err)
+      // })
     },
 
 
@@ -476,8 +476,6 @@ export default {
       }
     },
 
-
-
     // 增加新题目,向后端请求题目id
     addNewQuestionToBackend(Opt,pra){
       request({
@@ -518,6 +516,8 @@ export default {
 
     // 上移
     moveUp(index){
+      // console.log('上')
+      console.log(this.QuesList)
       let quesList = this.QuesList;
       if (index===0){
         this.$message({
@@ -527,18 +527,28 @@ export default {
         });
         return;
       }
-
+      //
       let src = quesList[index];
       let dest = quesList[index-1];
+      // console.log(src)
+      // console.log(dest)
       quesList.splice(index,1,dest);
       quesList.splice(index-1,1,src);
-      for (let i = 0; i < quesList.length; i++) {
+      console.log(this.QuesList)
+      for (let i = 0; i <= index; i++) {
+        console.log(quesList[i])
+        // quesList[i].idx=i;
+      }
+      for (let i = 0; i <= index; i++) {
+        // console.log(quesList[i])
         quesList[i].idx=i;
       }
     },
 
     // 下移
     moveDown(index){
+      // console.log('下')
+      console.log(this.QuesList)
       let quesList = this.QuesList;
       if (index===quesList.length-1){
         this.$message({
@@ -558,25 +568,6 @@ export default {
     },
 
 
-    // 将题目移动到最前
-    moveToTop(index){
-      let quesList = this.QuesList;
-      if (index===quesList.length-1){
-        this.$message({
-          showClose: true,
-          message: '已在最后，不可下移',
-          type: 'error'
-        });
-        return;
-      }
-      let src = quesList[index];
-      let dest = quesList[index+1];
-      quesList.splice(index,1,dest);
-      quesList.splice(index+1,1,src);
-      for (let i = 0; i < quesList.length; i++) {
-        quesList[i].idx=i;
-      }
-    },
 
     // 快速导航
     IndexNav(index){

@@ -106,6 +106,17 @@ export default {
         this.evaluate = newData;
         return
       }
+      else  {
+        this.evaluate = {
+          edit:1,
+          question:"",
+          score:null,
+          describe:["不行","很棒"],
+          level:["1","2"],
+          radio:[],
+          Must:true,
+        }
+      }
     },
   },
   methods: {

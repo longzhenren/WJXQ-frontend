@@ -57,7 +57,7 @@
 
   <div v-else class="InnerDiv" >
     <div >
-      <label v-if="multiChoice.Must==true" style="color: red" >*</label>
+      <label v-if="multiChoice.Must===true" style="color: red" >*</label>
       <label>多选题 - {{multiChoice.question }}</label>
       <el-divider></el-divider>
     </div>
@@ -111,6 +111,17 @@ export default {
       if ( newData.edit!==null && newData.edit!=={} && newData.edit!==undefined ){
         this.multiChoice = newData;
         return
+      }
+      else  {
+        this.multiChoice = {
+          edit:1,
+          question:"",
+          choices:["",""],
+          radio:[],
+          max:1,
+          min:1,
+          Must:true,
+        }
       }
     },
   },
