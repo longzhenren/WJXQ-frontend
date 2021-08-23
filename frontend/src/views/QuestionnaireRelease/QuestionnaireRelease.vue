@@ -4,7 +4,7 @@
     <div class="releaseMenu">
       <ul class="menuItems">
         <li class="menuItem" @click="backToDesign">
-          <span></span>
+          <span></span>
           <div>返回设计页面</div>
         </li>
 
@@ -20,6 +20,13 @@
             @click="changeLeft(1)">
           <span></span>
           <div>问卷发送</div>
+        </li>
+
+        <li class="menuItem"
+            :class="{horzontalActive: leftMenuCurrent===2}"
+            @click="BackToHome">
+          <span></span>
+          <div>返回首页</div>
         </li>
 
 <!--        <li class="menuItem">-->
@@ -82,10 +89,11 @@
           </div>
 
 <!--          导出-->
-          <div class="export">
+          <div class="export" @click="exportDocument">
             <span>导出到word</span>
             <span>可以将编辑好的问卷导出word</span>
           </div>
+
         </div>
       </div>
 
@@ -190,7 +198,6 @@ export default {
         }
       ],
 
-
       sendTopNavData: [
         {
           icon: '',
@@ -205,6 +212,20 @@ export default {
     }
   },
   methods: {
+    // 将问卷导出为word
+    exportDocument(){
+
+    },
+
+    // 返回首页
+    BackToHome(){
+      this.$router.push({
+        path: '/Management',
+        query: {
+          username: this.$store.state.personalInfo.username
+        }
+      })
+    },
 
     // 返回设计页面条船
     BackLink(){
@@ -258,11 +279,19 @@ export default {
     ShowQues(){
       console.log(this.DesignedQuestionnaire)
       console.log(this.QuesId)
+      this.$router.push('/dataanalysis');
     },
 
     // 打开问卷链接
     openQuesLink(){
-      window.open(this.QuesLink,'_blank')
+      let href = window.location.href;
+      let split = href.split('/release')
+      split[0]+='/Management';
+      console.log(split[0])
+      console.log(href)
+
+      // window.open(this.QuesLink,'_blank')
+      window.open(split[0],'_blank')
     },
 
     // 复制问卷链接
@@ -341,13 +370,10 @@ export default {
 
     acceptDesignedQuestionnaire(Questionnaire){
       let params = this.$route.params;
-      // params.id
       this.DesignedQuestionnaire = Questionnaire
-      this.QuesId = Questionnaire.id===0?params.id:Questionnaire.id
+      this.QuesId = Questionnaire.id===0?Number(params.id):Questionnaire.id
        localStorage.QuesId = this.QuesId
     },
-
-
     // 向后端发送请求接受问卷信息
     getDesignedQuestionnaire(){
       // 获取问卷
