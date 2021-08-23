@@ -48,6 +48,8 @@ export default {
   },
   data(){
     return {
+
+
       // 控制鼠标是否移动到问卷项上
       isCreate: false,
 
@@ -128,11 +130,23 @@ export default {
     CreateNewQues(){
 
       this.dialogFormVisible=true
+
+      // console.log(this.dialogFormVisible)
+    },
+
+
+    // 转到设计页面
+    sendRequest(){
+      this.$router.push('/design');
+    },
+
+    Confirm(){
       let pra = {
         Title: this.QuesForm.title,
         Text: this.QuesForm.Text,
         ShowNumber:false,
         Open:false,
+        username: this.$store.state.personalInfo.username,
       }
       request({
         url: '/question/createQuestionnaire',
@@ -150,14 +164,8 @@ export default {
       }).catch(err=>{
         // console.log(err)
       })
-      // console.log(this.dialogFormVisible)
-    },
+      setTimeout(this.sendRequest,1000)
 
-
-    Confirm(){
-
-
-      this.$router.push('/design');
     }
   }
 }

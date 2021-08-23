@@ -108,7 +108,7 @@ export default {
       this.evaluate.radio = this.FatherData.radio;
       this.evaluate.score = this.FatherData.score;
       this.evaluate.describe = this.FatherData.describe;
-      this.evaluate.describes = this.FatherData.describe;
+      this.evaluate.describes = this.FatherData.describes;
       this.evaluate.level = this.FatherData.level;
       this.evaluate.Must = this.FatherData.Must;
       return
@@ -147,7 +147,7 @@ export default {
     save: function() {
       let find = false;
       for (let i = 0; i < this.evaluate.level.length; i++) {
-        if(this.evaluate.level[i]==""){
+        if(this.evaluate.level[i]===""){
           find=true;
           break;
         }
@@ -156,7 +156,7 @@ export default {
         alert("选项分数设置不可以为空")
       }else {
         this.evaluate.edit=0
-        this.$emit('saveMultiData',this.evaluate)
+        this.$emit('saveEvaluateData',this.evaluate)
       }
     },
     edit: function() {
