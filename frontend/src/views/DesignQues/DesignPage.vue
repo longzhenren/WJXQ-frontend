@@ -243,25 +243,28 @@ export default {
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
       let child = this.$refs.child;
-      for (let i = 0; i < child.length; i++) {
-        // console.log(child[i].singleChoice.edit);
-        let edit;
-        if (child[i].singleChoice!==undefined) {
-          edit= child[i].singleChoice.edit;
-        }
-        else if ( child[i].multiChoice!==undefined){
-          edit= child[i].multiChoice.edit;
-        }
-        else if (child[i].fillBlank!==undefined){
-          edit= child[i].fillBlank.edit;
-        }
-        else if (child[i].evaluate!==undefined){
-          edit= child[i].evaluate.edit;
-        }
-        if (edit === 1) {
-          child[i].save();
+      if (child !== undefined){
+        for (let i = 0; i < child.length; i++) {
+          // console.log(child[i].singleChoice.edit);
+          let edit;
+          if (child[i].singleChoice!==undefined) {
+            edit= child[i].singleChoice.edit;
+          }
+          else if ( child[i].multiChoice!==undefined){
+            edit= child[i].multiChoice.edit;
+          }
+          else if (child[i].fillBlank!==undefined){
+            edit= child[i].fillBlank.edit;
+          }
+          else if (child[i].evaluate!==undefined){
+            edit= child[i].evaluate.edit;
+          }
+          if (edit === 1) {
+            child[i].save();
+          }
         }
       }
+
       this.Questionnaire.title = this.QuesTitle;
       this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
@@ -762,7 +765,7 @@ export default {
     // 从发布页面接受原先的问卷继续设计
     continueDesign(Ques){
       let params = this.$route.params;
-      this.QuesId = Ques.id===0?params.id:Ques.id;
+      this.QuesId = Ques.id===0?Number(params.id):Ques.id;
       this.QuesTitle = Ques.title;
       this.QuesText = Ques.Text;
       // console.log(this.QuesId)
@@ -1122,6 +1125,15 @@ export default {
     border-bottom: 1px solid rgba(0,0,0,.2);
     line-height: 30px;
     text-align: start;
+    transition: .4s;
+
+  }
+
+  .designContent .designComponent .outline .outlineItem:hover {
+    cursor: pointer;
+    color: #58ACFA;
+    font-weight: 500;
+
   }
 
   .designContent .designPreview {
@@ -1213,6 +1225,8 @@ export default {
     min-height: 130px;
     padding-top: 20px;
     padding-bottom: 10%;
+    padding-left: 25px;
+    padding-right: 25px;
     /*margin: 20px 0;*/
     background-color: white;
     border-bottom: 1px solid #BDBDBD;
@@ -1226,6 +1240,8 @@ export default {
     width: 100%;
     height: 10%;
     position: absolute;
+    padding-right: 30px;
+
     bottom: 25px;
     /*display: none;*/
     display: flex;
@@ -1245,20 +1261,22 @@ export default {
     height: 25px;
     width: 20%;
     display: inline-block;
-    /*margin: 0;*/
-    /*padding: 0;*/
     line-height: 25px;
-    /*background-color: pink;*/
-    font-size: 14px;
-    color: #A4A4A4;
-    border: 1px solid #A4A4A4;
-    /*z-index: 200;*/
+    background-color: pink;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0,0,0,.5);
+    color: white;
+    transition: .4s;
+    font-size: 16px;
   }
 
   .designContent .designPreview .QuesList .QuesItem .options ul li:hover {
     cursor: pointer;
-    border: 1px solid #2E9AFE;
-    background-image: linear-gradient(to left,#00FFFF,#01A9DB);
+    /*border: 1px solid #2E9AFE;*/
+    background-color: #58ACFA;
+    transform: scale(1.2);
+    font-weight: 600;
+    /*background-image: linear-gradient(to left,#00FFFF,#01A9DB);*/
     color: white;
   }
 

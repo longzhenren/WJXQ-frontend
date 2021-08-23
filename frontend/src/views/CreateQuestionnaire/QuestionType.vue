@@ -1,7 +1,9 @@
 <template>
   <div class="QueType">
     <nav class="TypeNav">
-
+      <div class="back" @click="BackToManageHome">
+        返回首页
+      </div>
     </nav>
 
     <div class="TypeList" >
@@ -127,6 +129,16 @@ export default {
   methods: {
 
 
+    // 返回首页
+    BackToManageHome(){
+      this.$router.push({
+        path: '/Management',
+        query: {
+          username: this.$store.state.personalInfo.username
+        }
+      })
+    },
+
     CreateNewQues(){
 
       this.dialogFormVisible=true
@@ -192,6 +204,29 @@ export default {
     width: 100%;
     height: 20%;
   }
+
+.TypeNav .back {
+  /*background-color: black;*/
+  width: 8%;
+  height: 40%;
+  margin-top: 3%;
+  margin-left: 3%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #A4A4A4;
+  letter-spacing: 2px;
+  transition: .4s;
+}
+
+.TypeNav .back:hover {
+  box-shadow: 0 0 10px rgba(0,0,0,.4);
+  background-color: #F2F2F2;
+  color: #6E6E6E;
+  font-weight: 600;
+  font-size: 18px;
+  cursor: pointer;
+}
 
   .TypeList {
     width: 100%;

@@ -5,6 +5,7 @@ import QuestionType from "../views/CreateQuestionnaire/QuestionType";
 import DesignPage from "../views/DesignQues/DesignPage";
 import QuestionnaireRelease from "../views/QuestionnaireRelease/QuestionnaireRelease";
 import Home from '../views/Home.vue'
+import DataAnalysis from "../views/DataAnalysis/DataAnalysis";
 
 Vue.use(VueRouter)
 
@@ -41,6 +42,11 @@ const routes = [
     path: '/questype',
     name: 'QuestionType',
     component: QuestionType
+  },
+  {
+    path: '/dataanalysis',
+    name: 'DataAnalysis',
+    component: DataAnalysis
   },
   {
     path: '/design',
