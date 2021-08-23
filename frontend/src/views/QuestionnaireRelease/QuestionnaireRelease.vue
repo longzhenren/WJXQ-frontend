@@ -208,7 +208,13 @@ export default {
 
     // 返回设计页面条船
     BackLink(){
-      this.$router.push('/design');
+      this.$router.push({
+        path: '/design',
+        query: {
+          username: this.$store.state.personalInfo.username,
+          id: this.QuesId
+        }
+      });
     },
 
     // 确认返回设计页面
@@ -334,8 +340,10 @@ export default {
 
 
     acceptDesignedQuestionnaire(Questionnaire){
+      let params = this.$route.params;
+      // params.id
       this.DesignedQuestionnaire = Questionnaire
-      this.QuesId = Questionnaire.id
+      this.QuesId = Questionnaire.id===0?params.id:Questionnaire.id
        localStorage.QuesId = this.QuesId
     },
 

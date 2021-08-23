@@ -8,7 +8,12 @@ export default {
   methods: {
     chooseType(){
       console.log('to Type')
-      this.$router.push('/questype')
+      this.$router.push({
+        path: '/questype',
+        query: {
+          username: this.$store.state.personalInfo.username
+        }
+      })
     }
   }
 }

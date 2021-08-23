@@ -231,7 +231,13 @@ export default {
   methods: {
     // 转到发布页面
     sendRequest(){
-      this.$router.push('/release');
+      this.$router.push({
+        path: '/release',
+        query: {
+          username: this.$store.state.personalInfo.username,
+          id: this.QuesId
+        }
+      });
     },
 
     // 问卷编辑完成，转到问卷发布页面
@@ -738,9 +744,10 @@ export default {
 
     // 接受输入的问卷标题
     acceptQuesTitle(Ques){
+      let params = this.$route.params;
       this.QuesTitle=Ques.title;
       this.QuesText = Ques.Text;
-      this.QuesId = Ques.id;
+      this.QuesId = Ques.id===0?params.id:Ques.id;
       localStorage.QuesId = this.QuesId
       localStorage.QuesText = this.QuesText
       localStorage.QuesTitle = this.QuesTitle
@@ -754,7 +761,8 @@ export default {
 
     // 从发布页面接受原先的问卷继续设计
     continueDesign(Ques){
-      this.QuesId = Ques.id===0?localStorage.QuesId:Ques.id;
+      let params = this.$route.params;
+      this.QuesId = Ques.id===0?params.id:Ques.id;
       this.QuesTitle = Ques.title;
       this.QuesText = Ques.Text;
       // console.log(this.QuesId)
