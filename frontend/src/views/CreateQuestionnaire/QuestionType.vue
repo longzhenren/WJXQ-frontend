@@ -137,7 +137,13 @@ export default {
 
     // 转到设计页面
     sendRequest(){
-      this.$router.push('/design');
+      this.$router.push({
+        path: '/design',
+        query: {
+          username: this.$store.state.personalInfo.username,
+          id: this.QuesForm.id
+        }
+      });
     },
 
     Confirm(){
