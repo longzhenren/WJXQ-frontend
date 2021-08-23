@@ -11,6 +11,13 @@
                   type="textarea">
         </el-input>
       </el-form-item>
+      <el-form-item >
+        <el-input v-model="fillBlank.describe"
+                  placeholder="请输入描述"
+                  type="textarea" style="font-size:12px">
+        </el-input>
+
+      </el-form-item>
     </el-form>
     <el-input placeholder="回答区域" type="textarea"  :disabled="true" class="InnerDiv2"></el-input>
     <div class="RightDiv">
@@ -28,8 +35,11 @@
     <div >
       <label v-if="fillBlank.Must==true" style="color: red" >*</label>
       <label>填空题 - {{ fillBlank.Questionnaire }}</label>
-      <el-divider></el-divider>
     </div>
+    <div >
+      <label  style="font-size: 12px;color: darkgrey"> {{fillBlank.describe}} </label>
+    </div>
+    <el-divider content-position="left" class="el-divider-top"></el-divider>
     <el-input placeholder="回答区域" type="textarea" v-model="fillBlank.Answer" class="InnerDiv2"></el-input>
     <div class="RightDiv">
       <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement" >修改</el-button></el-divider>
@@ -49,6 +59,7 @@ export default {
         id:"",
         Number:"",
         edit:1,
+        describe:"",
         Questionnaire:"",
         Must: true,
         Answer:""
@@ -62,6 +73,7 @@ export default {
       this.fillBlank.edit = this.FatherData.edit;
       this.fillBlank.Answer = this.FatherData.Answer;
       this.fillBlank.Must = this.FatherData.Must;
+      this.fillBlank.describe = this.FatherData.describe;
       this.fillBlank.Questionnaire = this.FatherData.Questionnaire;
       return
     }
@@ -78,6 +90,7 @@ export default {
           id:"",
           Number:"",
           edit:1,
+          describe:"",
           Questionnaire:"",
           Must: true,
           Answer:""
@@ -89,8 +102,10 @@ export default {
 
 
     save: function() {
+
         this.fillBlank.edit=0
         this.$emit('saveBlankData',this.fillBlank)
+
     },
     edit: function() {
       this.fillBlank.edit=1
@@ -121,7 +136,13 @@ export default {
   display: inline;
   margin-left: 20px
 }
-
-
+.LeftDiv{
+  text-align: left;
+  margin-left:70px;
+  margin-bottom:20px ;
+}
+.el-divider-top{
+  margin-top: 5px;
+}
 </style>
 

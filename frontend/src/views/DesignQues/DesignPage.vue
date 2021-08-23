@@ -244,8 +244,8 @@ export default {
       this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
       this.Questionnaire.Text = this.QuesText
-      // this.sendAndSaveNewQues(this.Questionnaire)
-      // this.$router.push('/release')
+      this.sendAndSaveNewQues(this.Questionnaire)
+      this.$router.push('/release')
     },
 
     // 创建问卷，向后端发送数据
@@ -313,15 +313,15 @@ export default {
 
 
       // console.log(FinalQuestionnaire)
-      // request({
-      //   url: '/question/modifyQuestionnaire',
-      //   method: 'post',
-      //   data: FinalQuestionnaire
-      // }).then(res=>{
-      //   console.log(res)
-      // }).catch(err=>{
-      //   console.log(err)
-      // })
+      request({
+        url: '/question/modifyQuestionnaire',
+        method: 'post',
+        data: FinalQuestionnaire
+      }).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log(err)
+      })
     },
 
 
@@ -344,14 +344,47 @@ export default {
       console.log(item)
     },
 
+    // 题目修改保存
+    modifyQuestion(item){
+      console.log(item)
+      let Question = {
+        id: item.id===undefined?0:item.id,
+        Stem: item.Stem,
+        Type: 1,
+        Questionnaire: this.QuesId===undefined?0:this.QuesId,
+        Must: item.subData.Must===undefined?false:item.subData.Must,
+        Number: item.idx,
+        Choice: [],
+      }
+      let choices = item.subData.choices;
+      console.log(choices)
+      if (choices!==undefined){
+        for (let i = 0; i <choices.length ; i++) {
+          let CItem = {
+            Text: choices[i],
+          }
+          Question.Choice.push(CItem);
+        }
+        console.log(Question)
+        request({
+          url: '/question/modifyQuestion',
+          method: 'post',
+          data: Question
+        }).then(res=>{
+          console.log(res)
+        }).catch( err=> {
+          console.log(err);
+        })
+      }
+
+    },
+
     // 单选题数据保存
     SingleChoiceSave(val,item){
-      // console.log(item);
-      // console.log(item)
-      // console.log(val)
       item.subData = val;
       item.Stem=val.question
-      // console.log(item)
+
+      this.modifyQuestion(item);
     },
 
 
@@ -507,9 +540,21 @@ export default {
         });
         return;
       }
+      let quesListElement = quesList[index];
+      console.log(quesListElement)
+      request({
+        url: '/question/deleteQuestion',
+        method: 'post',
+        data: quesListElement.id,
+      }).then(res=> {
+        console.log(res)
+      }).catch(err=>{
+        console.log(err)
+      })
       quesList.splice(index,1);
       for (let i = 0; i < quesList.length; i++) {
         quesList[i].idx=i;
+        this.modifyQuestion(quesList[i]);
       }
     },
 
@@ -637,16 +682,10 @@ export default {
 
     // 接受输入的问卷标题
     acceptQuesTitle(Ques){
-      console.log(Ques)
-      console.log(Ques.id)
-      console.log(Ques.title)
-      console.log(Ques.Text)
       this.QuesTitle=Ques.title;
       this.QuesText = Ques.Text;
       this.QuesId = Ques.id;
-
-      // console.log(this.QuesTitle)
-
+      this.getQuestionnaire(this.QuesId)
     },
 
 
@@ -657,9 +696,41 @@ export default {
       this.QuesText = Ques.Text;
       this.QuesList = Ques.Question
       this.isShowQuesNum = Ques.isShowSubNum
-      console.log(Ques)
+      this.getQuestionnaire(this.QuesId)
     },
 
+    // 调整问卷格式
+    adjustDataStruct(Questionnaire){
+      let Ques = {
+        id: 0,
+        Title: '',
+        CreateUser: '',
+        CreateTime: '',
+        UpdateTime: '',
+        ReleaseTime: '' ,
+        ShowNumber: false,
+        Open: false,
+        Text: '',
+        Question: [],
+      }
+      console.log(Questionnaire);
+    },
+
+    // 向后端发送请求接受问卷信息
+    getQuestionnaire(ID){
+      // 获取问卷
+      request({
+        url: '/question/questionnaireID',
+        method: 'get',
+        params: {
+          id: ID
+        }
+      }).then(res=>{
+        console.log(res);
+      }).catch(err=>{
+        console.log(err)
+      })
+    },
 
   },
   mounted() {
@@ -671,6 +742,8 @@ export default {
 
     // 从发布页面转会设计页面
     bus.$on('backToDesign',this.continueDesign)
+
+
 
   },
   watch: {

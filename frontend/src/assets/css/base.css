@@ -19,12 +19,36 @@ html {
     margin: 0;
     padding: 0;
     font-family: 'icomoon',sans-serif;
+    box-sizing: border-box;
 }
-
-a {
-    text-decoration: none;
+/*标签内外边距清零*/
+/*em和i斜体字不倾斜*/
+em,i{
+    font-style: normal;
 }
-
-li {
+/*去掉li圆点*/
+li{
     list-style: none;
+}
+/*图片底部无空白*/
+img{
+    vertical-align: middle;
+}
+/*改变连接的默认修饰*/
+a {
+    color: #666;
+    text-decoration: none
+}
+
+a:hover {
+    color: #c81623
+}
+/* 默认有灰色边框我们需要手动去掉 */
+button,input{
+    border: 0;
+    outline: none;
+}
+/*取消h3*/
+h3{
+
 }
