@@ -139,7 +139,8 @@ export default {
         method: 'post',
         data: pra
       }).then(res=>{
-        // console.log(res)
+        console.log(this.$store.state.personalInfo)
+        console.log(res)
         // if (res.data.message === 'Success'){
         //
         // }
