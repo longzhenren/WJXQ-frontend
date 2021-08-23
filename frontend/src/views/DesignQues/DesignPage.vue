@@ -229,86 +229,62 @@ export default {
     bus.$emit('NewQuesDesigned',this.Questionnaire)
   },
   methods: {
+    // 转到发布页面
+    sendRequest(){
+      this.$router.push('/release');
+    },
+
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
       let child = this.$refs.child;
       for (let i = 0; i < child.length; i++) {
-        child[i].save();
+        // console.log(child[i].singleChoice.edit);
+        let edit;
+        if (child[i].singleChoice!==undefined) {
+          edit= child[i].singleChoice.edit;
+        }
+        else if ( child[i].multiChoice!==undefined){
+          edit= child[i].multiChoice.edit;
+        }
+        else if (child[i].fillBlank!==undefined){
+          edit= child[i].fillBlank.edit;
+        }
+        else if (child[i].evaluate!==undefined){
+          edit= child[i].evaluate.edit;
+        }
+        if (edit === 1) {
+          child[i].save();
+        }
       }
-      this.$message({
-        showClose: true,
-        message: '保存成功',
-        type: 'success'
-      });
       this.Questionnaire.title = this.QuesTitle;
       this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
       this.Questionnaire.Text = this.QuesText
       this.sendAndSaveNewQues(this.Questionnaire)
-      this.$router.push('/release')
+      setTimeout(this.sendRequest,500)
     },
 
     // 创建问卷，向后端发送数据
     sendAndSaveNewQues(Ques){
-      console.log(Ques);
+      // console.log(Ques);
       let  FinalQuestionnaire = {
         id: 0,
-        CreateUser: '',
-        CreateTime: '',
-        UpdateTime: '',
-        ReleaseTime: '',
-        Open: false,
+        // Open: false,
         Text: '',
         Title: '',
         Question: [],
         ShowNumber: false,
+        username: this.$store.state.personalInfo.username
       }
-      FinalQuestionnaire.id=Ques.id;
+      FinalQuestionnaire.id = this.QuesId;
       FinalQuestionnaire.Title = Ques.title;
-      FinalQuestionnaire.CreateTime = Ques.CreateTime;
-      FinalQuestionnaire.Open = Ques.Open;
-      FinalQuestionnaire.CreateUser = Ques.CreateUser;
-      FinalQuestionnaire.ReleaseTime = Ques.ReleaseTime;
-      FinalQuestionnaire.UpdateTime = Ques.UpdateTime;
+      FinalQuestionnaire.Text = Ques.Text;
+      // FinalQuestionnaire.Open = Ques.Open;
       FinalQuestionnaire.ShowNumber = Ques.isShowSubNum;
       for (let i = 0; i < Ques.Question.length; i++) {
         let QuesItem = Ques.Question[i];
-        if (QuesItem.type === 'singleChoice'){
-          let singleChoice = {
-            id: QuesItem.id,
-            Stem: QuesItem.Stem,
-            Type: 1,
-            // ChoiceCount: 1,
-            Questionnaire: Ques.id,
-            Choice: [],
-            Number: i,
-            Must: QuesItem.subData.Must,
-          }
-          for (let j = 0; j < QuesItem.subData.choices.length; j++) {
-            let CItem = QuesItem.subData.choices[j];
-            // console.log(CItem)
-            let Item = {
-              Text: CItem,
-            }
-            singleChoice.Choice.push(Item);
-          }
-          FinalQuestionnaire.Question.push(singleChoice);
-        }
-
-        else if (QuesItem.type === 'multiChoose'){
-          let mutiChoice= {
-            Stem: '',
-            Type: 2,
-            maxCount: 1,
-            minCount: 1,
-            Choice: [],
-          }
-          mutiChoice.Stem = QuesItem.Stem;
-          mutiChoice.Choice = QuesItem.subData.choices;
-          mutiChoice.maxCount = QuesItem.subData.max;
-          mutiChoice.minCount = QuesItem.subData.min;
-          FinalQuestionnaire.Question.push(mutiChoice);
-        }
+        let Question = this.changeDataStructToBackend(QuesItem);
+        FinalQuestionnaire.Question.push(Question);
       }
 
 
@@ -319,45 +295,67 @@ export default {
         data: FinalQuestionnaire
       }).then(res=>{
         console.log(res)
+        if (res.data.Message === 'Success'){
+          this.$message({
+            showClose: true,
+            message: '保存成功',
+            type: 'success'
+          });
+        }
       }).catch(err=>{
         console.log(err)
       })
     },
 
 
-
-    // 获得已创建设计未完成的问卷
-
-    getNeedDesignQuestionnaire(CreateUser,QuesId){
-      request({
-        url: '/question/getQuestionnaire',
-        method: 'GET',
-        params: {
-          CreateUser: CreateUser,
-        }
-      })
-    },
-
-
-
-    ShowItem(item){
-      console.log(item)
-    },
-
-    // 题目修改保存
-    modifyQuestion(item){
-      console.log(item)
-      let Question = {
-        id: item.id===undefined?0:item.id,
-        Stem: item.Stem,
-        Type: 1,
-        Questionnaire: this.QuesId===undefined?0:this.QuesId,
-        Must: item.subData.Must===undefined?false:item.subData.Must,
-        Number: item.idx,
-        Choice: [],
+    // 向后端传送数据前进行格式转换
+    changeDataStructToBackend(item,mode){
+      let type =0;
+      let Question;
+      switch (item.type) {
+        case 'singleChoice' :
+          type=1;
+          break;
+        case 'multiChoose' :
+          type=2;
+          break;
+        case 'fillBlank' :
+          type=3;
+          break;
+        case 'evaluate' :
+          type=4;
+          break;
       }
+      if (mode==='sendQuestion'){
+         Question = {
+          id: item.id===undefined?0:item.id,
+          Stem: item.Stem,
+          Type: type,
+          Questionnaire: this.QuesId===undefined?0:this.QuesId,
+          Must: item.subData.Must===undefined?false:item.subData.Must,
+          Number: item.idx,
+          Choice: [],
+          Describe: item.subData.describe,
+          username: this.$store.state.personalInfo.username
+        }
+      }
+      else {
+         Question = {
+          id: item.id===undefined?0:item.id,
+          Stem: item.Stem,
+          Type: type,
+          Questionnaire: this.QuesId===undefined?0:this.QuesId,
+          Must: item.subData.Must===undefined?false:item.subData.Must,
+          Number: item.idx,
+          Choice: [],
+          Describe: item.subData.describe,
+        }
+      }
+
       let choices = item.subData.choices;
-      console.log(choices)
+      let describes = item.subData.describes;
+      let level = item.subData.level;
+      // console.log(choices)
       if (choices!==undefined){
         for (let i = 0; i <choices.length ; i++) {
           let CItem = {
@@ -365,18 +363,35 @@ export default {
           }
           Question.Choice.push(CItem);
         }
-        console.log(Question)
-        request({
-          url: '/question/modifyQuestion',
-          method: 'post',
-          data: Question
-        }).then(res=>{
-          console.log(res)
-        }).catch( err=> {
-          console.log(err);
-        })
       }
+      if (describes !== undefined && level !== undefined){
+        for (let i = 0; i <describes.length ; i++) {
+          let CItem = {
+            Text: describes[i],
+            Score: level[i],
+          }
+          Question.Choice.push(CItem);
+        }
+      }
+      return Question;
+    },
 
+    // 题目修改保存
+    modifyQuestion(item){
+      // console.log("aaa")
+      // console.log(item)
+      let Question = this.changeDataStructToBackend(item,'sendQuestion');
+
+      // console.log(Question)
+      request({
+        url: '/question/modifyQuestion',
+        method: 'post',
+        data: Question
+      }).then(res=>{
+        // console.log(res)
+      }).catch( err=> {
+        console.log(err);
+      })
     },
 
     // 单选题数据保存
@@ -392,19 +407,25 @@ export default {
     MultiChoiceSave(val,item){
       item.subData = val;
       item.Stem=val.question
+
+      this.modifyQuestion(item);
     },
 
     // 填空数据保存
     FillBlankSave(val,item){
       item.subData = val;
       item.Stem=val.Questionnaire
-      console.log(val)
+      // console.log(val)
+
+      this.modifyQuestion(item);
     },
 
     // 评价数据保存
     EvaluateSave(val,item){
       item.subData = val;
       item.Stem=val.question
+
+      this.modifyQuestion(item);
     },
 
     // 增加题目
@@ -425,17 +446,18 @@ export default {
                id: 0,
             }
               pra = {
-              Questionnaire: this.Questionnaire.id,
+                Questionnaire: this.QuesId,
               Type: 1,
               MinChoice: 1,
               MaxChoice: 1,
               Stem: Opt.Stem,
+                username: this.$store.state.personalInfo.username,
               Number: Opt.idx,
             }
 
             this.addNewQuestionToBackend(Opt,pra)
 
-            this.addNewQuesToQuesList(Opt);
+            // this.addNewQuesToQuesList(Opt);
             break;
 
             // 增加多选
@@ -450,15 +472,16 @@ export default {
             }
 
             pra = {
-              Questionnaire: this.Questionnaire.id,
+              Questionnaire: this.QuesId,
               Type: 2,
               MinChoice: 1,
               MaxChoice: 2,
               Stem: Opt.Stem,
               Number: Opt.idx,
+              username: this.$store.state.personalInfo.username
             }
             this.addNewQuestionToBackend(Opt,pra)
-            this.addNewQuesToQuesList(Opt);
+            // this.addNewQuesToQuesList(Opt);
             break;
 
             // 增加下拉菜单
@@ -478,14 +501,15 @@ export default {
         }
 
         pra = {
-          Questionnaire: this.Questionnaire.id,
+          Questionnaire: this.QuesId,
           Type: 3,
           Stem: Opt.Stem,
+          username: this.$store.state.personalInfo.username,
           Number: Opt.idx,
         }
 
         this.addNewQuestionToBackend(Opt,pra)
-        this.addNewQuesToQuesList(Opt);
+        // this.addNewQuesToQuesList(Opt);
       }
       // 增加评分题
       else if (type===2){
@@ -498,14 +522,15 @@ export default {
         }
 
         pra = {
-          Questionnaire: this.Questionnaire.id,
+          Questionnaire: this.QuesId,
           Type: 4,
           Stem: Opt.Stem,
           Number: Opt.idx,
+          username: this.$store.state.personalInfo.username
         }
 
         this.addNewQuestionToBackend(Opt,pra)
-        this.addNewQuesToQuesList(Opt);
+        // this.addNewQuesToQuesList(Opt);
       }
     },
 
@@ -514,10 +539,26 @@ export default {
       request({
         url: '/question/createQuestion',
         method: 'post',
-        data: pra
+        data: pra,
       }).then(res=>{
         console.log(res)
-        Opt.id=res.data.id
+        if (res.data.Message === 'Success'){
+          this.$message({
+            showClose: true,
+            message: '创建题目成功',
+            type: 'success'
+          });
+          Opt.id=res.data.id
+          this.addNewQuesToQuesList(Opt);
+        }
+        else {
+          this.$message({
+            showClose: true,
+            message: '添加失败',
+            type: 'error'
+          });
+        }
+
       }).catch(err=>{
         console.log(err)
       })
@@ -541,13 +582,25 @@ export default {
         return;
       }
       let quesListElement = quesList[index];
-      console.log(quesListElement)
+      // console.log(quesListElement)
+      console.log(quesListElement.id)
+      let  deleteItem ={
+        id: quesListElement.id,
+        username: this.$store.state.personalInfo.username
+      }
       request({
         url: '/question/deleteQuestion',
         method: 'post',
-        data: quesListElement.id,
+        data: deleteItem
       }).then(res=> {
         console.log(res)
+        if (res.data.Message === 'Success'){
+          this.$message({
+            showClose: true,
+            message: '删除成功',
+            type: 'success'
+          });
+        }
       }).catch(err=>{
         console.log(err)
       })
@@ -562,7 +615,7 @@ export default {
     // 上移
     moveUp(index){
       // console.log('上')
-      console.log(this.QuesList)
+      // console.log(this.QuesList)
       let quesList = this.QuesList;
       if (index===0){
         this.$message({
@@ -579,21 +632,22 @@ export default {
       // console.log(dest)
       quesList.splice(index,1,dest);
       quesList.splice(index-1,1,src);
-      console.log(this.QuesList)
-      for (let i = 0; i <= index; i++) {
-        console.log(quesList[i])
-        // quesList[i].idx=i;
-      }
+      // console.log(this.QuesList)
+      // for (let i = 0; i <= index; i++) {
+      //   console.log(quesList[i])
+      //   // quesList[i].idx=i;
+      // }
       for (let i = 0; i <= index; i++) {
         // console.log(quesList[i])
         quesList[i].idx=i;
+        this.modifyQuestion(quesList[i]);
       }
     },
 
     // 下移
     moveDown(index){
       // console.log('下')
-      console.log(this.QuesList)
+      // console.log(this.QuesList)
       let quesList = this.QuesList;
       if (index===quesList.length-1){
         this.$message({
@@ -609,6 +663,7 @@ export default {
       quesList.splice(index+1,1,src);
       for (let i = 0; i < quesList.length; i++) {
         quesList[i].idx=i;
+        this.modifyQuestion(quesList[i]);
       }
     },
 
@@ -645,7 +700,7 @@ export default {
     // 切换工具栏
     changeDesignTools(idx){
       this.ShowNum=idx
-      // console.log(this.ShowNum)
+      console.log(this.ShowNum)
     },
 
 
@@ -675,6 +730,7 @@ export default {
 
       for (let i = 0; i < newItems.length; i++) {
         newItems[i].idx=i;
+        this.modifyQuestion(newItems[i]);
       }
 
       this.QuesList = newItems
@@ -685,57 +741,182 @@ export default {
       this.QuesTitle=Ques.title;
       this.QuesText = Ques.Text;
       this.QuesId = Ques.id;
-      this.getQuestionnaire(this.QuesId)
+      localStorage.QuesId = this.QuesId
+      localStorage.QuesText = this.QuesText
+      localStorage.QuesTitle = this.QuesTitle
+      // this.Questionnaire.id = this.QuesId
+      // this.Questionnaire.title = this.QuesTitle
+      // this.Questionnaire.Text = this.QuesText
+      console.log(typeof this.QuesId)
+      // this.getQuestionnaire(this.QuesId)
     },
 
 
     // 从发布页面接受原先的问卷继续设计
     continueDesign(Ques){
-      this.QuesId = Ques.id;
+      this.QuesId = Ques.id===0?localStorage.QuesId:Ques.id;
       this.QuesTitle = Ques.title;
       this.QuesText = Ques.Text;
-      this.QuesList = Ques.Question
+      // console.log(this.QuesId)
+      // this.QuesList = Ques.Question
       this.isShowQuesNum = Ques.isShowSubNum
-      this.getQuestionnaire(this.QuesId)
+      // this.getQuestionnaire(this.QuesId)
     },
 
     // 调整问卷格式
     adjustDataStruct(Questionnaire){
       let Ques = {
-        id: 0,
-        Title: '',
-        CreateUser: '',
-        CreateTime: '',
-        UpdateTime: '',
-        ReleaseTime: '' ,
-        ShowNumber: false,
-        Open: false,
-        Text: '',
+        id: Questionnaire.id,
+        Title: Questionnaire.Title,
+        // CreateUser: '',
+        CreateTime: Questionnaire.CreateTime,
+        UpdateTime: Questionnaire.UpdateTime,
+        ReleaseTime: Questionnaire.ReleaseTime ,
+        ShowNumber: Questionnaire.ShowNumber,
+        Open: Questionnaire.Open,
+        Text: Questionnaire.Text,
         Question: [],
       }
-      console.log(Questionnaire);
+      this.isShowQuesNum = Questionnaire.ShowNumber
+      this.QuesText = Questionnaire.Text
+      this.QuesTitle = Questionnaire.Title
+
+      let Questions = Questionnaire.Question.sort(function(a,b){
+        return a.Number - b.Number;
+      });
+
+
+      this.QuesList = [];
+      for (let i = 0; i < Questions.length; i++) {
+        let questionItem = Questions[i];
+        // console.log(questionItem)
+        let type ;
+        let QuesInfo ;
+        switch (questionItem.Type) {
+          case 1 :
+            type='singleChoice';
+            console.log(questionItem.Describe)
+            QuesInfo ={
+              id:"",
+              number:"",
+              edit:0,
+              describe: questionItem.Describe,
+              question: questionItem.Stem,
+              choices:[],
+              radio: 0,
+              Must:questionItem.Must,
+            }
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.choices.push(questionItem.Choice[j].Text);
+            }
+            // console.log(QuesInfo)
+            break;
+          case 2 :
+            type='multiChoose';
+            QuesInfo = {
+              edit:0,
+              describe:questionItem.Describe,
+              question:questionItem.Stem,
+              choices:[],
+              radio:[],
+              max:questionItem.MaxChoice,
+              min:questionItem.MinChoice,
+              Must:questionItem.Must,
+            }
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.choices.push(questionItem.Choice[j].Text);
+            }
+            break;
+          case 3 :
+            type='fillBlank';
+            QuesInfo = {
+              id:"",
+              Number:"",
+              edit:0,
+              describe:questionItem.Describe,
+              Questionnaire:questionItem.Stem,
+              Must: questionItem.Must,
+              Answer:""
+            }
+            break;
+          case 4 :
+            type='evaluate';
+            QuesInfo = {
+              edit:0,
+              question:questionItem.Stem,
+              score:null,
+              describe:questionItem.Describe,
+              describes:[],
+              level:[],
+              radio:[],
+              Must: questionItem.Must,
+            }
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              let choiceElement = questionItem.Choice[j];
+              QuesInfo.describes.push(choiceElement.Text);
+              QuesInfo.level.push(choiceElement.Score);
+            }
+            // console.log(QuesInfo)
+            break;
+        }
+        let DesignQuestionItem = {
+          Stem: questionItem.Stem,
+          idx: questionItem.Number,
+          isDraggable: true,
+          subData: QuesInfo,
+          type: type,
+          id: questionItem.id
+        }
+        this.QuesList.push(DesignQuestionItem)
+      }
+      // console.log(this.QuesList)
+      Ques.Question = this.QuesList
+      this.Questionnaire = Ques
+      // console.log(Questionnaire);
     },
 
     // 向后端发送请求接受问卷信息
-    getQuestionnaire(ID){
+    getQuestionnaire(){
+      console.log(typeof this.QuesId)
+      console.log(this.QuesId)
       // 获取问卷
       request({
         url: '/question/questionnaireID',
         method: 'get',
         params: {
-          id: ID
+          id: this.QuesId
         }
       }).then(res=>{
         console.log(res);
+        // this.Questionnaire.id = this.QuesId
+        // this.Questionnaire.title = this.QuesTitle
+        // this.Questionnaire.Text = this.QuesText
+        if (res.data.Message !== 'No Such Questionnaire'){
+          this.adjustDataStruct(res.data.Questionnaire);
+        }
       }).catch(err=>{
-        console.log(err)
+        // console.log(err)
       })
     },
 
   },
   mounted() {
     this.Questionnaire.id = this.QuesId
+
+    if (localStorage.QuesId){
+      this.QuesId = Number(localStorage.QuesId);
+      // console.log(this.QuesId)
+    }
+
+    if (localStorage.QuesTitle){
+      this.QuesTitle = localStorage.QuesTitle
+    }
+
+    if (localStorage.QuesText){
+      this.QuesText = localStorage.QuesText
+    }
   },
+
   created() {
     // 从创建页面转到设计页面
     bus.$on('createNewQues',this.acceptQuesTitle)
@@ -743,7 +924,9 @@ export default {
     // 从发布页面转会设计页面
     bus.$on('backToDesign',this.continueDesign)
 
+    // console.log(this.QuesId)
 
+    setTimeout(this.getQuestionnaire,200);
 
   },
   watch: {
@@ -751,6 +934,23 @@ export default {
       this.QuesList=newList;
       // console.log(this.QuesList)
       // this.ShowOptions();
+    },
+
+    QuesId(newID){
+      localStorage.QuesId = newID
+      console.log(localStorage.QuesId)
+    },
+
+    QuesTitle(newTitle){
+      localStorage.QuesTitle = newTitle
+    },
+
+    QuesText(newText){
+      localStorage.QuesText = newText
+    },
+
+    Questionnaire(newText){
+      localStorage.Questionnaire = newText
     }
   }
 }

@@ -113,6 +113,9 @@ export default {
       this.multiChoice.choices = this.FatherData.choices;
       this.multiChoice.radio = this.FatherData.radio;
       this.multiChoice.describe = this.FatherData.describe;
+      this.multiChoice.max = this.FatherData.max;
+      this.multiChoice.min = this.FatherData.min;
+      this.multiChoice.Must = this.FatherData.Must;
     }
     // this.multiChoice.edit = this.FatherData.edit;
     // this.multiChoice.question = this.FatherData.question;

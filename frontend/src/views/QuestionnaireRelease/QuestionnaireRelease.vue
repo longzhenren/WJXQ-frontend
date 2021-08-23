@@ -49,8 +49,8 @@
         </li>
       </ul>
 
-      <div class="quesTitle">
-        {{DesignedQuestionnaire.title}}
+      <div class="quesTitle" @click="ShowQues">
+        {{DesignedQuestionnaire.Title}}
       </div>
     </div>
 
@@ -59,12 +59,14 @@
       <div class="status" v-if="topNavCurrent===0">
         <div class="releasable" v-if="DesignedQuestionnaire.Open">
           此问卷已经设计完成,您可以开始
-          <button @click="sendQues">逐一发送问卷</button>
+          <button @click="sendQues">逐一发送问卷</button>或者
+          <button @click="continueToDesign">继续编辑问卷</button>
         </div>
 
         <div class="disreleasable" v-else>
           此问卷还未设计完成,如果准备就绪,您可以
           <button @click="releaseMyQues">开启问卷</button>
+
         </div>
 
         <div class="warning">
@@ -128,6 +130,18 @@
         </div>
       </div>
     </div>
+
+
+    <el-dialog
+        title="提示"
+        :visible.sync="dialogVisible"
+        width="30%">
+      <span>现在返回设计页面会关闭问卷，确认返回吗？</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="confirmBackToDesign">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -143,6 +157,11 @@ export default {
   },
   data(){
     return{
+      // 是否弹出对话框
+      dialogVisible: false,
+
+      //需要发送得到的问卷id
+      QuesId: 0,
 
       // 得到的问卷
         DesignedQuestionnaire: {},
@@ -186,22 +205,57 @@ export default {
     }
   },
   methods: {
-    // 点击下载app二维码
-    // downloadE() {
-    //
-    //   let canvasData = this.$refs.Myqrcode.getElementsByTagName('canvas')
-    //   let a = document.createElement("a");
-    //   let event = new MouseEvent("click"); // 创建一个单击事件
-    //   a.href = canvasData[0].toDataURL("image/png");;
-    //   a.download = "drcQrcode";
-    //   a.dispatchEvent(event); // 触发a的单击事件
-    // },
+
+    // 返回设计页面条船
+    BackLink(){
+      this.$router.push('/design');
+    },
+
+    // 确认返回设计页面
+    confirmBackToDesign(){
+      this.dialogVisible =false;
+
+      this.continueToDesign();
+
+      this.BackLink();
+    },
+
+
+    // 继续编辑问卷
+    continueToDesign(){
+      this.DesignedQuestionnaire.Open = false;
+
+      let pra = {
+        id: this.DesignedQuestionnaire.id,
+        username: this.$store.state.personalInfo.username,
+        Open: this.DesignedQuestionnaire.Open
+      }
+
+      request({
+        url: '/question/releaseQuestionnaire',
+        method: 'post',
+        data: pra
+      }).then(res=> {
+        console.log(res)
+        if (res.data.Message === 'Success'){
+          this.$message({
+            showClose: true,
+            message: '问卷已停止发布',
+            type: 'success'
+          });
+        }
+      }).catch(err=>{
+        console.log(err)
+      })
+    },
+
+    ShowQues(){
+      console.log(this.DesignedQuestionnaire)
+      console.log(this.QuesId)
+    },
 
     // 打开问卷链接
     openQuesLink(){
-      // this.$router.replace(this.QuesLink);
-      // this.$router.go(this.QuesLink);
-      // window.location = this.QuesLink
       window.open(this.QuesLink,'_blank')
     },
 
@@ -225,6 +279,29 @@ export default {
     // 发布问卷
     releaseMyQues(){
       this.DesignedQuestionnaire.Open = true
+
+      let pra = {
+        id: this.DesignedQuestionnaire.id,
+        username: this.$store.state.personalInfo.username,
+        Open: this.DesignedQuestionnaire.Open
+      }
+
+      request({
+        url: '/question/releaseQuestionnaire',
+        method: 'post',
+        data: pra
+      }).then(res=> {
+        console.log(res)
+        if (res.data.Message === 'Success'){
+          this.$message({
+            showClose: true,
+            message: '问卷已发布',
+            type: 'success'
+          });
+        }
+      }).catch(err=>{
+        console.log(err)
+      })
     },
 
     // 切换顶部导航栏
@@ -234,27 +311,76 @@ export default {
 
     // 切换侧边导航栏
     changeLeft(index){
-      this.leftMenuCurrent=index
+      if (index === 1 && !this.DesignedQuestionnaire.Open){
+        this.$message({
+          showClose: true,
+          message: '问卷未发布，不可发送问卷',
+          type: 'warning'
+        });
+      }
+      else  {
+        this.leftMenuCurrent=index
+      }
     },
-
-
-
     // 返回问卷设计页面
     backToDesign(){
-      this.$router.push('/design');
+      if (this.DesignedQuestionnaire.Open){
+        this.dialogVisible = true;
+      }
+      else {
+        this.BackLink();
+      }
     },
 
 
     acceptDesignedQuestionnaire(Questionnaire){
       this.DesignedQuestionnaire = Questionnaire
-      console.log(this.DesignedQuestionnaire)
+      this.QuesId = Questionnaire.id
+       localStorage.QuesId = this.QuesId
     },
+
+
+    // 向后端发送请求接受问卷信息
+    getDesignedQuestionnaire(){
+      // 获取问卷
+      request({
+        url: '/question/questionnaireID',
+        method: 'get',
+        params: {
+          id: this.QuesId
+        }
+      }).then(res=>{
+        // console.log(res);
+        if (res.data.Message !== 'No Such Questionnaire'){
+          this.DesignedQuestionnaire = res.data.Questionnaire
+          // console.log(this.DesignedQuestionnaire)
+        }
+      }).catch(err=>{
+        console.log(err)
+      })
+    },
+
+  },
+  mounted() {
+    if (localStorage.QuesId){
+      this.QuesId = Number(localStorage.QuesId);
+      // console.log(this.QuesId)
+    }
   },
   beforeDestroy() {
     bus.$emit('backToDesign',this.DesignedQuestionnaire)
   },
+
   created() {
     bus.$on('NewQuesDesigned',this.acceptDesignedQuestionnaire)
+
+    setTimeout(this.getDesignedQuestionnaire,200)
+
+  },
+  watch: {
+    QuesId(newID){
+      localStorage.QuesId = newID
+    },
   },
 
 }

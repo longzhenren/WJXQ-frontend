@@ -103,7 +103,9 @@ export default {
       this.singleChoice.edit = this.FatherData.edit;
       this.singleChoice.question = this.FatherData.question;
       this.singleChoice.choices = this.FatherData.choices;
+      this.singleChoice.describe = this.FatherData.describe;
       this.singleChoice.radio = this.FatherData.radio;
+      this.singleChoice.Must = this.FatherData.Must;
       // this.singleChoice = this.FatherData
     }
   },
@@ -118,6 +120,7 @@ export default {
           id:"",
           number:"",
           edit:1,
+          describe: "",
           question:"",
           choices:["",""],
           radio: 0,
