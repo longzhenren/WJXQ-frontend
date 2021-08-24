@@ -234,7 +234,37 @@ export default {
 
     // 将问卷导出为word
     exportDocument(){
+      let  pra = {
+        username: this.$store.state.personalInfo.username,
+        id: this.QuesId
+      }
 
+      request({
+        url:'/question/exportQuestionnaire',
+        method:'post',
+        data: pra,
+        responseType: "blob"
+      }).then(res=>{
+        console.log(res)
+        this.download(res);
+      }).catch(err=>{
+        console.log()
+      })
+    },
+
+    download(res) {
+      if (!res.data) {
+        return;
+      }
+      let fileName = 'aaa.docx';
+      let url = window.URL.createObjectURL(new Blob([res.data]))
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      link.setAttribute('download', 'word.docx')
+
+      document.body.appendChild(link)
+      link.click()
     },
 
     // 返回首页
@@ -407,7 +437,7 @@ export default {
     },
 
     acceptDesignedQuestionnaire(Questionnaire){
-      let params = this.$route.params;
+      let params = this.$route.query;
       this.DesignedQuestionnaire = Questionnaire
       this.QuesId = Questionnaire.id===0?Number(params.id):Questionnaire.id
        localStorage.QuesId = this.QuesId
