@@ -1,7 +1,7 @@
 <template>
   <div class="designPage">
     <nav class="designNav">
-      <div class="QuesPreview"> 预览</div>
+      <div class="QuesPreview" @click="goPreview"> 预览</div>
 
       <div class="release" @click="designDone"> 编辑完成</div>
     </nav>
@@ -126,6 +126,9 @@ import MultiChoose from "../../components/QuestionTemplates/MultiChoose";
 import FillBlank from "../../components/QuestionTemplates/FillBlank";
 import Evaluate from "../../components/QuestionTemplates/Evaluate";
 import {request} from "../../network/request";
+import Vue from "vue";
+import vuescroll from "vuescroll/dist/vuescroll-native";
+
 
 export default {
   name: "DesignPage",
@@ -218,7 +221,9 @@ export default {
         // 发布时间
         ReleaseTime: '',
         // 是否显示题号
-        isShowSubNum: false
+        isShowSubNum: false,
+
+        EncodeID: '',
       },
 
       // 当前正在拖动的元素
@@ -229,6 +234,17 @@ export default {
     bus.$emit('NewQuesDesigned',this.Questionnaire)
   },
   methods: {
+    // 进行预览
+    goPreview(){
+      let psthH = '/answer/'+this.Questionnaire.EncodeID
+      this.$router.push({
+        path: psthH,
+        query: {
+          Mode: 'preview',
+        }
+      })
+    },
+
     // 转到发布页面
     sendRequest(){
       this.$router.push({
@@ -787,6 +803,7 @@ export default {
         Open: Questionnaire.Open,
         Text: Questionnaire.Text,
         Question: [],
+        EncodeID: Questionnaire.EncodeID
       }
       this.isShowQuesNum = Questionnaire.ShowNumber
       this.QuesText = Questionnaire.Text
