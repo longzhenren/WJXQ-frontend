@@ -1,0 +1,19 @@
+body{
+    background:lightcyan;
+}
+button{
+    background: #c6e2ff;
+    font-family: "Open Sans",sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 12px;
+    border-radius: 10px;
+    margin: auto;
+    display: block;
+    cursor: pointer;
+}
+button:hover{
+    background: wheat;
+    color: skyblue;
+    transition: all 0.2s ease-out !important;
+}
