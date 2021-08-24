@@ -125,6 +125,8 @@
             :code-width="150"></QRCode>
         </div>
 
+
+
         <div class="generateLink">
           <div class="title">问卷链接</div>
           <div class="quesLink">
@@ -134,7 +136,6 @@
               <button @click="openQuesLink">打开</button>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -171,6 +172,10 @@ export default {
       // 是否弹出对话框
       dialogVisible: false,
 
+      // 测试用链接
+      TestLink: '',
+
+
       //需要发送得到的问卷id
       QuesId: 0,
 
@@ -181,7 +186,7 @@ export default {
       topNavCurrent: 0,
 
       // 问卷链接
-      QuesLink: 'https://www.baidu.com/',
+      QuesLink: '',
 
       // 侧边菜单计数器
       leftMenuCurrent: 0,
@@ -215,6 +220,18 @@ export default {
     }
   },
   methods: {
+    // 进行预览
+    goPreview(){
+      let psthH = '/answer/'+this.DesignedQuestionnaire.EncodeID
+      this.$router.push({
+        path: psthH,
+        query: {
+          Mode: 'preview',
+        }
+      })
+    },
+
+
     // 将问卷导出为word
     exportDocument(){
 
@@ -294,7 +311,7 @@ export default {
       console.log(href)
 
       // window.open(this.QuesLink,'_blank')
-      window.open(split[0],'_blank')
+      window.open(this.QuesLink,'_blank')
     },
 
     // 复制问卷链接
@@ -347,6 +364,9 @@ export default {
     // 切换顶部导航栏
     changeTop(index){
       this.topNavCurrent=index
+      if (index===1){
+        this.goPreview();
+      }
     },
 
     // 切换侧边导航栏
@@ -376,10 +396,13 @@ export default {
     // 得到打开问卷的链接
     getQuestionnaireLink() {
       let split1 = window.location.href.split('/release');
+      this.TestLink = split1[0]+ '/answer/'+this.DesignedQuestionnaire.id;
       split1[0]+='/answer/'+this.EncodeID;
       this.QuesLink =    split1[0]   ;
-      // split[0]+='/Management';
+      // // split[0]+='/Management';
       console.log(this.QuesLink)
+      console.log(this.TestLink)
+
       // console.log(href)
     },
 

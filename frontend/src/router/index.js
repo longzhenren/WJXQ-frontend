@@ -6,6 +6,7 @@ import DesignPage from "../views/DesignQues/DesignPage";
 import QuestionnaireRelease from "../views/QuestionnaireRelease/QuestionnaireRelease";
 import Home from '../views/Home.vue'
 import DataAnalysis from "../views/DataAnalysis/DataAnalysis";
+import AnswerQuestionnaire from "../views/AnswerQuestionnaire/AnswerQuestionnaire";
 
 Vue.use(VueRouter)
 
@@ -32,6 +33,11 @@ const routes = [
     path: '/Management',
     name: 'Management',
     component: ()=>import('../views/Management.vue')
+  },
+  {
+    path: '/answer/:id',
+    name: 'AnswerQuestionnaire',
+    component: AnswerQuestionnaire
   },
   {
     path: '/createques',
