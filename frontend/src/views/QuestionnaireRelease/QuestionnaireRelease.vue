@@ -165,6 +165,9 @@ export default {
   },
   data(){
     return{
+      // 问卷id的加密结果
+      EncodeID: '',
+
       // 是否弹出对话框
       dialogVisible: false,
 
@@ -337,6 +340,8 @@ export default {
       }).catch(err=>{
         console.log(err)
       })
+
+
     },
 
     // 切换顶部导航栏
@@ -368,6 +373,16 @@ export default {
     },
 
 
+    // 得到打开问卷的链接
+    getQuestionnaireLink() {
+      let split1 = window.location.href.split('/release');
+      split1[0]+='/answer/'+this.EncodeID;
+      this.QuesLink =    split1[0]   ;
+      // split[0]+='/Management';
+      console.log(this.QuesLink)
+      // console.log(href)
+    },
+
     acceptDesignedQuestionnaire(Questionnaire){
       let params = this.$route.params;
       this.DesignedQuestionnaire = Questionnaire
@@ -387,10 +402,12 @@ export default {
         // console.log(res);
         if (res.data.Message !== 'No Such Questionnaire'){
           this.DesignedQuestionnaire = res.data.Questionnaire
-          // console.log(this.DesignedQuestionnaire)
+          console.log(this.DesignedQuestionnaire)
+          this.EncodeID = res.data.Questionnaire.EncodeID
+          this.getQuestionnaireLink();
         }
       }).catch(err=>{
-        console.log(err)
+        // console.log(err)
       })
     },
 
