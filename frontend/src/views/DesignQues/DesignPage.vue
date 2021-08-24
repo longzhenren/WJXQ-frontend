@@ -763,7 +763,7 @@ export default {
 
     // 接受输入的问卷标题
     acceptQuesTitle(Ques){
-      let params = this.$route.params;
+      let params = this.$route.query;
       this.QuesTitle=Ques.title;
       this.QuesText = Ques.Text;
       this.QuesId = Ques.id===0?params.id:Ques.id;
@@ -780,7 +780,7 @@ export default {
 
     // 从发布页面接受原先的问卷继续设计
     continueDesign(Ques){
-      let params = this.$route.params;
+      let params = this.$route.query;
       this.QuesId = Ques.id===0?Number(params.id):Ques.id;
       this.QuesTitle = Ques.title;
       this.QuesText = Ques.Text;
