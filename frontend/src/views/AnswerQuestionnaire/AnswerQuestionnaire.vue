@@ -1,137 +1,91 @@
 <template>
   <div class="AnswerQuestionnaire">
-    <!-- 问卷标题 -->
-    <h3>{{ Title }}</h3>
+    <div class="content">
+      <!-- 问卷标题 -->
+      <h3>{{ Title }}</h3>
 
-    <!-- 问卷描述 -->
-    <div v-if="Text != ''">
-      {{ Text }}
-    </div>
+      <!-- 问卷描述 -->
+      <div v-if="Text != ''" class="top">
+        {{ Text }}
+      </div>
 
-    <!-- 问题部分 -->
-    <div class="questions" v-for="(item, index) in Question">
-      <!-- 标号 -->
-      <span v-if="ShowNumber == true">
-        {{ "第" + (index + 1) + "题" }}
-      </span>
-
-      <!-- 单选题 -->
-      <div class="SingleChoice" v-if="item.Type == 1">
-        <div>
-          <!-- 必选符 -->
+      <!-- 问题部分 -->
+      <el-card class="box-card" v-for="(item, index) in Question">
+        <div slot="header">
+          <!-- 题号题干 -->
+          <span v-if="ShowNumber == true">
+            {{ index + 1 + "." }}
+          </span>
           <label v-if="item.Must == true" style="color: red">*</label>
-          <!-- 类型与题干 -->
-          <label>单选题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 1">单选题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 2">多选题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 3">填空题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 4">评分题 - {{ item.Stem }}</label>
+          <!-- 描述 -->
+          <div>
+            <label style="font-size: 12px; color: darkgrey">
+              {{ item.Describe }}
+            </label>
+          </div>
         </div>
 
-        <!-- 描述 -->
-        <div>
-          <label style="font-size: 12px; color: darkgrey">
-            {{ item.Describe }}
-          </label>
+        <!-- 单选题 -->
+        <div class="SingleChoice" v-if="item.Type == 1">
+          <el-radio-group v-model="item.RadioValue">
+            <el-radio
+              v-for="(choiceItem, i) in item.Choice"
+              :label="choiceItem.id"
+              style="margin-left: 60px; margin-bottom: 10px; AnswerQuestionnaire: block"
+            >
+              {{ choiceItem.Text }}
+            </el-radio>
+          </el-radio-group>
         </div>
 
-        <el-divider content-position="left" class="el-divider-top"></el-divider>
-
-        <!-- 选项 -->
-        <el-radio-group v-model="item.RadioValue">
-          <el-radio
-            v-for="(choiceItem, i) in item.Choice"
-            :label="choiceItem.id"
-            style="margin-left: 60px; margin-bottom: 10px; display: block"
+        <!-- 多选 -->
+        <div class="MultiChoice" v-if="item.Type == 2">
+          <el-checkbox-group
+            v-model="item.CheckList"
+            :min="item.MinChoice"
+            :max="item.MaxChoice"
           >
-            {{ choiceItem.Text }}
-          </el-radio>
-        </el-radio-group>
-      </div>
-
-      <!-- 多选 -->
-      <div class="MultiChoice" v-if="item.Type == 2">
-        <div>
-          <!-- 必选符 -->
-          <label v-if="item.Must == true" style="color: red">*</label>
-          <!-- 类型与题干 -->
-          <label>多选题 - {{ item.Stem }}</label>
+            <el-checkbox
+              v-for="(choice, i) in item.Choice"
+              :label="choice.id"
+              style="margin-left: 60px; margin-bottom: 10px; AnswerQuestionnaire: block"
+            >
+              {{ choice.Text }}
+            </el-checkbox>
+          </el-checkbox-group>
         </div>
 
-        <!-- 描述 -->
-        <div>
-          <label style="font-size: 12px; color: darkgrey">
-            {{ item.Describe }}
-          </label>
+        <!-- 填空 -->
+        <div class="FillBlank" v-if="item.Type == 3">
+          <el-input
+            placeholder="回答区域"
+            type="textarea"
+            v-model="item.Answer"
+          ></el-input>
         </div>
 
-        <el-divider content-position="left" class="el-divider-top"></el-divider>
-
-        <!-- 选项 -->
-        <el-checkbox-group
-          v-model="item.CheckList"
-          :min="item.MinChoice"
-          :max="item.MaxChoice"
-        >
-          <el-checkbox
-            v-for="(choice, i) in item.Choice"
-            :label="choice.id"
-            style="margin-left: 60px; margin-bottom: 10px; display: block"
+        <!-- 评分 -->
+        <div class="Evaluate" v-if="item.Type == 4">
+          <el-rate
+            v-model="item.Score"
+            show-text
+            :texts="item.Text"
+            :max="item.Text.length"
           >
-            {{ choice.Text }}
-          </el-checkbox>
-        </el-checkbox-group>
-      </div>
-
-      <!-- 填空 -->
-      <div class="FillBlank" v-if="item.Type == 3">
-        <div>
-          <!-- 必选符 -->
-          <label v-if="item.Must == true" style="color: red">*</label>
-          <!-- 类型与题干 -->
-          <label>填空题 - {{ item.Stem }}</label>
+          </el-rate>
         </div>
-        <!-- 描述 -->
-        <div>
-          <label style="font-size: 12px;color: darkgrey">
-            {{ item.Describe }}
-          </label>
-        </div>
+      </el-card>
 
-        <el-divider content-position="left" class="el-divider-top"></el-divider>
-
-        <!-- 作答框 -->
-        <el-input
-          placeholder="回答区域"
-          type="textarea"
-          v-model="item.Answer"
-        ></el-input>
-      </div>
-
-      <!-- 评分 -->
-      <div class="Evaluate" v-if="item.Type == 4">
-        <!-- 必选符 -->
-        <label v-if="item.Must == true" style="color: red">*</label>
-        <!-- 类型与题干 -->
-        <label>评分题 - {{ item.Stem }}</label>
-        <!-- 描述 -->
-        <div>
-          <label style="font-size: 12px;color: darkgrey">
-            {{ item.Describe }}
-          </label>
-        </div>
-        <el-divider class="el-divider-top"></el-divider>
-
-        <!-- 评分器 -->
-        <el-rate
-          v-model="item.Score"
-          show-text
-          :texts="item.Text"
-          :max="item.Text.length"
-        >
-        </el-rate>
-      </div>
-      <!-- 其他题型 -->
+      <!-- 提交按钮 -->
+      <el-button type="primary" @click="submit">提交</el-button>
     </div>
-
-    <!-- 提交按钮 -->
-    <el-button type="primary" @click="submit">提交</el-button>
+    <div class="bottom">
+        <el-link type="info" href="/">问卷星球&nbsp;</el-link>
+    </div>
   </div>
 </template>
 
@@ -224,14 +178,14 @@ export default {
 
   mounted() {
     //获取客户ip
-    this.ip = localStorage.getItem('Ip');
+    this.ip = localStorage.getItem("Ip");
     console.log(this.ip);
     //加载问卷
     request({
       url: "/question/answerQuestionnaire",
-      method: "get",
-      params: {
-        id: this.id,
+      method: "post",
+      data: {
+        EncodeID: this.id,
       },
     })
       .then((res) => {
@@ -242,7 +196,7 @@ export default {
         this.Text = Questionnaire.Text;
         //对this.Question[]赋值
         var i;
-        for (i in this.Question) {
+        for (i in Questionnaire.Question) {
           var q = Questionnaire.Question[i];
           if (q.Type == 1) {
             var i;
@@ -255,6 +209,7 @@ export default {
             this.Question.push({
               id: q.id,
               Stem: q.Stem,
+              Describe: q.Describe,
               Type: 1,
               Must: q.Must,
               Number: q.Number,
@@ -273,7 +228,8 @@ export default {
             this.Question.push({
               id: q.id,
               Stem: q.Stem,
-              Type: 1,
+              Describe: q.Describe,
+              Type: 2,
               MaxChoice: q.MaxChoice,
               Minchoice: q.Minchoice,
               Must: q.Must,
@@ -286,7 +242,8 @@ export default {
             this.Question.push({
               id: q.id,
               Stem: q.Stem,
-              Type: 1,
+              Describe: q.Describe,
+              Type: 3,
               Must: q.Must,
               Number: q.Number,
               Answer: "",
@@ -299,7 +256,8 @@ export default {
             this.Question.push({
               id: q.id,
               Stem: q.Stem,
-              Type: 1,
+              Describe: q.Describe,
+              Type: 4,
               Must: q.Must,
               Number: q.Number,
               Text: t,
@@ -317,4 +275,32 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.AnswerQuestionnaire {
+  text-align: center;
+  padding: 20px;
+}
+.AnswerQuestionnaire .top {
+  color: #606266;
+  padding: 0 10px 10px 10px;
+  border-bottom: 3px solid #409eff;
+  font-size: 15px;
+  line-height: 22px;
+  text-align: left;
+}
+.AnswerQuestionnaire .content {
+  width: 100%;
+  max-width: 800px;
+  display: inline-block;
+  text-align: center;
+}
+.AnswerQuestionnaire .box-card {
+  text-align: left;
+  width: 100%;
+  margin: 10px 0 10px 0;
+}
+.AnswerQuestionnaire .bottom {
+  margin: 20px 10px 20px 10px;
+  color: #909399;
+}
+</style>
