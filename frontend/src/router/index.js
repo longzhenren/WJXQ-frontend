@@ -66,4 +66,21 @@ const router = new VueRouter({
   routes
 })
 
+// router.beforeEach((to,from,next)=> {
+//   // 三个参数：
+//    // to 将要访问的路径
+//    // from 代表从哪个路径跳转而来
+//    // next 是一个函数，表示放行
+//    //    next() 放行    next('/login')  强制跳转
+//    // 如果用户访问登录页，直接放行
+//   if (to.path.indexOf('/answer/')===0){
+//     return next();
+//   }
+//   const item = window.sessionStorage.getItem('token');
+//   if (!item){
+//     return  next('/login');
+//   }
+//   next();
+// })
+
 export default router
