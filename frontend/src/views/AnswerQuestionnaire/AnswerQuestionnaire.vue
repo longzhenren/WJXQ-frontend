@@ -141,120 +141,17 @@ export default {
   name: "AnswerQuestionnaire",
   data() {
     return {
-      id: 1,
-      Title: "测试标题",
-      CreateUser: "",
-      CreateTime: "",
+      ip: "",
+      id: this.$route.params.id,
+      Title: "",
       ShowNumber: true,
-      Text: "测试文本",
-      Question: [
-        {
-          id: 1,
-          Stem: "测试单选题的题干",
-          Describe: "测试描述",
-          RadioValue: 0,
-          Type: 1,
-          Must: true,
-          Number: 1,
-          Choice: [
-            {
-              id: 1,
-              Text: "选项A",
-            },
-            {
-              id: 2,
-              Text: "选项B",
-            },
-            {
-              id: 3,
-              Text: "选项C",
-            },
-          ],
-        },
-        {
-          id: 2,
-          Stem: "测试多选题的题干",
-          CheckList: [],
-          Type: 2,
-          MinChoice: 1,
-          MaxChoice: 2,
-          Must: true,
-          Number: 2,
-          Choice: [
-            {
-              id: 1,
-              Text: "选项A",
-            },
-            {
-              id: 2,
-              Text: "选项B",
-            },
-            {
-              id: 3,
-              Text: "选项C",
-            },
-          ],
-        },
-        {
-          id: 3,
-          Stem: "测试填空题的题干",
-          Answer: "",
-          Type: 3,
-          Must: true,
-          Number: 3,
-        },
-        {
-          id: 4,
-          Stem: "测试评分题的题干",
-          Score: 0,
-          Type: 4,
-          Must: true,
-          Number: 4,
-          Text: ["坏", "普通", "好"],
-        },
-      ],
-      Answer: {
-        submissionID: 1,
-        content: [],
-      },
+      Text: "",
+      Question: [],
     };
   },
 
   methods: {
-    // //本地测试用
-    // save() {
-    //   this.Answer.submissionID = this.id;
-    //   var q;
-    //   for (q in this.Question) {
-    //     let i = this.Question[q];
-    //     if (i.Type == 1)
-    //       this.Answer.content.push({
-    //         questionID: i.id,
-    //         answerSelectionIDSet: [i.RadioValue],
-    //         type: 1,
-    //       });
-    //     if (i.Type == 2)
-    //       this.Answer.content.push({
-    //         questionID: i.id,
-    //         answerSelectionIDSet: i.CheckList,
-    //         type: 2,
-    //       });
-    //     if (i.Type == 3)
-    //       this.Answer.content.push({
-    //         questionID: i.id,
-    //         answerText: i.Answer,
-    //         type: 3,
-    //       });
-    //     if (i.Type == 4)
-    //       this.Answer.content.push({
-    //         questionID: i.id,
-    //         answerScore: i.Score,
-    //         type: 4,
-    //       });
-    //   }
-    //   console.log(this.Answer);
-    // },
-    
+    //提交
     submit() {
       //检测是否答完
       let flag = true;
@@ -263,7 +160,7 @@ export default {
         let i = this.Question[q];
         if (i.Must == true && i.Type == 1 && i.RadioValue == 0) flag = false;
         if (i.Must == true && i.Type == 2 && i.CheckList == []) flag = false;
-        if (i.Must == true && i.Type == 3 && i.Text == "") flag = false;
+        if (i.Must == true && i.Type == 3 && i.Answer == "") flag = false;
         if (i.Must == true && i.Type == 4 && i.Score == 0) flag = false;
       }
       if (flag == false) this.$message.error("请回答所有带*题目");
@@ -282,7 +179,7 @@ export default {
                 answerSelectionIDSet: [i.RadioValue],
               },
             });
-            if (i.Type == 2)
+          if (i.Type == 2)
             request({
               url: "/submit/savans",
               method: "post",
@@ -293,7 +190,7 @@ export default {
                 answerSelectionIDSet: i.CheckList,
               },
             });
-            if (i.Type == 3)
+          if (i.Type == 3)
             request({
               url: "/submit/savans",
               method: "post",
@@ -304,7 +201,7 @@ export default {
                 answerSelectionIDSet: i.Answer,
               },
             });
-            if (i.Type == 4)
+          if (i.Type == 4)
             request({
               url: "/submit/savans",
               method: "post",
@@ -319,9 +216,16 @@ export default {
         this.$message.success("提交成功");
       }
     },
+    //排序
+    sortRule(a, b) {
+      return a.Number - b.Number;
+    },
   },
 
   mounted() {
+    //获取客户ip
+    this.ip = localStorage.getItem('Ip');
+    console.log(this.ip);
     //加载问卷
     request({
       url: "/question/answerQuestionnaire",
@@ -332,6 +236,79 @@ export default {
     })
       .then((res) => {
         console.log(res);
+        var Questionnaire = res.data.Questionnaire;
+        this.Title = Questionnaire.Title;
+        this.ShowNumber = Questionnaire.ShowNumber;
+        this.Text = Questionnaire.Text;
+        //对this.Question[]赋值
+        var i;
+        for (i in this.Question) {
+          var q = Questionnaire.Question[i];
+          if (q.Type == 1) {
+            var i;
+            var c = [];
+            for (i in q.Choice)
+              c.push({
+                id: q.Choice[i].id,
+                Text: q.Choice[i].Text,
+              });
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Type: 1,
+              Must: q.Must,
+              Number: q.Number,
+              Choice: c,
+              RadioValue: 0,
+            });
+          }
+          if (q.Type == 2) {
+            var i;
+            var c = [];
+            for (i in q.Choice)
+              c.push({
+                id: q.Choice[i].id,
+                Text: q.Choice[i].Text,
+              });
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Type: 1,
+              MaxChoice: q.MaxChoice,
+              Minchoice: q.Minchoice,
+              Must: q.Must,
+              Number: q.Number,
+              Choice: c,
+              CheckList: [],
+            });
+          }
+          if (q.Type == 3) {
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Type: 1,
+              Must: q.Must,
+              Number: q.Number,
+              Answer: "",
+            });
+          }
+          if (q.Type == 4) {
+            var i;
+            var t = [];
+            for (i in q.Choice) t.push(q.Choice[i].Text);
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Type: 1,
+              Must: q.Must,
+              Number: q.Number,
+              Text: t,
+              Score: 0,
+            });
+          }
+        }
+        this.Question.sort(this.sortRule);
+        console.log(this.Question);
       })
       .catch((err) => {
         console.log(err);
