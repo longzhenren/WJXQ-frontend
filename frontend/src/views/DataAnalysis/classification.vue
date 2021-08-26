@@ -232,11 +232,12 @@ export default {
     /*background-color: #E6E6E6;*/
     width: 100%;
     transition: .4s all ease-in-out;
+    /*box-shadow: 0 0 10px rgba(0,0,0,.4);*/
   }
 
-  .classification .queryDataAnalysis:hover {
-    background-color: rgba(242,242,242,.7);
-  }
+  /*.classification .queryDataAnalysis:hover {*/
+  /*  background-color: rgba(242,242,242,.7);*/
+  /*}*/
 
   .classification .queryDataAnalysis .donotFind {
     width: 100%;
@@ -251,9 +252,9 @@ export default {
     /*box-shadow: 0 0 10px rgba(2,2,2,.6);*/
   }
 
-  .classification .queryDataAnalysis .donotFind:hover {
-    background-color: rgba(242,242,242,.2);
-  }
+  /*.classification .queryDataAnalysis .donotFind:hover {*/
+  /*  background-color: rgba(242,242,242,.2);*/
+  /*}*/
 
   .classification .classificationTitle {
     /*background-color: pink;*/
