@@ -4,28 +4,28 @@
     <div class="releaseMenu">
       <ul class="menuItems">
         <li class="menuItem" @click="backToDesign">
-          <span></span>
+          <span class="backLogo"></span>
           <div>返回设计页面</div>
         </li>
 
         <li class="menuItem"
-            :class="{horzontalActive: leftMenuCurrent===0}"
+            :class="{horzontalActive: $store.state.leftMenuCurrent===0}"
             @click="changeLeft(0)">
-          <span></span>
+          <span class="releaseLogo"></span>
           <div>问卷发布</div>
         </li>
 
         <li class="menuItem"
-            :class="{horzontalActive: leftMenuCurrent===1}"
+            :class="{horzontalActive: $store.state.leftMenuCurrent===1}"
             @click="changeLeft(1)">
-          <span></span>
+          <span class="sendLogo"></span>
           <div>问卷发送</div>
         </li>
 
         <li class="menuItem"
-            :class="{horzontalActive: leftMenuCurrent===2}"
+            :class="{horzontalActive: $store.state.leftMenuCurrent===2}"
             @click="BackToHome">
-          <span></span>
+          <span class="homeLogo"></span>
           <div>返回首页</div>
         </li>
 
@@ -37,21 +37,24 @@
 
 <!--    顶部导航栏-->
     <div class="topNav">
-      <ul v-if="leftMenuCurrent===0">
+      <ul v-if="$store.state.leftMenuCurrent===0">
         <!--      问卷状态-->
         <li v-for="(item,index) in releaseTopNavData"
             :class="{ active: topNavCurrent===index}"
             @click="changeTop(index)" >
-          <span>{{ item.icon }}</span>
+          <span v-if="index===0" class="stateLogo"></span>
+          <span v-if="index===1" class="prevLogo"></span>
+          <span v-if="index===2" class="setLogo"></span>
           <div>{{ item.title }}</div>
         </li>
       </ul>
 
-      <ul v-else-if="leftMenuCurrent===1">
+      <ul v-else-if="$store.state.leftMenuCurrent===1">
         <li v-for="(item,index) in sendTopNavData"
             :class="{ active: topNavCurrent===index}"
             @click="changeTop(index)" >
-          <span>{{ item.icon }}</span>
+          <span v-if="index===0" class="linkLogo"></span>
+          <span v-if="index===1" class="prev2Logo"></span>
           <div>{{ item.title }}</div>
         </li>
       </ul>
@@ -62,7 +65,7 @@
     </div>
 
 
-    <div class="release" v-if="leftMenuCurrent===0">
+    <div class="release" v-if="$store.state.leftMenuCurrent===0">
       <div class="status" v-if="topNavCurrent===0">
         <div class="releasable" v-if="DesignedQuestionnaire.Open">
           此问卷已经设计完成,您可以开始
@@ -115,7 +118,7 @@
     </div>
 
 
-    <div class="send" v-if="leftMenuCurrent===1">
+    <div class="send" v-if="$store.state.leftMenuCurrent===1">
       <div class="link">
         <div class="erweima">
           <div class="intro">点击二维码即可下载分享</div>
@@ -188,20 +191,14 @@ export default {
       // 问卷链接
       QuesLink: '',
 
-      // 侧边菜单计数器
-      leftMenuCurrent: 0,
-
       releaseTopNavData: [
         {
-          icon: '',
           title: '问卷状态',
         },
         {
-          icon: '',
           title: '问卷预览',
         },
         {
-          icon: '',
           title: '问卷设置',
         }
       ],
@@ -238,7 +235,6 @@ export default {
         username: this.$store.state.personalInfo.username,
         id: this.QuesId
       }
-
       request({
         url:'/question/exportQuestionnaire',
         method:'post',
@@ -250,21 +246,6 @@ export default {
       }).catch(err=>{
         console.log()
       })
-    },
-
-    download(res) {
-      if (!res.data) {
-        return;
-      }
-      let fileName = 'aaa.docx';
-      let url = window.URL.createObjectURL(new Blob([res.data]))
-      let link = document.createElement('a')
-      link.style.display = 'none'
-      link.href = url
-      link.setAttribute('download', 'word.docx')
-
-      document.body.appendChild(link)
-      link.click()
     },
 
     // 返回首页
@@ -329,7 +310,13 @@ export default {
     ShowQues(){
       console.log(this.DesignedQuestionnaire)
       console.log(this.QuesId)
-      this.$router.push('/dataanalysis');
+      this.$router.push({
+        path: '/dataanalysis',
+        query: {
+          id: this.QuesId,
+          username: this.$route.query.username
+        }
+      });
     },
 
     // 打开问卷链接
@@ -358,7 +345,7 @@ export default {
 
     // 问卷可以发送
     sendQues(){
-      this.leftMenuCurrent = 1;
+      this.$store.commit('leftMenuCurrentOne')
     },
 
     // 发布问卷
@@ -409,7 +396,13 @@ export default {
         });
       }
       else  {
-        this.leftMenuCurrent=index
+        if(index===0){
+          this.$store.commit('leftMenuCurrentZero')
+        }else if(index===1){
+          this.$store.commit('leftMenuCurrentOne')
+        }else if(index===2){
+          this.$store.commit('leftMenuCurrentTwo')
+        }
       }
     },
     // 返回问卷设计页面
@@ -421,8 +414,20 @@ export default {
         this.BackLink();
       }
     },
+    download(res) {
+      if (!res.data) {
+        return;
+      }
+      let fileName = 'aaa.docx';
+      let url = window.URL.createObjectURL(new Blob([res.data]))
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      link.setAttribute('download', 'word.docx')
 
-
+      document.body.appendChild(link)
+      link.click()
+    },
     // 得到打开问卷的链接
     getQuestionnaireLink() {
       let split1 = window.location.href.split('/release');
@@ -439,12 +444,16 @@ export default {
     acceptDesignedQuestionnaire(Questionnaire){
       let params = this.$route.query;
       this.DesignedQuestionnaire = Questionnaire
-      this.QuesId = Questionnaire.id===0?Number(params.id):Questionnaire.id
+      this.QuesId = Number(params.id)===0?Questionnaire.id:Number(params.id);
+      // this.QuesId = ===0?Number(params.id):Questionnaire.id
        localStorage.QuesId = this.QuesId
     },
     // 向后端发送请求接受问卷信息
     getDesignedQuestionnaire(){
       // 获取问卷
+
+      this.QuesId = Number(this.$route.query.id);
+      localStorage.QuesId = this.QuesId
       request({
         url: '/question/questionnaireID',
         method: 'get',
@@ -452,7 +461,7 @@ export default {
           id: this.QuesId
         }
       }).then(res=>{
-        // console.log(res);
+        console.log(res);
         if (res.data.Message !== 'No Such Questionnaire'){
           this.DesignedQuestionnaire = res.data.Questionnaire
           console.log(this.DesignedQuestionnaire)
@@ -466,10 +475,10 @@ export default {
 
   },
   mounted() {
-    if (localStorage.QuesId){
-      this.QuesId = Number(localStorage.QuesId);
-      // console.log(this.QuesId)
-    }
+    // if (localStorage.QuesId){
+    //   this.QuesId = Number(localStorage.QuesId);
+    //   // console.log(this.QuesId)
+    // }
   },
   beforeDestroy() {
     bus.$emit('backToDesign',this.DesignedQuestionnaire)
@@ -799,6 +808,66 @@ export default {
     display: flex;
     justify-content: center;align-items: center;
   }
+  .backLogo{
+    font-family: icomoon;
+    content: '\e90e';
+  }
+  .releaseLogo{
+    font-family: icomoon;
+    content: '\e935';
+  }
+  .sendLogo{
+    font-family: icomoon;
+    content: '\e006';
+  }
+  .homeLogo{
+    font-family: icomoon;
+    content: '\e902';
+  }
+  span[class=stateLogo]::after{
+    font-size: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    font-family: icomoon;
+    content: '\e937';
+  }
+  span[class=prevLogo]::after{
+    font-size: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    font-family: icomoon;
+    content: '\e9ce';
+  }
+  span[class=setLogo]::after{
+    font-size: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    font-family: icomoon;
+    content: '\e939';
+  }
+  span[class=linkLogo]::after{
+     font-size: 50px;
+     line-height: 70px;
+     vertical-align: middle;
+     font-family: icomoon;
+     content: '\e93b';
+  }
+  span[class=prev2Logo]::after{
+      font-size: 50px;
+      line-height: 70px;
+      vertical-align: middle;
+      font-family: icomoon;
+      content: '\e9ce';
+    }
+  {
+    font-family: icomoon;
+    content: 'e93b';
+  }
+  {
+    font-family: icomoon;
+    content: '\e935';
+  }
+
 
 
 </style>

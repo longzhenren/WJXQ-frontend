@@ -9,9 +9,6 @@
 
         <el-dialog title="修改邮箱" :visible.sync="dialog1FormVisible" style="width: 60%;margin-left: 20%">
           <el-form :model="form1" :rules="rules1">
-            <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
-              <el-input v-model="form1.password" show-password></el-input>
-            </el-form-item>
             <el-form-item prop="email" label="新邮箱" :label-width="formLabelWidth"
                           :rules="[
             { required: true, message: '请输入邮箱地址', trigger: 'blur' },
@@ -29,16 +26,6 @@
         <li class="style_grey" id="password"><label >密码:</label><el-button type="text" @click="dialog2FormVisible = true">修改密码</el-button></li>
         <el-dialog title="修改密码" :visible.sync="dialog2FormVisible" style="width: 60%;margin-left: 20%">
           <el-form :model="form2" :rules="rules2">
-            <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
-              <el-input v-model="form2.username" ></el-input>
-            </el-form-item>
-            <el-form-item prop="email" label="邮箱" :label-width="formLabelWidth"
-             :rules="[
-            { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-            { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
-           ]"style="margin-top:25px  ;">
-              <el-input v-model="form2.email" ></el-input>
-            </el-form-item>
             <el-form-item label="新密码" :label-width="formLabelWidth" prop="newPasswd">
               <el-input v-model="form2.newPasswd" show-password></el-input>
             </el-form-item>
@@ -61,14 +48,8 @@ export default {
   data(){
     return{
       rules1: {
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
-        ],
       },
       rules2: {
-        username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
-        ],
         newPasswd: [
           { required: true, message: '请输入新密码',  trigger: 'blur',}
         ],
@@ -89,7 +70,7 @@ export default {
         url: '/user/changeinfo/',
         method: 'post',
         data: {
-          'password':this.form1.password,
+          'username':this.$store.state.personalInfo.username,
           'email':this.form1.email,
         }
       }).then( res=> {
@@ -115,12 +96,11 @@ export default {
     subChange2(){
       this.dialog2FormVisible = false;
       request({
-        url: '/user/resetpassword/',
+        url: '/user/changeinfo/',
         method: 'post',
         data: {
-          'username':this.form2.username,
-          'email':this.form2.email,
-          'newpassword':this.form2.newpassword
+          'username':this.$store.state.personalInfo.username,
+          'password':this.form2.newPasswd
         }
       }).then( res=> {
         if (res.data.msg==='用户名与邮箱不匹配'){

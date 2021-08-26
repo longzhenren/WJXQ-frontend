@@ -15,7 +15,7 @@
 
     <el-dropdown @command="handleCommand2" id="state">
       <span class="el-dropdown-link">
-        {{state}}<i class="el-icon-arrow-down el-icon--right"></i>
+        {{$store.state.manageCurrentState}}<i class="el-icon-arrow-down el-icon--right"></i>
      </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="a">状态</el-dropdown-item>
@@ -25,7 +25,7 @@
     </el-dropdown>
 
     <input type="text" v-model="key" placeholder="输入问卷名以进行搜索">
-    <button class="searchLogo"></button>
+    <button class="searchLogo" @click="search"></button>
   </div>
 </template>
 
@@ -41,24 +41,59 @@ export default {
   },
   methods:{
     handleCommand1(command){
-      if(command==='a'){
-        this.order='时间正序'
-      }else if(command==='b'){
-        this.order='时间倒序'
-      }else if(command==='c'){
-        this.order='答卷正序'
-      }else if(command==='b'){
-        this.order='答卷正序'
+      if(this.$store.state.currentChoose===1){//在所有问卷
+        if(command==='a'){
+          this.order='时间正序';
+          this.$store.commit('manageTimePos')
+          this.$parent.timePos();
+        }else if(command==='b'){
+          this.order='时间倒序'
+          this.$store.commit('manageTimeNeg')
+          this.$parent.timeNeg();
+        }else if(command==='c'){
+          this.order='答卷正序'
+          this.$store.commit('manageSubPos')
+          this.$parent.subPos();
+        }else if(command==='d'){
+          this.order='答卷倒序';
+          this.$store.commit('manageSubNeg')
+          this.$parent.subNeg();
+        }
+      }
+      else if(this.$store.state.currentChoose===2){//在星标问卷
+        if(command==='a'){
+          this.order='时间正序';
+          this.$store.commit('manageTimePos')
+          this.$parent.timePosStar();
+        }else if(command==='b'){
+          this.order='时间倒序'
+          this.$store.commit('manageTimeNeg')
+          this.$parent.timeNegStar();
+        }else if(command==='c'){
+          this.order='答卷正序'
+          this.$store.commit('manageSubPos')
+          this.$parent.subPosStar();
+        }else if(command==='d'){
+          this.order='答卷倒序';
+          this.$store.commit('manageSubNeg')
+          this.$parent.subNegStar();
+        }
       }
     },
     handleCommand2(command){
       if(command==='a'){
-        this.state='状态'
+        this.state='状态';
+        this.$store.commit('manageStateAll');
       }else if(command==='b'){
-        this.state='已发布'
+        this.state='已发布';
+        this.$store.commit('manageStateOpen')
       }else if(command==='c'){
-        this.state='未发布'
+        this.state='未发布';
+        this.$store.commit('manageStateClose')
       }
+    },
+    search(){
+      this.$store.commit('manageKeySend',this.key)
     }
   }
 }

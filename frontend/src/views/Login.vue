@@ -23,6 +23,33 @@
           </el-form-item>
         </el-form>
       </div>
+
+      <el-button type="text" @click="dialog2FormVisible = true" id="findPwd">忘记密码？</el-button>
+      <el-dialog title="重置密码" :visible.sync="dialog2FormVisible" style="width: 60%;margin-left: 19%">
+        <el-form :model="form2" :rules="rules2">
+          <el-form-item label="用户名" prop="username" :label-width="formLabelWidth" >
+            <el-input v-model="form2.username" ></el-input>
+          </el-form-item>
+          <el-form-item
+            label="邮箱"
+            prop="email"
+            :label-width="formLabelWidth"
+            :rules="[
+            { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+            { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+           ]"style="margin-top:25px  ;">
+            <el-input v-model="form2.email" ></el-input>
+          </el-form-item>
+          <el-form-item label="新密码" :label-width="formLabelWidth" prop="newPasswd">
+            <el-input v-model="form2.newPasswd" show-password></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialog2FormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="subChange2">确 定</el-button>
+        </div>
+      </el-dialog>
+
       <div class="confirmButton">
         <button class="loginBtn" @click="Login">登录 </button>
       </div>
@@ -39,6 +66,7 @@ export default {
   data(){
     return{
       isPwdOneOk:false,
+      cname:'',
       loginForm: {
         username: '',
         passwd: '',
@@ -52,11 +80,39 @@ export default {
         passwd: [
           { pattern: /^[a-zA-Z0-9]{3,10}$/, message: '请确保密码在3到10个字符间，且只有数字与字母', trigger: 'blur' }
         ],
-      }
+      },
+      form2: {
+      },
+      formLabelWidth: '100px',
+      dialog2FormVisible: false,
+      rules2: {
+        username: [
+          {  required: true,message: '请输入用户名', trigger: 'blur' },
+        ],
+        newPasswd: [
+          { required: true, message: '请输入新密码',  trigger: 'blur',}
+        ],
+      },
     }
   },
   methods:{
-    Login(){
+    setCookie(name,value)
+      {
+        var Days = 30;//过期时间30天为例
+        var exp = new Date();
+        exp.setTime(exp.getTime() + Days*24*60*60*1000);
+        document.cookie = name + "="+ escape (value) + ";expires=" +
+        exp.toGMTString();
+      },
+    getCookie(name) {
+      var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+      if (arr === document.cookie.match(reg))
+        return unescape(arr[2]);
+      else
+        return null;
+    },
+
+Login(){
       console.log(this.loginForm)
       // let par=new URLSearchParams();
       // par.append('username',this.loginForm.username);
@@ -69,25 +125,24 @@ export default {
           'password':this.loginForm.passwd
         }
       }).then( res=> {
-        console.log(res.data);
+        console.log(res);
         if (res.data.msg==='success'){
           this.$store.commit("login",this.loginForm.username,this.loginForm.passwd);
-          console.log(this.$store.state.personalInfo.username)
           this.$message({
             showClose: true,
             message: '登陆成功！',
             type: 'success'
           });
+          window.sessionStorage.setItem('isLogin', 'true');
           request({
             url: '/user/getinfo/',
             method: 'post',
             data:{
+              'username':this.loginForm.username
             }
           }).then(res2=>{
-            console.log(res2)
             this.$store.commit('getEmail',res2.data.userinfo.email);
           })
-          console.log('email='+this.$store.state.personalInfo.email);
           this.$router.push('/Management')
         }
         else if (res.data.msg==='认证失败,请检查账号密码是否正确'){
@@ -107,6 +162,36 @@ export default {
     HomeClicked(){
       this.$router.push('/');
     },
+    subChange2(){
+      this.dialog2FormVisible = false;
+      request({
+        url: '/user/resetpassword/',
+        method: 'post',
+        data: {
+          'username':this.form2.username,
+          'email':this.form2.email,
+          'newpassword':this.form2.newPasswd
+        }
+      }).then( res=> {
+        if (res.data.msg==='用户名与邮箱不匹配'){
+          this.$message({
+            showClose: true,
+            message: '用户名与邮箱不匹配！',
+            type: 'warning'
+          });
+        }
+        else if (res.data.msg==="success"){
+          this.$message({
+            showClose: true,
+            message: '重置密码成功！',
+            type: 'success'
+          });
+        }
+        console.log(res.data)
+      }).catch( err=> {
+        console.log(err)
+      })
+    }
   },
   // beforeRouteEnter(to, from, next) {
   //   // 添加背景色
@@ -122,10 +207,8 @@ export default {
 }
 </script>
 
-<style scoped src="../assets/css/base.css"></style>
-<style scoped src="../assets/css/common.css"></style>
 <style scoped>
-
+@import "../assets/css/base.css";
 #top{
   top: 0px;
   left: 0px;
@@ -194,7 +277,7 @@ export default {
   display: block;
   width: 300px;
   height: 40px;
-  margin-top: 40px;
+  margin-top: 60px;
   margin-left: 70px;
   background-color: orange;
   font-size:16px ;
@@ -211,13 +294,21 @@ export default {
   font-size:15px ;
   color: orange;
 }
+#findPwd{
+  position: absolute;
+  font-size: 15px;
+  top:210px;
+  right: 15%;
+  color:gray;
+  text-decoration:underline
+}
 span[class=userLogo]::after{
   position: absolute;
   font-size: 20px;
   line-height: 70px;
   vertical-align: middle;
   font-family: icomoon;
-  content: '\e911';
+  content: '\e968';
   top: 70px;
   left:50px;
 }
@@ -227,7 +318,7 @@ span[class=passwdLogo]::after{
   line-height: 70px;
   vertical-align: middle;
   font-family: icomoon;
-  content: '\e914';
+  content: '\e97c';
   top: 140px;
   left:50px;
 }

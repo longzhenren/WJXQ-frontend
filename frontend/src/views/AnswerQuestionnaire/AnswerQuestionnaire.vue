@@ -169,6 +169,9 @@ export default {
         }
         this.$message.success("提交成功");
       }
+      setTimeout(function () {
+        this.$router.replace('')
+      },500)
     },
     //排序
     sortRule(a, b) {

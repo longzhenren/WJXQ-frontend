@@ -30,33 +30,23 @@ export default {
       this.$store.commit('perClicked')
     },
     logoutClicked(){
-      request({
-        url: '/user/logout/',
-        method: 'post',
-        data: {
-        }
-      }).then( res=> {
-        console.log(res.data);
-        if (res.data.msg==='success'){
-          this.$store.commit("logout");
-          console.log(this.$store.state.personalInfo.username)
-          this.$message({
-            showClose: true,
-            message: '退出成功！',
-            type: 'success'
-          });
-          this.$router.push('/Management')
-        }
-        else if (res.data.msg==='当前未登录'){
-          this.$message({
-            showClose: true,
-            message: '当前未登录',
-            type: 'warning'
-          });
-        }
-      }).catch( err=> {
-        console.log(err)
-      })
+      if(window.sessionStorage.getItem('isLogin')==='true'){
+        this.$store.commit("logout");
+        console.log(this.$store.state.personalInfo.username)
+        this.$message({
+          showClose: true,
+          message: '退出成功！',
+          type: 'success'
+        });
+        window.sessionStorage.clear();
+        this.$router.push('/Login')
+      }else {
+        this.$message({
+          showClose: true,
+          message: '当前未登录',
+          type: 'warning'
+        });
+      }
     },
   }
 }
