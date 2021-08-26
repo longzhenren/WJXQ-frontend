@@ -1,28 +1,22 @@
 @font-face {
     font-family: 'icomoon';
-    src:  url('../fonts/icomoon.eot?9l5ai0');
-    src:  url('../fonts/icomoon.eot?9l5ai0#iefix') format('embedded-opentype'),
-    url('../fonts/icomoon.ttf?9l5ai0') format('truetype'),
-    url('../fonts/icomoon.woff?9l5ai0') format('woff'),
-    url('../fonts/icomoon.svg?9l5ai0#icomoon') format('svg');
+    src:  url('../fonts/icomoon.eot?y9ztcv');
+    src:  url('../fonts/icomoon.eot?y9ztcv#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon.ttf?y9ztcv') format('truetype'),
+    url('../fonts/icomoon.woff?y9ztcv') format('woff'),
+    url('../fonts/icomoon.svg?y9ztcv#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
 }
 
-
-
-
-*,
-body,
-html {
+/*标签内外边距清零*/
+*{
     margin: 0;
     padding: 0;
-    font-family: 'icomoon',sans-serif;
+    /*css3盒子模型边距边框不撑开*/
     box-sizing: border-box;
 }
-
-/*标签内外边距清零*/
 /*em和i斜体字不倾斜*/
 em,i{
     font-style: normal;

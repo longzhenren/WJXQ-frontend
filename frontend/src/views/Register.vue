@@ -135,16 +135,7 @@ export default {
   },
   components:{
   },
-  // beforeRouteEnter(to, from, next) {
-  //   // 添加背景色
-  //   document.querySelector('body').setAttribute('style', 'background:#F2F2F2')
-  //   next()
-  // },
-  // beforeRouteLeave(to, from, next) {
-  //   // 去除背景色
-  //   document.querySelector('body').setAttribute('style', '')
-  //   next()
-  // }
+
 }
 </script>
 
@@ -244,7 +235,7 @@ span[class=userLogo]::after{
   line-height: 70px;
   vertical-align: middle;
   font-family: icomoon;
-  content: '\e911';
+  content: '\e968';
   top: 70px;
   left:50px;
 }
@@ -254,7 +245,7 @@ span[class=passwdLogo1]::after{
   line-height: 70px;
   vertical-align: middle;
   font-family: icomoon;
-  content: '\e914';
+  content: '\e97c';
   top: 135px;
   left:50px;
 }
@@ -264,7 +255,7 @@ span[class=passwdLogo2]::after{
   line-height: 70px;
   vertical-align: middle;
   font-family: icomoon;
-  content: '\e914';
+  content: '\e97c';
   top: 200px;
   left:50px;
 }

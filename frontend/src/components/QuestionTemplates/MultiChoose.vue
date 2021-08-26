@@ -177,6 +177,7 @@ export default {
       }
       if(find){
         alert("不可以存在重复项")
+
       }else {
         this.multiChoice.edit=0
         this.$emit('saveMultiData',this.multiChoice)

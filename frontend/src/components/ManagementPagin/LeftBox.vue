@@ -1,7 +1,6 @@
 <template>
   <div class="leftBox">
-<!--    <button id="newQes"><span class="addLogo"></span>创建问卷</button>-->
-    <CreateQuestion></CreateQuestion>
+    <button id="newQes" @click="chooseType"><span class="addLogo"></span>创建问卷</button>
     <div id="nav">
       <button id="allQes" class="inBtn" @click="allClicked" :class="{inChoose:$store.state.currentChoose===1}"><span class="qesLogo"></span>全部问卷</button>
       <button id="starQes" class="inBtn" @click="starClicked" :class="{inChoose:$store.state.currentChoose===2}"><span class="starLogo"></span>星标问卷</button>
@@ -11,12 +10,8 @@
 </template>
 
 <script>
-import CreateQuestion from "../../views/CreateQuestionnaire/CreateQuestion";
 export default {
   name: "LeftBox",
-  components:{
-    CreateQuestion
-  },
   methods:{
     allClicked() {
       this.$store.commit('allClicked')
@@ -26,6 +21,15 @@ export default {
     },
     recClicked(){
       this.$store.commit('recClicked')
+    },
+    chooseType(){
+      console.log('to Type')
+      this.$router.push({
+        path: '/questype',
+        query: {
+          username: this.$store.state.personalInfo.username
+        }
+      })
     }
   }
 }
@@ -103,7 +107,7 @@ span[class=qesLogo]::after{
   line-height: 70px;
   vertical-align: middle;
   font-family: icomoon;
-  content: '\e90d';
+  content: '\e964';
   top: -8px;
   left:53px;
 }
