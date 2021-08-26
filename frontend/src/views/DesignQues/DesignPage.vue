@@ -1,9 +1,9 @@
 <template>
   <div class="designPage">
     <nav class="designNav">
-      <div class="QuesPreview" @click="goPreview"> 预览</div>
+      <div class="QuesPreview" @click="goPreview"><span class="prevLogo"></span>&nbsp;预览</div>
 
-      <div class="release" @click="designDone"> 编辑完成</div>
+      <div class="release" @click="designDone"><span class="yesLogo"></span>&nbsp;编辑完成</div>
     </nav>
 
     <div class="designContent">
@@ -13,11 +13,11 @@
           <div :class="{active: ShowNum===1}" @click="changeDesignTools(1)">问卷大纲</div>
         </div>
 
-<!--        题型组件库-->
+        <!--        题型组件库-->
         <div class="components" v-if="ShowNum===0">
 
           <div class="choices" v-for="(item,index) in QuesTypeList">
-            <div class="title"> {{ item.type }}</div>
+            <div class="title"><span class="yesLogo"></span>{{ item.type }}</div>
             <ul>
               <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
             </ul>
@@ -26,7 +26,7 @@
         </div>
 
 
-<!--        该问卷的大纲-->
+        <!--        该问卷的大纲-->
         <div class="outline" v-else >
           <ul ref="outline_nav">
             <li v-for="(item,index) in QuesList" class="outlineItem" @click="IndexNav(index)">
@@ -41,65 +41,65 @@
 
       <div class="designPreview">
 
-          <div class="QuesBase">
-            <div class="QuesTitle">{{ QuesTitle }}</div>
+        <div class="QuesBase">
+          <div class="QuesTitle">{{ QuesTitle }}</div>
 
-            <div class="QuesIntro">
-              {{ QuesText }}
-            </div>
-
-            <div class="AutoNumSwitch">
-              <el-switch
-                  style="display: block"
-                  v-model="isShowQuesNum"
-                  active-color="#13ce66"
-                  inactive-color="#ff4949"
-                  active-text="题号显示"
-                  inactive-text="题号隐藏">
-              </el-switch>
-            </div>
+          <div class="QuesIntro">
+            {{ QuesText }}
           </div>
 
+          <div class="AutoNumSwitch">
+            <el-switch
+              style="display: block"
+              v-model="isShowQuesNum"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              active-text="题号显示"
+              inactive-text="题号隐藏">
+            </el-switch>
+          </div>
+        </div>
+
         <vue-scroll ref="vs"
-            :ops="ops" >
+                    :ops="ops" >
           <ul class="QuesList" v-if="QuesList.length!==0">
 
-              <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="item.isDraggable"
-                  @dragstart="handleDragStart($event,item)"
-                  @dragover.prevent="handleDragOver($event)"
-                  @dragenter="handleDragEnter($event,item)"
-                  @dragend="handleDragEnd($event,item)">
-                <span v-if="isShowQuesNum">{{ item.idx + 1 }}</span>
-                {{ item.Stem }}
+            <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="item.isDraggable"
+                @dragstart="handleDragStart($event,item)"
+                @dragover.prevent="handleDragOver($event)"
+                @dragenter="handleDragEnter($event,item)"
+                @dragend="handleDragEnd($event,item)">
+              <span v-if="isShowQuesNum">{{ item.idx + 1 }}</span>
+              {{ item.Stem }}
 
-                <div class="componentsItem" @mouseover="OverDrag(index,item)" @mouseleave="LeaveDrag(index,item)">
-                  <SingleChoose v-if="item.type==='singleChoice'" ref="child"
-                                @saveSingleData="SingleChoiceSave($event,item)"
-                                :father-data="item.subData"></SingleChoose>
+              <div class="componentsItem" @mouseover="OverDrag(index,item)" @mouseleave="LeaveDrag(index,item)">
+                <SingleChoose v-if="item.type==='singleChoice'" ref="child"
+                              @saveSingleData="SingleChoiceSave($event,item)"
+                              :father-data="item.subData"></SingleChoose>
 
-                  <MultiChoose v-else-if="item.type==='multiChoose'" ref="child"
-                               :father-data="item.subData"
-                               @saveMultiData="MultiChoiceSave($event,item)"></MultiChoose>
+                <MultiChoose v-else-if="item.type==='multiChoose'" ref="child"
+                             :father-data="item.subData"
+                             @saveMultiData="MultiChoiceSave($event,item)"></MultiChoose>
 
-                  <FillBlank v-else-if="item.type==='fillBlank'" ref="child"
-                              :father-data="item.subData"
-                              @saveBlankData="FillBlankSave($event,item)"></FillBlank>
+                <FillBlank v-else-if="item.type==='fillBlank'" ref="child"
+                           :father-data="item.subData"
+                           @saveBlankData="FillBlankSave($event,item)"></FillBlank>
 
-                  <Evaluate v-else-if="item.type==='evaluate'" ref="child"
-                            :father-data="item.subData"
-                            @saveEvaluateData="EvaluateSave($event,item)"></Evaluate>
-                </div>
+                <Evaluate v-else-if="item.type==='evaluate'" ref="child"
+                          :father-data="item.subData"
+                          @saveEvaluateData="EvaluateSave($event,item)"></Evaluate>
+              </div>
 
 
-                <div class="options">
-                  <ul>
-                    <li @click="deleteQues(index)">删除</li>
-                    <li @click="moveUp(index)">上移</li>
-                    <li @click="moveDown(index)">下移</li>
-                  </ul>
-                </div>
+              <div class="options">
+                <ul>
+                  <li @click="deleteQues(index)">删除</li>
+                  <li @click="moveUp(index)">上移</li>
+                  <li @click="moveDown(index)">下移</li>
+                </ul>
+              </div>
 
-              </li>
+            </li>
 
           </ul>
 
@@ -157,8 +157,8 @@ export default {
         {
           type: '选择',
           details: [
-              '单选',
-              '多选',
+            '单选',
+            '多选',
           ]
         },
         {
@@ -352,7 +352,7 @@ export default {
           break;
       }
       if (mode==='sendQuestion'){
-         Question = {
+        Question = {
           id: item.id===undefined?0:item.id,
           Stem: item.Stem,
           Type: type,
@@ -365,7 +365,7 @@ export default {
         }
       }
       else {
-         Question = {
+        Question = {
           id: item.id===undefined?0:item.id,
           Stem: item.Stem,
           Type: type,
@@ -462,21 +462,21 @@ export default {
         switch (QuesNum) {
           // 增加单选
           case 0:
-             Opt = {
-               Stem: '单选题标题',
+            Opt = {
+              Stem: '单选题标题',
               idx: this.QuesList.length,
               isDraggable: true,
               subData: {},
               type: 'singleChoice',
-               id: 0,
+              id: 0,
             }
-              pra = {
-                Questionnaire: this.QuesId,
+            pra = {
+              Questionnaire: this.QuesId,
               Type: 1,
               MinChoice: 1,
               MaxChoice: 1,
               Stem: Opt.Stem,
-                username: this.$store.state.personalInfo.username,
+              username: this.$store.state.personalInfo.username,
               Number: Opt.idx,
             }
 
@@ -485,11 +485,11 @@ export default {
             // this.addNewQuesToQuesList(Opt);
             break;
 
-            // 增加多选
+          // 增加多选
           case 1:
             console.log('增加多选')
-             Opt = {
-               Stem: '多选题标题',
+            Opt = {
+              Stem: '多选题标题',
               idx: this.QuesList.length,
               isDraggable: true,
               subData: {},
@@ -509,7 +509,7 @@ export default {
             // this.addNewQuesToQuesList(Opt);
             break;
 
-            // 增加下拉菜单
+          // 增加下拉菜单
           case 2:
             console.log('增加下拉菜单')
             break;
@@ -702,10 +702,10 @@ export default {
         height+=QuesItems[i].clientHeight;
       }
       this.$refs.vs.scrollTo({
-        y: height
-      },
-          500,
-          "easeInQuad"
+          y: height
+        },
+        500,
+        "easeInQuad"
       )
 
     },
@@ -766,7 +766,7 @@ export default {
       let params = this.$route.query;
       this.QuesTitle=Ques.title;
       this.QuesText = Ques.Text;
-      this.QuesId = Ques.id===0?params.id:Ques.id;
+      this.QuesId = Number(params.id)===0?Ques.id:Number(params.id);
       localStorage.QuesId = this.QuesId
       localStorage.QuesText = this.QuesText
       localStorage.QuesTitle = this.QuesTitle
@@ -781,7 +781,7 @@ export default {
     // 从发布页面接受原先的问卷继续设计
     continueDesign(Ques){
       let params = this.$route.query;
-      this.QuesId = Ques.id===0?Number(params.id):Ques.id;
+      this.QuesId = Number(params.id)===0?Ques.id:Number(params.id);
       this.QuesTitle = Ques.title;
       this.QuesText = Ques.Text;
       // console.log(this.QuesId)
@@ -907,6 +907,9 @@ export default {
     getQuestionnaire(){
       console.log(typeof this.QuesId)
       console.log(this.QuesId)
+
+      this.QuesId = Number(this.$route.query.id)
+
       // 获取问卷
       request({
         url: '/question/questionnaireID',
@@ -931,18 +934,18 @@ export default {
   mounted() {
     this.Questionnaire.id = this.QuesId
 
-    if (localStorage.QuesId){
-      this.QuesId = Number(localStorage.QuesId);
-      // console.log(this.QuesId)
-    }
-
-    if (localStorage.QuesTitle){
-      this.QuesTitle = localStorage.QuesTitle
-    }
-
-    if (localStorage.QuesText){
-      this.QuesText = localStorage.QuesText
-    }
+    // if (localStorage.QuesId){
+    //   this.QuesId = Number(localStorage.QuesId);
+    //   // console.log(this.QuesId)
+    // }
+    //
+    // if (localStorage.QuesTitle){
+    //   this.QuesTitle = localStorage.QuesTitle
+    // }
+    //
+    // if (localStorage.QuesText){
+    //   this.QuesText = localStorage.QuesText
+    // }
   },
 
   created() {
@@ -985,320 +988,335 @@ export default {
 </script>
 
 <style scoped>
-  .designPage {
-    width: 100vw;
-    height: 100vh;
-    background-color: #E6E6E6;
-  }
-  .designNav {
-    background-color: #380B61;
-    height: 6vh;
-    position: relative;
-  }
+.designPage {
+  width: 100vw;
+  height: 100vh;
+  background-color: #E6E6E6;
+}
+.designNav {
+  background-color: #380B61;
+  height: 6vh;
+  position: relative;
+}
 
-  .designNav .QuesPreview {
-    height: 100%;
-    background-color: white;
-    color: #58ACFA;
-    width: 7%;
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    left: 10%;
-    top: 0;
-    transition: .4s all ease-in-out;
-  }
+.designNav .QuesPreview {
+  height: 100%;
+  background-color: white;
+  color: #58ACFA;
+  width: 7%;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 10%;
+  top: 0;
+  transition: .4s all ease-in-out;
+}
 
-  .designNav .QuesPreview:hover {
-    background-color: #58ACFA;
-    color: white;
-    cursor: pointer;
-  }
+.designNav .QuesPreview:hover {
+  background-color: #58ACFA;
+  color: white;
+  cursor: pointer;
+}
 
-  .designNav .release {
-    height: 100%;
-    width: 10%;
-    color: white;
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: skyblue;
-    position: absolute;
-    top: 0;
-    right: 5%;
-    transition: .4s all ease-in-out;
-  }
+.designNav .release {
+  height: 100%;
+  width: 10%;
+  color: white;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: skyblue;
+  position: absolute;
+  top: 0;
+  right: 5%;
+  transition: .4s all ease-in-out;
+}
 
-  .designNav .release:hover {
-    background-color: white;
-    color: #58ACFA;
-    cursor: pointer;
-  }
+.designNav .release:hover {
+  background-color: white;
+  color: #58ACFA;
+  cursor: pointer;
+}
 
-  .designContent {
-    width: 80vw;
+.designContent {
+  width: 80vw;
 
-    box-sizing: border-box;
-    height: 94vh;
-    /*background-color: white;*/
-    padding-top: 10px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 2fr 7fr;
-    column-gap: 15px;
-  }
+  box-sizing: border-box;
+  height: 94vh;
+  /*background-color: white;*/
+  padding-top: 10px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 7fr;
+  column-gap: 15px;
+}
 
-  .designContent .designComponent {
-    background-color: white;
-    box-sizing: border-box;
-    height: 92vh;
-    box-shadow: 0 0 10px rgba(0,0,0,.2);
-    /*box-sizing: border-box;*/
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
+.designContent .designComponent {
+  background-color: white;
+  box-sizing: border-box;
+  height: 92vh;
+  box-shadow: 0 0 10px rgba(0,0,0,.2);
+  /*box-sizing: border-box;*/
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-  .designContent .designComponent .ShowCntl {
-    /*background-color: pink;*/
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 7%;
-    font-weight: 600;
-  }
+.designContent .designComponent .ShowCntl {
+  /*background-color: pink;*/
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 7%;
+  font-weight: 600;
+}
 
-  .designContent .designComponent .ShowCntl div {
-    width: 50%;
-    height: 70%;
-    box-sizing: border-box;
-    transition: .4s;
-  }
+.designContent .designComponent .ShowCntl div {
+  width: 50%;
+  height: 70%;
+  box-sizing: border-box;
+  transition: .4s;
+}
 
-  .designContent .designComponent .ShowCntl div:hover {
-    cursor: pointer;
-  }
+.designContent .designComponent .ShowCntl div:hover {
+  cursor: pointer;
+}
 
-  .designContent .designComponent .ShowCntl .active {
-    border-bottom: 2px solid #A4A4A4;
-    color: #CC2EFA;
-    box-sizing: border-box;
-    transition: .4s;
-  }
+.designContent .designComponent .ShowCntl .active {
+  border-bottom: 2px solid #A4A4A4;
+  color: #CC2EFA;
+  box-sizing: border-box;
+  transition: .4s;
+}
 
-  .designContent .designComponent .components {
-    /*background-color: greenyellow;*/
-    height: 90%;
-  }
+.designContent .designComponent .components {
+  /*background-color: greenyellow;*/
+  height: 90%;
+}
 
-  .designContent .designComponent .components .choices {
-    /*background-color: pink;*/
-    /*height: 20%;*/
-  }
+.designContent .designComponent .components .choices {
+  /*background-color: pink;*/
+  /*height: 20%;*/
+}
 
-  .designContent .designComponent .components .choices .title {
-    width: 100%;
-    /*background-color: blue;*/
-    height: 50px;
-    text-align: left;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-  }
+.designContent .designComponent .components .choices .title {
+  width: 100%;
+  /*background-color: blue;*/
+  height: 50px;
+  text-align: left;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
 
-  .designContent .designComponent .components .choices ul {
-    display: flex;
-    justify-content: space-around;
-    /*height: 70%;*/
-    flex-direction: column;
-    /*align-content: space-around;*/
-  }
-  .designContent .designComponent .components .choices ul li {
-    width: 100%;
-    height: 40px;
-    /*background-color: red;*/
-    text-align: left;
-    margin-left: 20px;
+.designContent .designComponent .components .choices ul {
+  display: flex;
+  justify-content: space-around;
+  /*height: 70%;*/
+  flex-direction: column;
+  /*align-content: space-around;*/
+}
+.designContent .designComponent .components .choices ul li {
+  width: 100%;
+  height: 40px;
+  /*background-color: red;*/
+  text-align: left;
+  margin-left: 20px;
 
-  }
+}
 
-  .designContent .designComponent .components .choices ul li:hover {
-    color: #58ACFA;
-    cursor: pointer;
-  }
-
-
-  .designContent .designComponent .outline {
-    /*background-color: skyblue;*/
-    height: 90%;
-  }
-
-  .designContent .designComponent .outline .outlineItem {
-    height: 30px;
-    border-bottom: 1px solid rgba(0,0,0,.2);
-    line-height: 30px;
-    text-align: start;
-    transition: .4s;
-
-  }
-
-  .designContent .designComponent .outline .outlineItem:hover {
-    cursor: pointer;
-    color: #58ACFA;
-    font-weight: 500;
-
-  }
-
-  .designContent .designPreview {
-    /*background-color: blue;*/
-    box-sizing: border-box;
-    height: 92vh;
-    /*position: relative;*/
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0,0,0,.2);
-  }
+.designContent .designComponent .components .choices ul li:hover {
+  color: #58ACFA;
+  cursor: pointer;
+}
 
 
-  .designContent .designPreview  .QuesBase {
-    width: 100%;
-    height: 20%;
-    background-color: white;
-    border-bottom: 1px solid #BDBDBD;
-    /*box-shadow: 10px 10px 10px rgba(0,0,0,.7);*/
-    padding-top: 20px ;
-    position: relative;
-    box-sizing: border-box;
-  }
+.designContent .designComponent .outline {
+  /*background-color: skyblue;*/
+  height: 90%;
+}
 
-  .designContent .designPreview  .QuesBase .QuesTitle {
-    font-size: 22px;
-    color: #A4A4A4;
-    font-weight: 600;
-  }
+.designContent .designComponent .outline .outlineItem {
+  height: 30px;
+  border-bottom: 1px solid rgba(0,0,0,.2);
+  line-height: 30px;
+  text-align: start;
+  transition: .4s;
 
-  .designContent .designPreview  .QuesBase .QuesIntro {
-    /*background-color: #58ACFA;*/
-    width: 40%;
-    height: 30%;
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    text-align: left;
-    font-size: 20px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    color: #A4A4A4;
-  }
+}
 
-  .designContent .designPreview  .QuesBase .AutoNumSwitch {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-  }
+.designContent .designComponent .outline .outlineItem:hover {
+  cursor: pointer;
+  color: #58ACFA;
+  font-weight: 500;
 
-  .designContent .designPreview .None {
-    background-color: #F2F2F2;
-    width: 100%;
-    height: 90vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
+}
 
-  }
+.designContent .designPreview {
+  /*background-color: blue;*/
+  box-sizing: border-box;
+  height: 92vh;
+  /*position: relative;*/
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,.2);
+}
 
-  .designContent .designPreview .None .empty_pic {
-    width: 50%;
-    height: 50%;
 
-  }
+.designContent .designPreview  .QuesBase {
+  width: 100%;
+  height: 20%;
+  background-color: white;
+  border-bottom: 1px solid #BDBDBD;
+  /*box-shadow: 10px 10px 10px rgba(0,0,0,.7);*/
+  padding-top: 20px ;
+  position: relative;
+  box-sizing: border-box;
+}
 
-  .designContent .designPreview .None .empty_pic img {
-    width: 100%;
-    height: 100%;
+.designContent .designPreview  .QuesBase .QuesTitle {
+  font-size: 22px;
+  color: #A4A4A4;
+  font-weight: 600;
+}
 
-  }
+.designContent .designPreview  .QuesBase .QuesIntro {
+  /*background-color: #58ACFA;*/
+  width: 40%;
+  height: 30%;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  text-align: left;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  color: #A4A4A4;
+}
 
-  .designContent .designPreview .None .empty_font {
-    width: 100%;
-    font-size: 30px;
-    font-weight: 600;
-    color: #6E6E6E;
-    height: 40%;
-  }
+.designContent .designPreview  .QuesBase .AutoNumSwitch {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
 
-  .designContent .designPreview .QuesList {
-    width: 100%;
-    padding-bottom: 138px;
-  }
+.designContent .designPreview .None {
+  background-color: #F2F2F2;
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 
-  .designContent .designPreview .QuesList .QuesItem {
-    width: 100%;
-    min-height: 130px;
-    padding-top: 20px;
-    padding-bottom: 10%;
-    padding-left: 25px;
-    padding-right: 25px;
-    /*margin: 20px 0;*/
-    background-color: white;
-    border-bottom: 1px solid #BDBDBD;
-    position: relative;
+}
 
-    z-index: 44;
-  }
+.designContent .designPreview .None .empty_pic {
+  width: 50%;
+  height: 50%;
 
-  .designContent .designPreview .QuesList .QuesItem .options {
-    /*background-color: #58ACFA;*/
-    width: 100%;
-    height: 10%;
-    position: absolute;
-    padding-right: 30px;
+}
 
-    bottom: 25px;
-    /*display: none;*/
-    display: flex;
+.designContent .designPreview .None .empty_pic img {
+  width: 100%;
+  height: 100%;
 
-    justify-content: space-around;
-  }
+}
 
-  .designContent .designPreview .QuesList .QuesItem .options ul {
-    width: 70%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-left: 350px;
-  }
+.designContent .designPreview .None .empty_font {
+  width: 100%;
+  font-size: 30px;
+  font-weight: 600;
+  color: #6E6E6E;
+  height: 40%;
+}
 
-  .designContent .designPreview .QuesList .QuesItem .options ul li {
-    height: 25px;
-    width: 20%;
-    display: inline-block;
-    line-height: 25px;
-    background-color: pink;
-    border-radius: 10px;
-    box-shadow: 0 0 5px rgba(0,0,0,.5);
-    color: white;
-    transition: .4s;
-    font-size: 16px;
-  }
+.designContent .designPreview .QuesList {
+  width: 100%;
+  padding-bottom: 138px;
+}
 
-  .designContent .designPreview .QuesList .QuesItem .options ul li:hover {
-    cursor: pointer;
-    /*border: 1px solid #2E9AFE;*/
-    background-color: #58ACFA;
-    transform: scale(1.2);
-    font-weight: 600;
-    /*background-image: linear-gradient(to left,#00FFFF,#01A9DB);*/
-    color: white;
-  }
+.designContent .designPreview .QuesList .QuesItem {
+  width: 100%;
+  min-height: 130px;
+  padding-top: 20px;
+  padding-bottom: 10%;
+  padding-left: 25px;
+  padding-right: 25px;
+  /*margin: 20px 0;*/
+  background-color: white;
+  border-bottom: 1px solid #BDBDBD;
+  position: relative;
 
-  .designContent .designPreview .QuesList .QuesItem:hover {
-    cursor: move;
-  }
+  z-index: 44;
+}
+
+.designContent .designPreview .QuesList .QuesItem .options {
+  /*background-color: #58ACFA;*/
+  width: 100%;
+  height: 10%;
+  position: absolute;
+  padding-right: 30px;
+
+  bottom: 25px;
+  /*display: none;*/
+  display: flex;
+
+  justify-content: space-around;
+}
+
+.designContent .designPreview .QuesList .QuesItem .options ul {
+  width: 70%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-left: 350px;
+}
+
+.designContent .designPreview .QuesList .QuesItem .options ul li {
+  height: 25px;
+  width: 20%;
+  display: inline-block;
+  line-height: 25px;
+  background-color: pink;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0,0,0,.5);
+  color: white;
+  transition: .4s;
+  font-size: 16px;
+}
+
+.designContent .designPreview .QuesList .QuesItem .options ul li:hover {
+  cursor: pointer;
+  /*border: 1px solid #2E9AFE;*/
+  background-color: #58ACFA;
+  transform: scale(1.2);
+  font-weight: 600;
+  /*background-image: linear-gradient(to left,#00FFFF,#01A9DB);*/
+  color: white;
+}
+
+.designContent .designPreview .QuesList .QuesItem:hover {
+  cursor: move;
+}
+span[class=yesLogo]::after{
+  font-size: 20px;
+  line-height: 20px;
+  vertical-align: middle;
+  font-family: icomoon;
+  content: '\e927';
+}
+span[class=prevLogo]::after{
+   font-size: 20px;
+   line-height: 20px;
+   vertical-align: middle;
+   font-family: icomoon;
+   content: '\e9ce';
+ }
+
 
 </style>

@@ -96,21 +96,6 @@ export default {
     }
   },
   methods:{
-    setCookie(name,value)
-      {
-        var Days = 30;//过期时间30天为例
-        var exp = new Date();
-        exp.setTime(exp.getTime() + Days*24*60*60*1000);
-        document.cookie = name + "="+ escape (value) + ";expires=" +
-        exp.toGMTString();
-      },
-    getCookie(name) {
-      var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
-      if (arr === document.cookie.match(reg))
-        return unescape(arr[2]);
-      else
-        return null;
-    },
 
 Login(){
       console.log(this.loginForm)
@@ -134,6 +119,8 @@ Login(){
             type: 'success'
           });
           window.sessionStorage.setItem('isLogin', 'true');
+          window.sessionStorage.setItem('username', this.loginForm.username);
+          window.sessionStorage.setItem('passwd', this.loginForm.passwd);
           request({
             url: '/user/getinfo/',
             method: 'post',
@@ -142,6 +129,7 @@ Login(){
             }
           }).then(res2=>{
             this.$store.commit('getEmail',res2.data.userinfo.email);
+            window.sessionStorage.setItem('email', res2.data.userinfo.email);
           })
           this.$router.push('/Management')
         }

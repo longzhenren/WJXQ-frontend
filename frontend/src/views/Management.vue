@@ -27,6 +27,15 @@ export default {
     All,
     Rec,
     Star,
+  },
+  created(){
+    if(window.sessionStorage.getItem('isLogin')){
+      let username=window.sessionStorage.getItem('username');
+      let passwd=window.sessionStorage.getItem('passwd')
+      let email=window.sessionStorage.getItem('email')
+      this.$store.commit("login",username,passwd);
+      this.$store.commit('getEmail',email);
+    }
   }
 }
 </script>

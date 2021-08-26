@@ -1,6 +1,6 @@
 <template>
   <div class="questionnaireRelease">
-<!--    侧边菜单-->
+    <!--    侧边菜单-->
     <div class="releaseMenu">
       <ul class="menuItems">
         <li class="menuItem" @click="backToDesign">
@@ -29,13 +29,13 @@
           <div>返回首页</div>
         </li>
 
-<!--        <li class="menuItem">-->
+        <!--        <li class="menuItem">-->
 
-<!--        </li>-->
+        <!--        </li>-->
       </ul>
     </div>
 
-<!--    顶部导航栏-->
+    <!--    顶部导航栏-->
     <div class="topNav">
       <ul v-if="$store.state.leftMenuCurrent===0">
         <!--      问卷状态-->
@@ -85,13 +85,13 @@
 
 
         <div class="check">
-<!--          查看历史记录-->
-          <div class="checkHistory">
-            <span>发布记录</span>
-            <span>可以查看问卷的发布历史记录</span>
-          </div>
+          <!--          查看历史记录-->
+<!--          <div class="checkHistory">-->
+<!--            <span>发布记录</span>-->
+<!--            <span>可以查看问卷的发布历史记录</span>-->
+<!--          </div>-->
 
-<!--          导出-->
+          <!--          导出-->
           <div class="export" @click="exportDocument">
             <span>导出到word</span>
             <span>可以将编辑好的问卷导出word</span>
@@ -123,9 +123,9 @@
         <div class="erweima">
           <div class="intro">点击二维码即可下载分享</div>
           <QRCode ref="Myqrcode"
-            :urlpath="QuesLink"
-            :code-height="150"
-            :code-width="150"></QRCode>
+                  :urlpath="QuesLink"
+                  :code-height="150"
+                  :code-width="150"></QRCode>
         </div>
 
 
@@ -145,9 +145,9 @@
 
 
     <el-dialog
-        title="提示"
-        :visible.sync="dialogVisible"
-        width="30%">
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="30%">
       <span>现在返回设计页面会关闭问卷，确认返回吗？</span>
       <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
@@ -183,7 +183,7 @@ export default {
       QuesId: 0,
 
       // 得到的问卷
-        DesignedQuestionnaire: {},
+      DesignedQuestionnaire: {},
 
       // 顶部菜单计数器
       topNavCurrent: 0,
@@ -198,9 +198,9 @@ export default {
         {
           title: '问卷预览',
         },
-        {
-          title: '问卷设置',
-        }
+        // {
+        //   title: '问卷设置',
+        // }
       ],
 
       sendTopNavData: [
@@ -228,13 +228,13 @@ export default {
       })
     },
 
-
-    // 将问卷导出为word
+// 将问卷导出为word
     exportDocument(){
       let  pra = {
         username: this.$store.state.personalInfo.username,
         id: this.QuesId
       }
+
       request({
         url:'/question/exportQuestionnaire',
         method:'post',
@@ -242,7 +242,12 @@ export default {
         responseType: "blob"
       }).then(res=>{
         console.log(res)
-        this.download(res);
+        if ( res.data.Message ){
+        }
+        else {
+          this.download(res);
+        }
+
       }).catch(err=>{
         console.log()
       })
@@ -438,13 +443,16 @@ export default {
     acceptDesignedQuestionnaire(Questionnaire){
       let params = this.$route.query;
       this.DesignedQuestionnaire = Questionnaire
-      this.QuesId = Questionnaire.id===0?Number(params.id):Questionnaire.id
-       localStorage.QuesId = this.QuesId
+      this.QuesId = Number(params.id)===0?Questionnaire.id:Number(params.id);
+      // this.QuesId = ===0?Number(params.id):Questionnaire.id
+      localStorage.QuesId = this.QuesId
     },
     // 向后端发送请求接受问卷信息
     getDesignedQuestionnaire(){
       // 获取问卷
-      console.log(this.QuesId)
+
+      this.QuesId = Number(this.$route.query.id);
+      localStorage.QuesId = this.QuesId
       request({
         url: '/question/questionnaireID',
         method: 'get',
@@ -466,10 +474,10 @@ export default {
 
   },
   mounted() {
-    if (localStorage.QuesId){
-      this.QuesId = Number(localStorage.QuesId);
-      // console.log(this.QuesId)
-    }
+    // if (localStorage.QuesId){
+    //   this.QuesId = Number(localStorage.QuesId);
+    //   // console.log(this.QuesId)
+    // }
   },
   beforeDestroy() {
     bus.$emit('backToDesign',this.DesignedQuestionnaire)
@@ -816,48 +824,40 @@ export default {
     content: '\e902';
   }
   span[class=stateLogo]::after{
-    font-size: 30px;
-    line-height: 30px;
+    font-size: 40px;
+    line-height: 20px;
     vertical-align: middle;
     font-family: icomoon;
     content: '\e937';
   }
   span[class=prevLogo]::after{
-    font-size: 30px;
-    line-height: 30px;
+    font-size: 40px;
+    line-height: 20px;
     vertical-align: middle;
     font-family: icomoon;
     content: '\e9ce';
   }
   span[class=setLogo]::after{
-    font-size: 30px;
-    line-height: 30px;
+    font-size: 40px;
+    line-height: 20px;
     vertical-align: middle;
     font-family: icomoon;
     content: '\e939';
   }
   span[class=linkLogo]::after{
-     font-size: 50px;
-     line-height: 70px;
+     font-size: 40px;
+     line-height: 20px;
      vertical-align: middle;
      font-family: icomoon;
      content: '\e93b';
   }
   span[class=prev2Logo]::after{
-      font-size: 50px;
-      line-height: 70px;
+      font-size: 40px;
+      line-height: 20px;
       vertical-align: middle;
       font-family: icomoon;
       content: '\e9ce';
     }
-  {
-    font-family: icomoon;
-    content: 'e93b';
-  }
-  {
-    font-family: icomoon;
-    content: '\e935';
-  }
 
 
 

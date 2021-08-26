@@ -84,7 +84,7 @@
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
     <div class="bottom">
-        <el-link type="info" href="/">问卷星球&nbsp;</el-link>
+      <el-link type="info" href="/">问卷星球&nbsp;</el-link>
     </div>
   </div>
 </template>
@@ -97,6 +97,8 @@ export default {
     return {
       ip: "",
       id: this.$route.params.id,
+      questionnaireID: 0,
+      submissionID: 0,
       Title: "",
       ShowNumber: true,
       Text: "",
@@ -120,53 +122,83 @@ export default {
       if (flag == false) this.$message.error("请回答所有带*题目");
       //向后端发送答案（按题分类）
       else {
-        for (q in this.Question) {
-          let i = this.Question[q];
-          if (i.Type == 1)
-            request({
-              url: "/submit/savans",
-              method: "post",
-              headers: { "Content-Type": "application/json" },
-              data: {
-                submissionID: this.id,
-                questionID: i.id,
-                answerSelectionIDSet: [i.RadioValue],
-              },
-            });
-          if (i.Type == 2)
-            request({
-              url: "/submit/savans",
-              method: "post",
-              headers: { "Content-Type": "application/json" },
-              data: {
-                submissionID: this.id,
-                questionID: i.id,
-                answerSelectionIDSet: i.CheckList,
-              },
-            });
-          if (i.Type == 3)
-            request({
-              url: "/submit/savans",
-              method: "post",
-              headers: { "Content-Type": "application/json" },
-              data: {
-                submissionID: this.id,
-                questionID: i.id,
-                answerSelectionIDSet: i.Answer,
-              },
-            });
-          if (i.Type == 4)
-            request({
-              url: "/submit/savans",
-              method: "post",
-              headers: { "Content-Type": "application/json" },
-              data: {
-                submissionID: this.id,
-                questionID: i.id,
-                answerSelectionIDSet: i.Score,
-              },
-            });
-        }
+        //创建问卷
+        request({
+          url: "/submit/crtsub",
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          data: {
+            submitUID: this.ip,
+            questionnaireID: this.questionnaireID,
+          },
+        }).then((res) => {
+          console.log(res);
+          this.submissionID = res.data.submissionID;
+          console.log(this.submissionID);
+          for (q in this.Question) {
+            console.log(this.submissionID);
+            let i = this.Question[q];
+            if (i.Type == 1) {
+              request({
+                url: "/submit/savans",
+                method: "post",
+                headers: { "Content-Type": "application/json" },
+                data: {
+                  submissionID: this.submissionID,
+                  questionID: i.id,
+                  answerSelectionIDSet: [i.RadioValue],
+                },
+              }).then((res) => {
+                console.log(res);
+              });
+            }
+            if (i.Type == 2)
+              request({
+                url: "/submit/savans",
+                method: "post",
+                headers: { "Content-Type": "application/json" },
+                data: {
+                  submissionID: this.submissionID,
+                  questionID: i.id,
+                  answerSelectionIDSet: i.CheckList,
+                },
+              });
+            if (i.Type == 3)
+              request({
+                url: "/submit/savans",
+                method: "post",
+                headers: { "Content-Type": "application/json" },
+                data: {
+                  submissionID: this.submissionID,
+                  questionID: i.id,
+                  answerText: i.Answer,
+                },
+              });
+            if (i.Type == 4)
+              request({
+                url: "/submit/savans",
+                method: "post",
+                headers: { "Content-Type": "application/json" },
+                data: {
+                  submissionID: this.submissionID,
+                  questionID: i.id,
+                  answerScore: i.Score,
+                },
+              });
+            console.log(i.id);
+          }
+          request({
+            url: "/submit/submit",
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            data: {
+              submissionID: this.submissionID,
+            },
+          }).then(res=>{console.log(res.data);})
+        });
+
+        //最终提交
+
         this.$message.success("提交成功");
       }
     },
@@ -180,7 +212,6 @@ export default {
     //获取客户ip
     this.ip = localStorage.getItem("Ip");
     console.log(this.ip);
-
     let  pra;
     if (this.$route.query.Mode===undefined){
       pra = {
@@ -194,6 +225,7 @@ export default {
         Mode: this.$route.query.Mode,
       }
     }
+
     //加载问卷
     request({
       url: "/question/answerQuestionnaire",
@@ -206,6 +238,7 @@ export default {
         this.Title = Questionnaire.Title;
         this.ShowNumber = Questionnaire.ShowNumber;
         this.Text = Questionnaire.Text;
+        this.questionnaireID = Questionnaire.id;
         //对this.Question[]赋值
         var i;
         for (i in Questionnaire.Question) {
@@ -288,9 +321,6 @@ export default {
 </script>
 
 <style scoped>
-
-
-
 .AnswerQuestionnaire {
   text-align: center;
   padding: 20px;

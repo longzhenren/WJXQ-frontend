@@ -9,7 +9,7 @@
     <div class="TypeList" >
       <ul ref="typelist">
         <li v-for="(item,index) in QuesTypes">
-          <div class="TypeIcon"></div>
+          <div class="TypeIcon"><span class="searchLogo"></span></div>
           <div class="type">
             <div class="title">{{ item.title }}</div>
             <div class="intro">{{ item.intro }}</div>
@@ -305,6 +305,13 @@ export default {
 
 .TypeList ul li .type .confirm:hover {
   cursor: pointer;
+}
+span[class=searchLogo]::after{
+  font-size: 40px;
+  line-height: 20px;
+  vertical-align: middle;
+  font-family: icomoon;
+  content: '\e900';
 }
 
 

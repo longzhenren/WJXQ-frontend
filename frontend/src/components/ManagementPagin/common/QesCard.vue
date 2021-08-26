@@ -59,8 +59,8 @@
                   数据分析<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item  class="el-dropdown-item">查看分析</el-dropdown-item>
-                  <el-dropdown-item class="el-dropdown-item">下载结果</el-dropdown-item>
+<!--                  <el-dropdown-item  class="el-dropdown-item">查看分析</el-dropdown-item>-->
+                  <el-dropdown-item class="el-dropdown-item" @click.native.prevent="exportDocument">下载结果</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
@@ -96,6 +96,45 @@ export default {
     QesInfo:Object,
   },
   methods:{
+    // excel
+    exportDocument(){
+      let  pra = {
+        // username: this.$store.state.personalInfo.username,
+        questionnaireID: this.QesInfo.id
+      }
+
+      request({
+        url:'/submit/report',
+        method:'post',
+        data: pra,
+        responseType: "blob"
+      }).then(res=>{
+        console.log(res)
+        if ( res.data.Message ){
+        }
+        else {
+          this.download(res);
+        }
+
+      }).catch(err=>{
+        console.log()
+      })
+    },
+
+    download(res) {
+      if (!res.data) {
+        return;
+      }
+      let fileName = 'aaa.xls';
+      let url = window.URL.createObjectURL(new Blob([res.data]))
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      link.setAttribute('download', 'data.xlsx')
+
+      document.body.appendChild(link)
+      link.click()
+    },
     linkClicked(){
       if(this.QesInfo.Open){
         this.$store.commit('leftMenuCurrentOne')
