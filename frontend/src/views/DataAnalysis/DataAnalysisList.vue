@@ -31,6 +31,7 @@
             <ChooseAnalyse></ChooseAnalyse>
           </div>
 
+          <el-divider></el-divider>
         </li>
       </ul>
   </div>
@@ -113,7 +114,8 @@ export default {
   width: 100%;
   /*height: 30vh;*/
   border-radius: 10px;
-  border: 1px solid #BDBDBD;
+    box-shadow: 0 0 5px rgba(0,0,0,.4);
+  /*border: 1px solid #BDBDBD;*/
   margin: 10px 0;
 }
 
