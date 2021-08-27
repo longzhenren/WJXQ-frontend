@@ -460,7 +460,7 @@ export default {
           id: this.QuesId
         }
       }).then(res=>{
-        console.log(res);
+        console.log(res)
         if (res.data.Message !== 'No Such Questionnaire'){
           this.DesignedQuestionnaire = res.data.Questionnaire
           console.log(this.DesignedQuestionnaire)

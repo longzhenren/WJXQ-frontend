@@ -103,9 +103,12 @@ export default {
       ShowNumber: true,
       Text: "",
       Question: [],
+      model:'preview'
     };
   },
-
+  props:{
+    qesId:'',
+  },
   methods: {
     //提交
     submit() {
@@ -211,29 +214,35 @@ export default {
   mounted() {
     //获取客户ip
     this.ip = localStorage.getItem("Ip");
-    console.log(this.ip);
+    // console.log(this.ip);
     let  pra;
-    if (this.$route.query.Mode===undefined){
+    if(this.qesId===undefined){
+      if (this.$route.query.Mode===undefined){
+        pra = {
+          EncodeID: this.id,
+          Mode: '',
+        }
+      }
+      else {
+        pra = {
+          EncodeID: this.id,
+          Mode: this.$route.query.Mode,
+        }
+      }
+    }else {
       pra = {
-        EncodeID: this.id,
-        Mode: '',
+        EncodeID: this.qesId,
+        Mode: this.model,
       }
     }
-    else {
-      pra = {
-        EncodeID: this.id,
-        Mode: this.$route.query.Mode,
-      }
-    }
-
     //加载问卷
     request({
       url: "/question/answerQuestionnaire",
       method: "post",
       data: pra
-    })
-      .then((res) => {
-        console.log(res);
+    }).then((res) => {
+      // console.log(pra.EncodeID)
+      //   console.log(res)
         var Questionnaire = res.data.Questionnaire;
         this.Title = Questionnaire.Title;
         this.ShowNumber = Questionnaire.ShowNumber;
@@ -311,7 +320,7 @@ export default {
           }
         }
         this.Question.sort(this.sortRule);
-        console.log(this.Question);
+        // console.log(this.Question);
       })
       .catch((err) => {
         console.log(err);

@@ -1,17 +1,8 @@
 <template>
   <div class="search">
     <h3 id="title">问卷列表</h3>
-    <el-dropdown @command="handleCommand1" id="order">
-      <span class="el-dropdown-link">
-        {{order}}<i class="el-icon-arrow-down el-icon--right"></i>
-     </span>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="a">时间正序</el-dropdown-item>
-        <el-dropdown-item command="b">时间倒序</el-dropdown-item>
-        <el-dropdown-item command="c">答卷正序</el-dropdown-item>
-        <el-dropdown-item command="d">答卷倒序</el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
+    <input type="text" v-model="key" placeholder="输入问卷名以进行搜索">
+    <button class="searchLogo" @click="search"></button>
 
     <el-dropdown @command="handleCommand2" id="state">
       <span class="el-dropdown-link">
@@ -24,8 +15,18 @@
       </el-dropdown-menu>
     </el-dropdown>
 
-    <input type="text" v-model="key" placeholder="输入问卷名以进行搜索">
-    <button class="searchLogo" @click="search"></button>
+    <el-dropdown @command="handleCommand1" id="order">
+      <span class="el-dropdown-link">
+        {{order}}<i class="el-icon-arrow-down el-icon--right"></i>
+     </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item command="a">时间倒序</el-dropdown-item>
+        <el-dropdown-item command="b">时间正序</el-dropdown-item>
+        <el-dropdown-item command="c">答卷倒序</el-dropdown-item>
+        <el-dropdown-item command="d">答卷正序</el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+
   </div>
 </template>
 
@@ -34,7 +35,7 @@ export default {
   name: "Search",
   data(){
     return{
-      order:'时间正序',
+      order:'时间倒序',
       state:'状态',
       key:''
     }
@@ -43,40 +44,40 @@ export default {
     handleCommand1(command){
       if(this.$store.state.currentChoose===1){//在所有问卷
         if(command==='a'){
-          this.order='时间正序';
-          this.$store.commit('manageTimePos')
-          this.$parent.timePos();
-        }else if(command==='b'){
-          this.order='时间倒序'
+          this.order='时间倒序';
           this.$store.commit('manageTimeNeg')
           this.$parent.timeNeg();
+        }else if(command==='b'){
+          this.order='时间正序'
+          this.$store.commit('manageTimePos')
+          this.$parent.timePos();
         }else if(command==='c'){
-          this.order='答卷正序'
-          this.$store.commit('manageSubPos')
-          this.$parent.subPos();
-        }else if(command==='d'){
           this.order='答卷倒序';
           this.$store.commit('manageSubNeg')
           this.$parent.subNeg();
+        }else if(command==='d'){
+          this.order='答卷正序'
+          this.$store.commit('manageSubPos')
+          this.$parent.subPos();
         }
       }
       else if(this.$store.state.currentChoose===2){//在星标问卷
         if(command==='a'){
-          this.order='时间正序';
-          this.$store.commit('manageTimePos')
-          this.$parent.timePosStar();
-        }else if(command==='b'){
           this.order='时间倒序'
           this.$store.commit('manageTimeNeg')
           this.$parent.timeNegStar();
+        }else if(command==='b'){
+          this.order='时间正序';
+          this.$store.commit('manageTimePos')
+          this.$parent.timePosStar();
         }else if(command==='c'){
-          this.order='答卷正序'
-          this.$store.commit('manageSubPos')
-          this.$parent.subPosStar();
-        }else if(command==='d'){
           this.order='答卷倒序';
           this.$store.commit('manageSubNeg')
           this.$parent.subNegStar();
+        }else if(command==='d'){
+          this.order='答卷正序'
+          this.$store.commit('manageSubPos')
+          this.$parent.subPosStar();
         }
       }
     },
@@ -108,15 +109,15 @@ export default {
 #order{
   font-size: 10px;
   display: inline-block;
-  float: left;
+  float: right;
   margin-top: 10px;
-  margin-left: 45%;
+  margin-right:1%;
 }
 #state{
   font-size: 10px;
   display: inline-block;
-  float: left;
-  margin-left: 1%;
+  float: right;
+  margin-right: 4%;
   margin-top: 10px;
 }
 input{
@@ -133,7 +134,7 @@ button[class=searchLogo]::after{
   line-height: 70px;
   font-family: icomoon;
   content: '\f002';
-  top:-20px;
-  right: 10px;
+  top:50px;
+  right: 15.5%;
 }
 </style>

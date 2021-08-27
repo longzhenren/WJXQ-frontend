@@ -212,8 +212,9 @@ Login(){
   background-color: white;
   top: 20%;
   height: 450px;
-  width: 28%;
-  left: 35%;
+  width: 400px;
+  left: 50%;
+  margin-left: -200px;
   border-radius: 5%;
 }
 #mainBody:hover{
@@ -266,7 +267,6 @@ Login(){
   width: 300px;
   height: 40px;
   margin-top: 60px;
-  margin-left: 70px;
   background-color: orange;
   font-size:16px ;
   color: white;

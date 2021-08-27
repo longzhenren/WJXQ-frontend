@@ -40,6 +40,7 @@
                 </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item class="el-dropdown-item" @click.native.prevent="encodeClicked">编辑问卷</el-dropdown-item>
+                    <el-dropdown-item class="el-dropdown-item" @click.native.prevent="modelShow=true">预览问卷</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </div>
@@ -59,8 +60,9 @@
                   数据分析<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item  class="el-dropdown-item">查看分析</el-dropdown-item>
-                    <el-dropdown-item class="el-dropdown-item">下载结果</el-dropdown-item>
+<!--                    <el-dropdown-item  class="el-dropdown-item">查看分析</el-dropdown-item>-->
+                    <el-dropdown-item class="el-dropdown-item" @click.native.prevent="exportDocumentExcel">下载excel</el-dropdown-item>
+                    <el-dropdown-item class="el-dropdown-item" @click.native.prevent="exportDocumentWord">下载word</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </div>
@@ -77,18 +79,91 @@
       </div>
 
     </div>
+    <Model :show="modelShow"  @hideModal="hideModal" :QesInfo="QesInfo"/>
   </div>
 </template>
 
 <script>
+import Model from "@/components/ManagementPagin/common/Model.vue";
 import {request} from "../../../network/request";
 
 export default {
   name: "QesCard",
+  data(){
+    return{
+      modelShow:false,
+    }
+  },
   props:{
     QesInfo:Object,
   },
-  methods:{
+  components:{
+    Model
+  },
+  methods:{// 关闭弹窗
+    hideModal() {
+      this.modelShow = false;
+    },
+    // 将问卷导出为word
+    exportDocumentWord(){
+      let  pra = {
+        username: this.$store.state.personalInfo.username,
+        id: this.QesInfo.id
+      }
+
+      request({
+        url:'/question/exportQuestionnaire',
+        method:'post',
+        data: pra,
+        responseType: "blob"
+      }).then(res=>{
+        console.log(res)
+        if ( res.data.Message ){
+        }
+        else {
+          this.download(res);
+        }
+
+      }).catch(err=>{
+        console.log()
+      })
+    },
+    // excel
+    exportDocumentExcel(){
+      let  pra = {
+        // username: this.$store.state.personalInfo.username,
+        questionnaireID: this.QesInfo.id
+      }
+      request({
+        url:'/submit/report',
+        method:'post',
+        data: pra,
+        responseType: "blob"
+      }).then(res=>{
+        console.log(res)
+        if ( res.data.Message ){
+        }
+        else {
+          this.download(res);
+        }
+
+      }).catch(err=>{
+        console.log()
+      })
+    },
+    download(res) {
+      if (!res.data) {
+        return;
+      }
+      let fileName = 'aaa.xls';
+      let url = window.URL.createObjectURL(new Blob([res.data]))
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      link.setAttribute('download', 'data.xlsx')
+      document.body.appendChild(link)
+      link.click()
+    },
     linkClicked(){
       if(this.QesInfo.Open){
         this.$store.commit('leftMenuCurrentOne')
