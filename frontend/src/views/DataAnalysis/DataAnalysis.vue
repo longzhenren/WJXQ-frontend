@@ -30,13 +30,13 @@
             </div>
             <div>查看下载</div>
           </li>
-          <li @click="changePos(2)" :class="{active: currentPos===2}">
-            <div class="icon">
-              <img src="../../assets/SVG/stats.svg" alt="答案来源分析">
-            </div>
+<!--          <li @click="changePos(2)" :class="{active: currentPos===2}">-->
+<!--            <div class="icon">-->
+<!--              <img src="../../assets/SVG/stats.svg" alt="答案来源分析">-->
+<!--            </div>-->
 
-            <div>答案来源分析</div>
-          </li>
+<!--            <div>答案来源分析</div>-->
+<!--          </li>-->
         </ul>
       </div>
 
@@ -97,9 +97,8 @@
 
       <div class="AnalysisPage" ref="AnalysisPage">
         <div class="QuestionsIndexAnalysis" v-if="switchMode===0">
-          <el-tabs type="border-card">
-
-            <el-tab-pane>
+          <el-tabs type="border-card" @tab-click="isShowQuick">
+            <el-tab-pane name="0">
               <span slot="label">
                 <i class="el-icon-s-order"></i> 标准报告
               </span>
@@ -114,32 +113,67 @@
                   </div>
 
                   <el-divider></el-divider>
+
                   <DataAnalysisList
                       :questions="Questionnaire.Question"
                     :father-need-show-questions="NeedShowQuestions"></DataAnalysisList>
                 </vue-scroll>
+
+
               </div>
+
 
             </el-tab-pane>
 
-
-            <el-tab-pane>
+            <el-tab-pane name="1">
               <span slot="label">
                 <i class="el-icon-s-grid"></i> 分类筛查
               </span>
               <classification :questions="Questionnaire.Question"></classification>
             </el-tab-pane>
 
-            <el-tab-pane>
+            <el-tab-pane name="2">
               <span slot="label">
                 <i class="el-icon-s-data"></i> 交叉统计
               </span>
-              交叉统计
+<!--              交叉统计-->
+              <CrossAnalysis
+              :questions="Questionnaire.Question"></CrossAnalysis>
             </el-tab-pane>
-
           </el-tabs>
+
+          <div class="quickNav" v-if="isShowQuickNav">
+            <div class="toTop" @click="ToTop">
+              <i class="el-icon-caret-top"></i>
+              <div>回顶</div>
+            </div>
+            <div class="download">
+              <i class="el-icon-download"></i>
+              <div>报告</div>
+            </div>
+            <div class="toBottom" @click="ToBottom">
+              <i class="el-icon-caret-bottom"></i>
+              <div>到底</div>
+            </div>
+          </div>
+
+
         </div>
+
+
+<!--        <div class="AnswerTable" v-else-if="switchMode===1">-->
+
+<!--        </div>-->
       </div>
+    </div>
+
+    <div class="AnswerTable" v-else-if="currentPos===1">
+      <div class="AnswerNav">
+
+      </div>
+
+
+      <div class="Answers"></div>
     </div>
 
 
@@ -156,18 +190,59 @@
   import {request} from "../../network/request";
 import classification from "./classification";
 import DataAnalysisList from "./DataAnalysisList";
+import CrossAnalysis from "./CrossAnalysis";
 
   export default {
     name: "DataAnalysis",
     components: {
       classification,
-      DataAnalysisList
+      DataAnalysisList,
+      CrossAnalysis
     },
     updated() {
-        this.updateHTMLHeight();
+        // this.updateHTMLHeight();
       // this.changeChart()
+      // this.isShowQuick()
     },
     methods:{
+
+      // // 判断是否显示固定菜单
+      isShowQuick(tab,event){
+          // this.isShowQuickNav = true
+
+        // else
+        if (tab.name === '0'){
+          this.isShowQuickNav = true
+        }
+        else {
+          this.isShowQuickNav = false
+        }
+
+
+      },
+
+      // NotShowQuick(){
+      //   console.log( this.isShowQuickNav)
+      //   this.isShowQuickNav = false
+      // },
+
+      // 回到顶部
+      ToTop(){
+        this.$refs.vs2.scrollTo({
+              y: 0
+            },
+            500,
+            "easeInQuad"
+        )
+      },
+
+
+      // 到底
+      ToBottom(){
+        let length = this.Questionnaire.Question.length;
+        this.IndexNav(length-1)
+      },
+
 
       // 快速导航
       IndexNav(index){
@@ -176,15 +251,18 @@ import DataAnalysisList from "./DataAnalysisList";
         // for (let i = 0; i < index; i++) {
         //   height+=QuesItems[i].clientHeight;
         // }
-        height = QuesItems[index].offsetTop
-        // height-=10*index;
-        // height -= 8;
-        this.$refs.vs2.scrollTo({
-              y: height
-            },
-            500,
-            "easeInQuad"
-        )
+        if (QuesItems){
+          height = QuesItems[index].offsetTop
+          // height-=10*index;
+          // height -= 8;
+          this.$refs.vs2.scrollTo({
+                y: height
+              },
+              500,
+              "easeInQuad"
+          )
+        }
+
 
       },
 
@@ -209,7 +287,7 @@ import DataAnalysisList from "./DataAnalysisList";
         this.$router.push({
           path: '/Management',
           query: {
-            username: this.$store.state.personalInfo.username
+            username: this.$route.query.username
           }
         })
       },
@@ -286,15 +364,15 @@ import DataAnalysisList from "./DataAnalysisList";
         })
       },
 
-      // 刷新页面高度
-      updateHTMLHeight(height){
-        let classify = this.$refs.AnalysisPage;
-        let html = document.documentElement;
-        let body = document.body;
-        console.log(height)
-        console.log(classify.offsetTop)
-        html.style.height = height + classify.offsetTop + 'px';
-      },
+      // // 刷新页面高度
+      // updateHTMLHeight(height){
+      //   let classify = this.$refs.AnalysisPage;
+      //   let html = document.documentElement;
+      //   let body = document.body;
+      //   console.log(height)
+      //   console.log(classify.offsetTop)
+      //   html.style.height = height + classify.offsetTop + 'px';
+      // },
 
     },
 
@@ -303,6 +381,7 @@ import DataAnalysisList from "./DataAnalysisList";
     },
     data(){
       return {
+        isShowQuickNav: true,
 
         // 在问题列表中,对于单个问题需要展示的图表
         QuesDataShowTable: 0,
@@ -573,7 +652,52 @@ body {
     /*background-color: #42b983;*/
     width: 100%;
     height: 100%;
+    position: relative;
   }
+
+/*.dataAndAnalysis .AnalysisPage .AnswerTable {*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  background-color: #42b983;*/
+/*}*/
+
+  .dataAndAnalysis .AnalysisPage .QuestionsIndexAnalysis  .quickNav {
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0,0,0,.5);
+    /*border-radius: 999999px;*/
+    width: 3vw;
+    height: 25vh;
+    position: absolute;
+    top: 0;
+    right: -5vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+.dataAndAnalysis .AnalysisPage .QuestionsIndexAnalysis .quickNav div {
+  height: 7vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  /*background-color: pink;*/
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s all ease-in-out;
+}
+
+.dataAndAnalysis .AnalysisPage .QuestionsIndexAnalysis .quickNav div:hover {
+  background-color: #58ACFA;
+  color: white;
+}
+
+.dataAndAnalysis .AnalysisPage .QuestionsIndexAnalysis .quickNav div i {
+  width: 100%;
+  height: 100%;
+  margin: 2px 0;
+}
 
   .dataAndAnalysis .AnalysisPage .QuestionsIndexAnalysis .normalReport {
     width: 100%;
@@ -669,6 +793,33 @@ body {
     color: rgba(64,0,255,.6);
     font-weight: 600;
   }
+
+  .AnswerTable {
+    width: 100vw;
+    height: 100vh;
+    padding-top: 5%;
+    /*display: flex;*/
+    position: relative;
+    /*justify-content: center;*/
+    /*align-items: center;*/
+    /*background-color: white;*/
+  }
+.AnswerTable .AnswerNav {
+  width: 15vw;
+  height: 50vh;
+  background-color: white;
+  position: absolute;
+  left: 5vw;
+  box-shadow: 0 0 5px rgba(0,0,0,.5);
+}
+
+.AnswerTable .Answers {
+  width: 50%;
+  height: 70%;
+  background-color: #42b983;
+  margin-left: 45vh;
+  /*margin-top: 30%;*/
+}
 
 
 

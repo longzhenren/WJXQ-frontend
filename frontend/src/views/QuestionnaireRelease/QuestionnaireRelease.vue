@@ -15,12 +15,12 @@
           <div>问卷发布</div>
         </li>
 
-        <li class="menuItem"
-            :class="{horzontalActive: $store.state.leftMenuCurrent===1}"
-            @click="changeLeft(1)">
-          <span class="sendLogo"></span>
-          <div>问卷发送</div>
-        </li>
+<!--        <li class="menuItem"-->
+<!--            :class="{horzontalActive: $store.state.leftMenuCurrent===1}"-->
+<!--            @click="changeLeft(1)">-->
+<!--          <span class="sendLogo"></span>-->
+<!--          <div>问卷发送</div>-->
+<!--        </li>-->
 
         <li class="menuItem"
             :class="{horzontalActive: $store.state.leftMenuCurrent===2}"
@@ -49,15 +49,15 @@
         </li>
       </ul>
 
-      <ul v-else-if="$store.state.leftMenuCurrent===1">
-        <li v-for="(item,index) in sendTopNavData"
-            :class="{ active: topNavCurrent===index}"
-            @click="changeTop(index)" >
-          <span v-if="index===0" class="linkLogo"></span>
-          <span v-if="index===1" class="prev2Logo"></span>
-          <div>{{ item.title }}</div>
-        </li>
-      </ul>
+<!--      <ul v-else-if="$store.state.leftMenuCurrent===1">-->
+<!--        <li v-for="(item,index) in sendTopNavData"-->
+<!--            :class="{ active: topNavCurrent===index}"-->
+<!--            @click="changeTop(index)" >-->
+<!--          <span v-if="index===0" class="linkLogo"></span>-->
+<!--          <span v-if="index===1" class="prev2Logo"></span>-->
+<!--          <div>{{ item.title }}</div>-->
+<!--        </li>-->
+<!--      </ul>-->
 
       <div class="quesTitle" @click="ShowQues">
         {{DesignedQuestionnaire.Title}}
@@ -76,12 +76,44 @@
         <div class="disreleasable" v-else>
           此问卷还未设计完成,如果准备就绪,您可以
           <button @click="releaseMyQues">开启问卷</button>
+        </div>
+
+          <div class="link" v-if="DesignedQuestionnaire.Open">
+            <div class="erweima">
+<!--              <div class="intro">点击二维码即可下载分享</div>-->
+              <div class="code">
+                <QRCode ref="Myqrcode"
+                        :urlpath="QuesLink"
+                        :code-height="150"
+                        :code-width="150"></QRCode>
+              </div>
+            </div>
+
+            <div class="generateLink">
+              <div class="title">问卷链接</div>
+              <div class="quesLink">
+                <input id="links" type="text" v-model="QuesLink">
+                <div class="operations">
+                  <button @click="copyLink">复制</button>
+                  <button @click="openQuesLink">打开</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <div class="warning" v-else>
+          <div class="linksWarning">
+            问卷还未发布，发布后才可获取问卷链接
+          </div>
+
+          <div class="tims">
+            根据中国相关法规和主管部门要求，不允许发布与政治、军事、宗教，信仰，民族，人权、民主、国家主权、国家统一、外交事件 等相关的 敏感话题调查，请您谅解！
+          </div>
 
         </div>
 
-        <div class="warning">
-          根据中国相关法规和主管部门要求，不允许发布与政治、军事、宗教，信仰，民族，人权、民主、国家主权、国家统一、外交事件 等相关的 敏感话题调查，请您谅解！
-        </div>
+
+
 
 
         <div class="check">
@@ -119,28 +151,28 @@
 
 
     <div class="send" v-if="$store.state.leftMenuCurrent===1">
-      <div class="link">
-        <div class="erweima">
-          <div class="intro">点击二维码即可下载分享</div>
-          <QRCode ref="Myqrcode"
-            :urlpath="QuesLink"
-            :code-height="150"
-            :code-width="150"></QRCode>
-        </div>
+<!--      <div class="link">-->
+<!--        <div class="erweima">-->
+<!--          <div class="intro">点击二维码即可下载分享</div>-->
+<!--          <QRCode ref="Myqrcode"-->
+<!--            :urlpath="QuesLink"-->
+<!--            :code-height="150"-->
+<!--            :code-width="150"></QRCode>-->
+<!--        </div>-->
 
 
 
-        <div class="generateLink">
-          <div class="title">问卷链接</div>
-          <div class="quesLink">
-            <input id="links" type="text" v-model="QuesLink">
-            <div class="operations">
-              <button @click="copyLink">复制</button>
-              <button @click="openQuesLink">打开</button>
-            </div>
-          </div>
-        </div>
-      </div>
+<!--        <div class="generateLink">-->
+<!--          <div class="title">问卷链接</div>-->
+<!--          <div class="quesLink">-->
+<!--            <input id="links" type="text" v-model="QuesLink">-->
+<!--            <div class="operations">-->
+<!--              <button @click="copyLink">复制</button>-->
+<!--              <button @click="openQuesLink">打开</button>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
 
 
@@ -545,7 +577,7 @@ export default {
 
   .topNav {
     width: 100%;
-    height: 13%;
+    height: 10%;
     position: fixed;
     background-color: white;
     box-shadow: 0 0 10px rgba(0,0,0,.5);
@@ -635,7 +667,7 @@ export default {
 
   }
 
-  .release .status div {
+  .release .status div:first-child {
     background-color: white;
     width: 100%;
     height: 15%;
@@ -646,7 +678,7 @@ export default {
     align-items: center;
     box-shadow: 0 0 6px rgba(2,2,2,.5);
   }
-  .release .status div button {
+  .release .status div:first-child button {
     border: 0;
     outline: none;
     background-color: #FE9A2E;
@@ -657,39 +689,63 @@ export default {
     transition: all .4s ease-in-out;
   }
 
-  .release .status div button:hover {
+  .release .status div:first-child button:hover {
     cursor: pointer;
     background-color: #FFBF00;
   }
 
-  .release .status .warning {
-    background-color: white;
-    width: 100%;
-    height: 25%;
-    padding: 20px 30px;
-    /*padding: 30px 0;*/
-    text-align: left;
-    color: #A4A4A4;
+  /*.release .status .warning {*/
+  /*  background-color: white;*/
+  /*  width: 100%;*/
+  /*  height: 25%;*/
+  /*  padding: 20px 30px;*/
+  /*  !*padding: 30px 0;*!*/
+  /*  text-align: left;*/
+  /*  color: #A4A4A4;*/
+  /*}*/
+
+  .release .status .link div {
+    box-shadow: none;
   }
   .release .status .check {
     background-color: white;
     width: 100%;
     height: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,.5);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 30px 0;
+    padding: 30px 20px;
   }
 
-  .release .status .check div {
+  .release .status .check .checkHistory {
     box-shadow: none;
-    /*background-color: pink;*/
+      display: flex;
+      height: 70px;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: start;
+  }
+
+  .release .status .check .export {
+    padding-left: 10% ;
+    box-shadow: none;
     display: flex;
     height: 70px;
     flex-direction: column;
     justify-content: space-around;
     align-items: start;
   }
+
+  /*.release .status .check div {*/
+  /*  box-shadow: none;*/
+  /*  !*background-color: pink;*!*/
+  /*  display: flex;*/
+  /*  height: 70px;*/
+  /*  flex-direction: column;*/
+  /*  justify-content: space-around;*/
+  /*  align-items: start;*/
+  /*}*/
 
   .release .settings {
 
@@ -713,39 +769,66 @@ export default {
     transform: translateX(-50%);
   }
 
-  .send .link {
+  .release .status  .link {
     width: 100%;
     /*background-color: pink;*/
     height: 180px;
     box-shadow: 0 0 5px rgba(0,0,0,.5);
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    padding-left: 0;
   }
 
-  .send .link .generateLink {
+  .release .status  .warning {
+    width: 100%;
+    /*background-color: pink;*/
+    height: 180px;
+    box-shadow: 0 0 5px rgba(0,0,0,.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-left: 0;
+  }
+
+  .release .status  .warning .tims {
+    box-shadow: none;
+    height: 100px;
+    padding: 0 63px;
+    text-align: left;
+    color: #A4A4A4;
+  }
+
+  .release .status  .warning .linksWarning {
+    box-shadow: none;
+    height: 100px;
+  }
+
+  .release .status  .link .generateLink {
     /*background-color: blue;*/
     width: 70%;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    padding-left: 20px;
+    /*padding-left: 20px;*/
     box-sizing: border-box;
   }
 
-  .send .link .generateLink .title {
+  .release .status  .link .generateLink .title {
     /*background-color: #58ACFA;*/
     width: 100%;
     height: 30%;
     font-size: 20px;
     font-weight: 600;
+    text-align: left;
     color: #1C1C1C;
     display: flex;
     justify-content: start;
     align-items: center;
   }
 
-  .send .link .generateLink .quesLink {
+  .release .status  .link .generateLink .quesLink {
     /*background-color: purple;*/
     width: 100%;
     height: 60%;
@@ -755,7 +838,7 @@ export default {
     align-items: start;
   }
 
-  .send .link .generateLink .quesLink input {
+  .release .status  .link .generateLink .quesLink input {
     border: 0;
     outline: none;
     width: 60%;
@@ -765,16 +848,16 @@ export default {
     padding-left: 20px;
   }
 
-  .send .link .generateLink .quesLink .operations {
+  .release .status  .link .generateLink .quesLink .operations {
     /*background-color: #F2F2F2;*/
-    width: 70%;
+    width: 85%;
     height: 30%;
     display: flex;
     justify-content: space-around;
     align-items: center;
   }
 
-  .send .link .generateLink .quesLink .operations button {
+  .release .status  .link .generateLink .quesLink .operations button {
     border: 0;
     outline: none;
     background-image: linear-gradient(to left,#A9D0F5,#58FAF4);
@@ -784,7 +867,7 @@ export default {
     color: #848484;
   }
 
-  .send .link .generateLink .quesLink .operations button:hover {
+  .release .status  .link .generateLink .quesLink .operations button:hover {
     /*background-image: linear-gradient(to left,,#58FAF4);
     */
     cursor: pointer;
@@ -794,20 +877,24 @@ export default {
     color: #58ACFA;
   }
 
-  .send .link .erweima {
+  .release .status  .link .erweima {
     /*background-color: red;*/
-    width: 30%;
+    width: 60%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*justify-content: space-between;*/
+    /*align-items: center;*/
+    /*margin-left: 5px;*/
+    margin-left: 0;
   }
 
-  .send .link .erweima .intro {
-    display: flex;
-    justify-content: center;align-items: center;
+  .release .status  .link .erweima .code {
+    width: 150px;
+    height: 150px;
+    margin: 0;
   }
+
   .backLogo{
     font-family: icomoon;
     content: '\e90e';

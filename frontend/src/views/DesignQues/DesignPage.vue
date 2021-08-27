@@ -845,8 +845,6 @@ export default {
           })
         }
       }
-
-
     },
 
     // 下移
@@ -1289,7 +1287,7 @@ export default {
     height: 150px;
     width: 500px;
     position: absolute;
-    left: 16vw;
+    left: 15vw;
     display: none;
     background-color: white;
     box-shadow: 0 0 2px rgba(0,0,0,.4);

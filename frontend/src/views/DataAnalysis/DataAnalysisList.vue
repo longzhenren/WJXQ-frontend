@@ -32,7 +32,9 @@
           </div>
 
           <el-divider></el-divider>
+
         </li>
+
       </ul>
   </div>
 
@@ -112,8 +114,10 @@ export default {
   .TableContainer {
   /*background-color: red;*/
   width: 100%;
+    padding: 10px 0;
+    box-sizing: border-box;
   /*height: 30vh;*/
-  border-radius: 10px;
+  /*border-radius: 10px;*/
     box-shadow: 0 0 5px rgba(0,0,0,.4);
   /*border: 1px solid #BDBDBD;*/
   margin: 10px 0;
