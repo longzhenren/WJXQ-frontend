@@ -151,28 +151,7 @@
 
 
     <div class="send" v-if="$store.state.leftMenuCurrent===1">
-<!--      <div class="link">-->
-<!--        <div class="erweima">-->
-<!--          <div class="intro">点击二维码即可下载分享</div>-->
-<!--          <QRCode ref="Myqrcode"-->
-<!--            :urlpath="QuesLink"-->
-<!--            :code-height="150"-->
-<!--            :code-width="150"></QRCode>-->
-<!--        </div>-->
 
-
-
-<!--        <div class="generateLink">-->
-<!--          <div class="title">问卷链接</div>-->
-<!--          <div class="quesLink">-->
-<!--            <input id="links" type="text" v-model="QuesLink">-->
-<!--            <div class="operations">-->
-<!--              <button @click="copyLink">复制</button>-->
-<!--              <button @click="openQuesLink">打开</button>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
     </div>
 
 
