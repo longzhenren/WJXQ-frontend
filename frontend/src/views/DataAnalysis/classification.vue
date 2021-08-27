@@ -1,6 +1,6 @@
 <template>
   <div class="classification">
-    <el-collapse >
+    <el-collapse @change="handleChange()">
       <el-collapse-item name="1">
         <template slot="title">
           <div class="classificationTitle">
@@ -136,6 +136,19 @@ export default {
   mounted() {
   },
   methods: {
+
+    handleChange(){
+      let analysisData = this.$refs.analysisData;
+      // console.log(analysisData.classList)
+      if (!analysisData.classList.contains('queryDataAnalysisHavePad')) {
+        analysisData.classList.add('queryDataAnalysisHavePad')
+      }
+      else {
+        analysisData.classList.remove('queryDataAnalysisHavePad')
+      }
+
+    },
+
     // // 刷新页面高度
     // getNewClassfyHeight(){
     //   let analysisData = document.querySelector(".classification");
@@ -228,11 +241,15 @@ export default {
 
   .classification .queryDataAnalysis {
     height: 75vh;
-    padding-bottom: 200px;
+    /*padding-bottom: 200px;*/
     /*background-color: #E6E6E6;*/
     width: 100%;
     transition: .4s all ease-in-out;
     /*box-shadow: 0 0 10px rgba(0,0,0,.4);*/
+  }
+
+  .classification .queryDataAnalysisHavePad {
+    padding-bottom: 200px;
   }
 
   /*.classification .queryDataAnalysis:hover {*/
