@@ -918,7 +918,7 @@ export default {
     // 增加新题目到列表中
     addNewQuesToQuesList(SubjectObj){
 
-      bus.$emit('SaveEdited')
+      bus.$emit('SaveEdited',this.editingQuestion.index)
       let length = this.QuesList.length;
       this.isCanChangeItem = true
       this.QuesList.splice(length,0,SubjectObj);
@@ -932,7 +932,7 @@ export default {
     // 修改题目
     changeQuestions(index){
       console.log('需要改的题目',index)
-      bus.$emit('SaveEdited')
+      bus.$emit('SaveEdited',this.editingQuestion.index)
       let quesList = this.QuesList;
       let quesListElement = quesList[index];
       this.editingQuestion = quesListElement;
