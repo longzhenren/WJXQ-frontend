@@ -11,7 +11,6 @@
     <div >
       <label  class="describe"> {{ QesData.describe }} </label>
     </div>
-    <el-divider content-position="left" class="el-divider-top"></el-divider>
     <el-checkbox-group v-model="QesData.radio" class="InnerDiv"  >
       <el-checkbox v-for="(choice,i) in QesData.choices" :label="QesData.choices[i]" :key="choice"
                    class="Choice"
@@ -92,25 +91,19 @@ export default {
       this.save()
       // this.$emit('saveMultiData',this.QesData)
     },
-
-
-    changeMax: function(){
-      if(this.QesData.min>this.QesData.max){
-        this.QesData.min=this.QesData.max;
-      }
-    },
-    changeMin: function(){
-      if(this.QesData.min>this.QesData.max){
-        this.QesData.max=this.QesData.min;
-      }
-    },
     del:function (i){
-      this.QesData.choices.splice(i,1)
-      if(this.QesData.max>this.QesData.choices.length){
-        this.QesData.max=this.QesData.choices.length
+      if(this.QesData.choices>=2)
+      {
+        this.QesData.choices.splice(i,1)
+        if(this.QesData.max>this.QesData.choices.length){
+          this.QesData.max=this.QesData.choices.length
+        }
+        if(this.QesData.min>this.QesData.choices.length){
+          this.QesData.min=this.QesData.choices.length
+        }
       }
-      if(this.QesData.min>this.QesData.choices.length){
-        this.QesData.min=this.QesData.choices.length
+      else {
+        this.$message.warning("选项不可以少于2")
       }
     },
     add: function() {
@@ -127,7 +120,7 @@ export default {
         if (find) break;
       }
       if(find){
-        alert("不可以存在重复项")
+        this.$message.warning("不可以存在重复项")
 
       }else {
         this.QesData.edit=0
@@ -148,6 +141,7 @@ export default {
   alignment: left;
 }
 .InnerDiv{
+  margin-top:20px;
   text-align: left;
   margin-left:10px;
 }

@@ -1,21 +1,21 @@
 
 
 
-<template >
+<template>
 
   <div >
-    <el-form  class="InnerDiv" >
-        <label class="InnerElement">问题 {{this.needSendIdx+1}}</label>
+    <el-form  class="InnerDiv">
+        <label class="InnerElement">问题</label>
         <el-input class="InnerElement" v-model="QesData.question"
                   placeholder="请输入问题"
-                  type="textarea" >
+                  type="textarea">
         </el-input>
 
 
         <label class="InnerElement">描述</label>
         <el-input v-model="QesData.describe"
                   placeholder="请输入描述" class="InnerElement"
-                  type="textarea" style="font-size:12px" >
+                  type="textarea" style="font-size:12px">
         </el-input>
 
     </el-form>
@@ -31,11 +31,11 @@
         <el-col :span="18">
           <el-input   v-model="QesData.choices[i]"
                       placeholder="请输入选项"
-                      type="textarea" >
+                      type="textarea">
           </el-input>
         </el-col >
         <el-col :span="2" class="centerElement">
-          <el-button  icon="el-icon-delete"   type="text" @click="del(i)" ></el-button>
+          <el-button  icon="el-icon-delete"   type="text" @click="del" ></el-button>
         </el-col>
       </el-row>
 
@@ -54,6 +54,8 @@
       <el-form>
         <el-form-item class="left">
           <el-checkbox v-model="QesData.Must">必答题</el-checkbox>
+          <el-checkbox v-model="QesData.Rate">显示比例</el-checkbox>
+          <el-checkbox v-model="QesData.Amount">显示数量</el-checkbox>
         </el-form-item>
 
       </el-form>
@@ -66,16 +68,8 @@
 </template>
 
 <script>
-import bus from "../../../assets/utils/bus";
-
 export default {
   props:{
-    FatherData: {
-      type: Object,
-      default(){
-        return {}
-      }
-    },
     needSendIdx: {
       type: Number,
       default() {
@@ -88,21 +82,22 @@ export default {
       QesData:{
         id:"",
         number:"",
-        edit:1,
-        describe: "",
+        describe: "这是一个描述",
         question:"",
-        choices:["",""],
+        choices:["选项1","选项2"],
         radio: 0,
+
+        //settings
+        edit:1,
         Must:true,
-      },
-      SavedData:[]
+        Rate:true,
+        Amount:true
+      }
+
     };
   },
-  created() {
-    bus.$on('SaveEdited',this.save)
-  },
   mounted() {
-    console.log(this.FatherData)
+    // console.log(this.FatherData)
     if ( this.FatherData.question!==null && this.FatherData.question!=={} && this.FatherData.question!==undefined ){
       this.QesData.edit = this.FatherData.edit;
       this.QesData.question = this.FatherData.question;
@@ -112,7 +107,6 @@ export default {
       this.QesData.Must = this.FatherData.Must;
       // this.singleChoice = this.FatherData
     }
-    console.log(this.needSendIdx)
   },
 
   watch: {
@@ -133,24 +127,10 @@ export default {
         }
       }
     },
-
-    needSendIdx(newIndex,oldIndex){
-      this.needSendIdx = newIndex
-    },
-    QesData:{
-      handler(newData,oldData){
-
-        console.log("同步ing"+this.needSendIdx)
-        bus.$emit('changeSingleData',this.QesData,this.needSendIdx)
-      },
-      deep: true
-
-    },
-
   },
   methods: {
     del:function (i){
-      if(this.QesData.choices.length>2)
+      if(this.QesData.choices>=2)
       {
         this.QesData.choices.splice(i,1)
       }
@@ -163,24 +143,20 @@ export default {
     },
     save: function() {
       let find = false;
-      let j=0;
       for (let i = 0; i < this.QesData.choices.length; i++) {
-        for ( j = i + 1; j < this.QesData.choices.length; j++) {
+        for (let j = i + 1; j < this.QesData.choices.length; j++) {
           if (this.QesData.choices[i]== this.QesData.choices[j] ) {
-            find=true;
-            console.log(i,j)
-           this.$set(this.QesData.choices,j,this.QesData.choices[j]+"-重复项"+j.toString())
+            find = true; break;
           }
         }
+        if (find) break;
       }
       if(find){
-        this.$message.warning("不可以存在重复项,已为您添加标识，请您修改")
-
+        this.$message.warning("不可以存在重复项")
+      }else {
+        this.QesData.edit=0
+        this.$emit('saveSingleData',this.QesData)
       }
-        // this.$emit('saveSingleData',this.QesData)
-        console.log("编辑保存"+this.needSendIdx);
-        bus.$emit('SaveSingleData',this.QesData,this.needSendIdx)
-
     },
     edit: function() {
       this.QesData.edit=1

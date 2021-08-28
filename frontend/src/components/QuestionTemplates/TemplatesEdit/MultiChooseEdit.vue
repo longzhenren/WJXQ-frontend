@@ -169,13 +169,20 @@ export default {
       }
     },
     del:function (i){
-      this.QesData.choices.splice(i,1)
-      if(this.QesData.max>this.QesData.choices.length){
-        this.QesData.max=this.QesData.choices.length
+      if(this.QesData.choices.length>2)
+      {
+        this.QesData.choices.splice(i,1)
+        if(this.QesData.max>this.QesData.choices.length){
+          this.QesData.max=this.QesData.choices.length
+        }
+        if(this.QesData.min>this.QesData.choices.length){
+          this.QesData.min=this.QesData.choices.length
+        }
       }
-      if(this.QesData.min>this.QesData.choices.length){
-        this.QesData.min=this.QesData.choices.length
+      else {
+        this.$message.warning("选项不可以少于2")
       }
+
     },
     add: function() {
       this.QesData.choices.push("")
@@ -191,7 +198,7 @@ export default {
         if (find) break;
       }
       if(find){
-        alert("不可以存在重复项")
+        this.$message.warning("不可以存在重复项")
 
       }else {
         this.QesData.edit=0

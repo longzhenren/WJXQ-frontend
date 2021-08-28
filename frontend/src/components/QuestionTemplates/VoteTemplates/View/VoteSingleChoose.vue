@@ -1,51 +1,65 @@
 
 
-
 <template>
 
   <div  class="InnerDiv" >
-      <div >
+    <div >
 
-        <label v-if="QesData.Must==true" style="color: red" >*</label>
-              <label  >单选题 - {{ QesData.question }}</label>
+      <label v-if="QesData.Must==true" style="color: red" >*</label>
+      <label  >单选题 - {{ QesData.question }}</label>
 
-      </div>
-      <div >
-        <label  class="describe"> {{ QesData.describe }} </label>
-      </div>
+    </div>
+    <div >
+      <label  class="describe"> {{ QesData.describe }} </label>
+    </div>
+    <el-divider content-position="left" class="el-divider-top"></el-divider>
+    <el-radio-group v-model="QesData.radio" class="InnerDiv" style="width: 100%" >
+      <el-row :gutter="10" class="Choice" type="flex" align="top" justify="left"  v-for="(choice,i) in QesData.choices" >
+        <el-col :span="12">
+          <el-radio class="Choice" :label="QesData.choices[i]" >
+          </el-radio>
+        </el-col>
+        <el-col :span="2" v-if="QesData.Amount==true")>
+          <label style="font-size: 12px" >0票</label>
+        </el-col>
+        <el-col :span="10" v-if="QesData.Rate==true")>
+          <el-progress :percentage="0"  ></el-progress>
+        </el-col>
 
-    <el-radio-group v-model="QesData.radio" class="InnerDiv"  >
-      <el-radio v-for="(choice,i) in QesData.choices" :label="QesData.choices[i]"
-                class="Choice"
-                  >
-      </el-radio>
+      </el-row>
     </el-radio-group>
 
-<!--    <div class="RightDiv">-->
-<!--      <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement"  >修改</el-button></el-divider>-->
-<!--    </div>-->
+    <!--    <div class="RightDiv">-->
+    <!--      <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement"  >修改</el-button></el-divider>-->
+    <!--    </div>-->
   </div>
 </template>
 
 <script>
-import bus from "../../assets/utils/bus";
-
 export default {
   props:{
-    FatherData: Object,
-    ItemIndex: Number,
+    needSendIdx: {
+      type: Number,
+      default() {
+        return 0;
+      }
+    }
   },
   data () {
     return {
       QesData:{
         id:"",
-        Number: 0,
-        edit:1,
+        number:"",
         describe: "这是一个描述",
         question:"",
         choices:["选项1","选项2"],
         radio: 0,
+
+        //settings
+        edit:1,
         Must:true,
+        Rate:true,
+        Amount:true
       }
     };
   },
@@ -58,7 +72,6 @@ export default {
       this.QesData.describe = this.FatherData.describe;
       this.QesData.radio = this.FatherData.radio;
       this.QesData.Must = this.FatherData.Must;
-      this.QesData.Number = this.FatherData.Number
       // this.singleChoice = this.FatherData
     }
   },
@@ -71,9 +84,8 @@ export default {
       else  {
         this.QesData = {
           id:"",
-          Number: 0,
-          edit:1,
-          describe: "这是一个描述",
+          number:"",
+          describe: "",
           question:"",
           choices:["选项1","选项2"],
           radio: 0,
@@ -82,41 +94,11 @@ export default {
       }
     },
   },
-  created() {
-    bus.$on('SaveSingleData',this.saveData)
-    bus.$on('changeSingleData',this.changeData)
-  },
   methods: {
-
-    del:function (i){
-      if(this.QesData.choices>=2)
-      {
-        this.QesData.choices.splice(i,1)
-      }
-      else {
-        this.$message.warning("选项不可以少于2")
-      }
-    },
-    // 保存数据
-    saveData(QesData,index){
-      console.log("要保存的题号："+index)
-      console.log("本体题号:"+this.QesData.Number)
-      if (index===this.ItemIndex){
-        this.QesData = QesData
-        this.save()
-      }
-    },
     add: function() {
       this.QesData.choices.push("")
     },
-    changeData(QesData,index){
-      console.log(index)
-      console.log(this.QesData.Number)
-      if (index===this.ItemIndex){
-        this.QesData = QesData
-      }
-    },
-    save() {
+    save: function() {
       let find = false;
       for (let i = 0; i < this.QesData.choices.length; i++) {
         for (let j = i + 1; j < this.QesData.choices.length; j++) {
@@ -129,9 +111,8 @@ export default {
       if(find){
         alert("不可以存在重复项")
       }else {
-        console.log("子组件开始保存")
         this.QesData.edit=0
-        this.$emit('SaveQes',this.QesData)
+        this.$emit('saveSingleData',this.QesData)
       }
     },
     edit: function() {
@@ -141,14 +122,14 @@ export default {
 }
 </script>
 <style scoped>
-/deep/ .el-radio{
+/deep/ .el-radio Choice{
   display: block;
   line-height: 23px;
   white-space: normal;
   alignment: left;
+  margin:0px
 }
 .InnerDiv{
-  margin-top:20px;
   text-align: left;
   margin-left:10px;
 }
@@ -161,7 +142,9 @@ export default {
   color: darkgrey
 }
 .Choice{
-  margin-left: 0px;margin-bottom:10px;display: block
+  margin-left: 0px;margin-bottom:10px;
+
 }
+
 </style>
 

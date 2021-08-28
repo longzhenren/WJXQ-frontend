@@ -11,8 +11,8 @@
     <div >
       <label  class="describe" > {{ QesData.describe }} </label>
     </div>
-    <el-divider content-position="left" class="el-divider-top"></el-divider>
-    <el-input placeholder="回答区域" type="textarea" v-model="QesData.Answer" class="Choice"></el-input>
+
+    <el-input placeholder="回答区域" type="textarea" v-model="QesData.Answer" class="InnerDiv"></el-input>
 
   </div>
 
@@ -121,6 +121,7 @@ export default {
   margin-bottom:20px ;
 }
 .InnerDiv{
+  margin-top:20px;
   text-align: left;
   margin-left:10px;
 }

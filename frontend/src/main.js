@@ -16,6 +16,7 @@ Vue.use(VueCookies)
 Vue.config.productionTip = false;
 Vue.use(vuescroll)
 Vue.use(ElementUI);
+Vue.prototype.$message=ElementUI.Message
 axios.defaults.withCredentials = true
 
 new Vue({
