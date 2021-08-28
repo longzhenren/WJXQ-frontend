@@ -26,16 +26,48 @@
 <!--&lt;!&ndash;            <div class="title"> {{ item.type }}</div>&ndash;&gt;-->
 
 <!--          </div>-->
-          <el-collapse v-model="activeName" accordion v-for="(item,index) in QuesTypeList" >
-            <el-collapse-item :name="index" class="choices">
-              <template slot="title">
-                <div class="title"> {{ item.type }}</div>
-              </template>
-              <ul ref="choices">
-                <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
-              </ul>
-            </el-collapse-item>
-          </el-collapse>
+
+
+
+          <div v-if="Questionnaire.Type === 2">
+            <el-collapse v-model="activeName" v-for="(item,index) in VoteQuesTypeList">
+              <el-collapse-item :name="index" class="choices">
+                <template slot="title">
+                  <div class="title"> {{ item.type }}</div>
+                </template>
+                <ul ref="choices">
+                  <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
+                </ul>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+
+
+          <div v-else>
+            <el-collapse
+                v-model="activeName"
+                v-for="(item,index) in QuesTypeList" >
+              <el-collapse-item :name="index" class="choices">
+                <template slot="title">
+                  <div class="title"> {{ item.type }}</div>
+                </template>
+                <ul ref="choices">
+                  <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
+                </ul>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+
+
+<!--            <el-collapse-item :name="index" class="choices" v-if="Questionnaire.Type === 2">-->
+<!--              <template slot="title">-->
+<!--                <div class="title"> {{ item.type }}</div>-->
+<!--              </template>-->
+<!--              <ul ref="choices">-->
+<!--                <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
+
 
 
           <div class="choicesPreview" ref="choicesPreview">
@@ -150,8 +182,6 @@
         <div class="quesInfo">
 
         </div>
-
-
       </div>
 
       <el-dialog title="修改问卷头信息" :visible.sync="dialogFormVisible">
@@ -200,7 +230,7 @@ export default {
 
       dialogFormVisible: false,
 
-      activeName: 0,
+      activeName: ['1'],
 
       ops: {
         vuescroll: {
@@ -261,9 +291,46 @@ export default {
             '评价',
           ]
         },
-
       ],
 
+
+      // 带有特殊题型的问题列表
+      // 投票问题列表
+      VoteQuesTypeList: [
+        // 选择
+        {
+          type: '选择',
+          details: [
+            '单选',
+            '多选',
+            '下拉',
+          ]
+        },
+        {
+          type: '填空',
+          details: [
+            '填空',
+          ]
+        },
+        {
+          type: '评分',
+          details: [
+            '评价',
+          ]
+        },
+        {
+          type: '投票题型',
+          details: [
+            '投票单选',
+            '投票多选',
+          ],
+        }
+      ],
+
+      // 考试问题列表
+      ExamQuesTypeList: [
+
+      ],
 
       ShowNum: 0,
 
@@ -310,7 +377,7 @@ export default {
         ReleaseTime: '',
         // 是否显示题号
         isShowSubNum: false,
-
+        Type: 1,
         EncodeID: '',
       },
 
@@ -978,7 +1045,9 @@ export default {
         Open: Questionnaire.Open,
         Text: Questionnaire.Text,
         Question: [],
-        EncodeID: Questionnaire.EncodeID
+        Settings: Questionnaire.Settings,
+        EncodeID: Questionnaire.EncodeID,
+        Type: Questionnaire.Type,
       }
       this.isShowQuesNum = Questionnaire.ShowNumber
       this.QuesText = Questionnaire.Text
@@ -1096,6 +1165,7 @@ export default {
         console.log(res);
         if (res.data.Message !== 'No Such Questionnaire'){
           this.adjustDataStruct(res.data.Questionnaire);
+          console.log(this.Questionnaire)
         }
       }).catch(err=>{
         // console.log(err)
