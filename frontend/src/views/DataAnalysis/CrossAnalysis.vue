@@ -32,15 +32,32 @@
       </div>
     </div>
 
-    <div class="crossContainer" v-if="isShowCross">
 
-    </div>
+      <div class="crossContainer" v-if="isShowCross">
+        <vue-scroll
+            :op="cross">
+          <CrossComponent
+              :x-data-i-d="xQuesID"
+              :y-data-i-d="yQuesID"
+              :question-i-o="QuestionnaireId">
+
+          </CrossComponent>
+
+        </vue-scroll>
+      </div>
+
   </div>
 </template>
 
 <script>
+import {request} from "../../network/request";
+import CrossComponent from "./CrossComponent";
+
 export default {
   name: "CrossAnalysis",
+  components: {
+    CrossComponent
+  },
   props: {
     Questions: {
       type: Array,
@@ -48,9 +65,25 @@ export default {
         return [];
       }
     },
+
+    Questionnaire: {
+      type: Object,
+      default() {
+        return {};
+      }
+    }
   },
   data(){
     return {
+
+      cross: {
+
+      },
+
+      QuestionnaireId: '',
+
+
+
       // 是否显示交叉分析组件
       isShowCross: false,
 
@@ -61,19 +94,96 @@ export default {
         Stem: '添加自变量'
       },
 
+      xQuesID: 0,
+
+      xAnswerData: [],
+
+      yAnswerData: [],
+
       // 指定为y因变量的题目
       yVairableQues: {
         Stem: '添加因变量'
       },
+
+      yQuesID: '',
+    }
+  },
+  mounted() {
+    // this.yQuesID = this.yVairableQues.id.toString();
+    this.QuestionnaireId = this.Questionnaire.id;
+  },
+  watch: {
+    Questionnaire(newQues){
+      this.QuestionnaireId = newQues.id;
     }
   },
   methods: {
     // 进行交叉分析
     goCrossAnalysis(){
       this.isShowCross = true
+      // this.xQuesID = this.xVairableQues.id.toString();
+      // this.yQuesID = this.yVairableQues.id.toString();
+      // this.QuestionnaireId = this.Questionnaire.id.toString();
       console.log(this.xVairableQues);
       console.log(this.yVairableQues)
-    }
+      console.log(this.Questionnaire)
+      this.xQuesID = this.xVairableQues.Number
+      this.yQuesID = this.yVairableQues.Number
+      this.QuestionnaireId = this.Questionnaire.id;
+      // setTimeout(this.getXData,100)
+      // setTimeout(this.getYData,100)
+      // ();
+      console.log(this.xQuesID);
+      console.log(this.QuestionnaireId)
+    },
+
+    // getXData(){
+    //   console.log('11',this.QuestionnaireId)
+    //   console.log('22',this.yQuesID)
+    //   request({
+    //     url: '/submit/qesrep',
+    //     method: 'post',
+    //     data: {
+    //       questionnaireID:this.QuestionnaireId,
+    //       questionNumber: this.xQuesID
+    //     }
+    //   }).then(res=>{
+    //     console.log(res);
+    //     if (res.data.Message !== 'No Such Questionnaire'){
+    //       // this.Questionnaire = res.data.Questionnaire
+    //       // this.QesData=res.data.QesData,
+    //       //     this.ChooseData=res.data.ChooseData,
+    //       //     this.AnswerData=res.data.AnswerData
+    //       this.xAnswerData = res.data.AnswerData
+    //     }
+    //   }).catch(err=>{
+    //     console.log(err)
+    //   })
+    // },
+    //
+    // getYData(){
+    //   console.log('11',this.QuestionnaireId)
+    //   console.log('22',this.xQuesID)
+    //   request({
+    //     url: '/submit/qesrep',
+    //     method: 'post',
+    //     data: {
+    //       questionnaireID:this.QuestionnaireId,
+    //       questionNumber: this.yQuesID
+    //     }
+    //   }).then(res=>{
+    //     console.log(res);
+    //     if (res.data.Message !== 'No Such Questionnaire'){
+    //       // this.Questionnaire = res.data.Questionnaire
+    //       // this.QesData=res.data.QesData,
+    //       //     this.ChooseData=res.data.ChooseData,
+    //       //     this.AnswerData=res.data.AnswerData
+    //       this.yAnswerData = res.data.AnswerData
+    //     }
+    //   }).catch(err=>{
+    //     console.log(err)
+    //   })
+    // }
   }
 }
 </script>
@@ -87,8 +197,8 @@ export default {
 
   .crossAnalysis .crossContainer {
     width: 100%;
-    height: 10vh;
-    background-color: #42b983;
+    height: 35vh;
+    /*background-color: red;*/
   }
 
   .crossAnalysis .crossTitle {

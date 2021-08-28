@@ -11,14 +11,11 @@
 
 <!--          <controlList @changeShowState="changeChartState($event,index)"></controlList>-->
 
-          <div class="TableContainer" >
+          <div class="TableContainer">
             <ChooseAnalyse :id="Qesid" :number="index"></ChooseAnalyse>
           </div>
-
           <el-divider></el-divider>
-
         </li>
-
       </ul>
   </div>
 
@@ -51,7 +48,7 @@ export default {
     this.NeedShowQuestions = this.Questions
     this.Qesid=this.id;
     console.log("Qesid:"+this.Qesid)
-    console.log(this.NeedShowQuestions)
+    // console.log(this.NeedShowQuestions)
   },
   watch: {
     Questions(newQues){

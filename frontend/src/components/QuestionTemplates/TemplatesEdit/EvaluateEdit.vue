@@ -137,6 +137,15 @@ export default {
         }
       }
     },
+    needSendIdx(newIndex,oldIndex){
+      // console.log('旧',oldIndex)
+      // console.log('新',newIndex)
+      this.needSendIdx = newIndex
+      // if (newIndex !== oldIndex) {
+      //   console.log('自动')
+      //   bus.$emit('saveSingleData',this.QesData,oldIndex)
+      // }
+    }
   },
   methods: {
     del:function (i){

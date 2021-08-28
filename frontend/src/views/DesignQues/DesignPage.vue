@@ -1,7 +1,10 @@
 <template>
   <div class="designPage">
     <nav class="designNav">
-      <div class="QuesPreview" @click="goPreview"> 预览</div>
+      <div class="QuesPreview" @click="goPreview">
+        <i class="el-icon-zoom-in"></i>
+        预览
+      </div>
 
       <div class="BackHome">
 
@@ -30,7 +33,9 @@
             <el-collapse v-model="activeName" v-for="(item,index) in VoteQuesTypeList">
               <el-collapse-item :name="index" class="choices">
                 <template slot="title">
-                  <div class="title"> {{ item.type }}</div>
+                  <div class="title">
+                    <i class="el-icon-stopwatch"></i>
+                    {{ item.type }}</div>
                 </template>
                 <ul ref="choices">
                   <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
@@ -46,7 +51,10 @@
                 v-for="(item,index) in QuesTypeList" >
               <el-collapse-item :name="index" class="choices">
                 <template slot="title">
-                  <div class="title"> {{ item.type }}</div>
+                  <div class="title">
+                    <i class="el-icon-stopwatch"></i>
+                    {{ item.type }}
+                  </div>
                 </template>
                 <ul ref="choices">
                   <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
@@ -104,7 +112,6 @@
         <vue-scroll ref="vs"
             :ops="ops" >
           <ul class="QuesList" v-if="QuesList.length!==0" ref="list">
-
               <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="true"
                   @dragstart="handleDragStart($event,item)"
                   @dragover.prevent="handleDragOver($event)"
@@ -114,7 +121,7 @@
 <!--                {{ item.Stem }}-->
                 <span v-if="isShowQuesNum">{{ item.idx + 1 }}. </span>
                 <span v-else></span>
-                <div class="componentsItem" @mouseover="OverDrag(index,item)" @mouseleave="LeaveDrag(index,item)">
+                <div class="componentsItem">
                   <SingleChoose v-if="item.type==='singleChoice'" ref="child"
                                 @SaveQes="SaveQes($event,item)"
                                 :item-index="index"
@@ -136,10 +143,23 @@
 
                 <div class="options">
                   <ul>
-                    <li @click="deleteQues(index)">删除</li>
-                    <li @click="moveUp(index)">上移</li>
-                    <li @click="moveDown(index)">下移</li>
-                    <li @click="changeQuestions(index)">修改</li>
+                    <li @click="deleteQues(index)">
+                      <i class="el-icon-delete"></i>
+                      删除
+                    </li>
+                    <li @click="moveUp(index)">
+                      <i class="el-icon-caret-top"></i>
+                      上移
+                    </li>
+                    <li @click="moveDown(index)">
+                      <i class="el-icon-caret-bottom"></i>
+                      下移
+                    </li>
+
+                    <li @click="changeQuestions(index)">
+                      <i class="el-icon-edit-outline"></i>
+                      修改
+                    </li>
                   </ul>
                 </div>
 
@@ -169,36 +189,43 @@
 <!--        该题目基本信息-->
         <div class="quesInfo">
         </div>
-       <el-menu default-active="1" class="el-menu-vertical-demo">
-        <el-submenu index="1">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">题目编辑</span>
-          </template>
-          <el-menu-item-group>
-              <SingleChooseEdit v-if="editingQuestion.type === 'singleChoice'"
-                                :father-data="editingQuestion.subData"
-                                :need-send-idx="editingQuestion.index"
-                                ref="childEdit"></SingleChooseEdit>
-              <MultiChooseEdit v-else-if="editingQuestion.type === 'multiChoose'"
+        <div class="editContain">
+          <vue-scroll ref="editScroll"
+                      :ops="editScroll" >
+
+            <el-card class="box-card">
+              <div class="editTitle">
+                题目编辑
+              </div>
+              <el-divider></el-divider>
+              <div v-if="isCanChangeItem">
+                <SingleChooseEdit v-if="editingQuestion.type === 'singleChoice'"
+                                                                          :father-data="editingQuestion.subData"
+                                                                          :need-send-idx="editingQuestion.index"
+                                                                          ref="childEdit"></SingleChooseEdit>
+                <MultiChooseEdit v-else-if="editingQuestion.type === 'multiChoose'"
+                                 :father-data="editingQuestion.subData"
+                                 :need-send-idx="editingQuestion.index"
+                                 ref="childEdit"></MultiChooseEdit>
+                <EvaluateEdit v-else-if="editingQuestion.type === 'evaluate'"
+                              :father-data="editingQuestion.subData"
+                              :need-send-idx="editingQuestion.index"
+                              ref="childEdit"></EvaluateEdit>
+                <FillBlankEdit v-else-if="editingQuestion.type === 'fillBlank'"
                                :father-data="editingQuestion.subData"
                                :need-send-idx="editingQuestion.index"
-                               ref="childEdit"></MultiChooseEdit>
-              <EvaluateEdit v-else-if="editingQuestion.type === 'evaluate'"
-                            :father-data="editingQuestion.subData"
-                            :need-send-idx="editingQuestion.index"
-                            ref="childEdit"></EvaluateEdit>
-              <FillBlankEdit v-else-if="editingQuestion.type === 'fillBlank'"
-                             :father-data="editingQuestion.subData"
-                             :need-send-idx="editingQuestion.index"
-                             ref="childEdit"></FillBlankEdit>
+                               ref="childEdit"></FillBlankEdit>
+              </div>
 
 
-          </el-menu-item-group>
-
-        </el-submenu>
-
-      </el-menu>
+              <div v-else>
+                <el-empty
+                    image="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+                    description="编辑完成"></el-empty>
+              </div>
+            </el-card>
+          </vue-scroll>
+        </div>
       </div>
 
       <el-dialog title="修改问卷头信息" :visible.sync="dialogFormVisible">
@@ -256,7 +283,9 @@ export default {
 
       // 当前编辑的题目
       editingQuestion: {
-
+        type: '',
+        subData: {},
+        index: -1,
       },
 
       dialogFormVisible: false,
@@ -273,6 +302,38 @@ export default {
         rail: {
           background: '#A9F5F2',
           opacity: .2,
+          size: '6px',
+          specifyBorderRadius: false,
+          gutterOfEnds: null,
+          gutterOfSide: '2px',
+          keepShow: false
+        },
+        bar: {
+          showDelay: 300,
+          onlyShowBarOnScroll: true,
+          keepShow: false,
+          background: '#2ECCFA',
+          opacity: .8,
+          hoverStyle: false,
+          specifyBorderRadius: false,
+          minSize: false,
+          size: '6px',
+          disable: false,
+        }
+      },
+
+      editScroll: {
+        vuescroll: {
+          mode: 'native',
+          sizeStrategy: 'percent',
+          detectResize: true,
+          /** 锁定一种滚动方向， 锁定的方向为水平或者垂直方向上滑动距离较大的那个方向 */
+          locking: true,
+        },
+        scrollPanel: {},
+        rail: {
+          background: '#A9F5F2',
+          opacity: .8,
           size: '6px',
           specifyBorderRadius: false,
           gutterOfEnds: null,
@@ -410,6 +471,8 @@ export default {
         // 是否显示题号
         isShowSubNum: false,
 
+        Type: 1,
+        Settings: {},
         EncodeID: '',
       },
 
@@ -461,7 +524,13 @@ export default {
       let child = this.$refs.childEdit;
       // console.log(chi)
       console.log(child)
-      child.save();
+      if (child !== undefined){
+        if (child.QesData.edit === 0 ){
+          child.save();
+        }
+
+      }
+
       // console.log(child.$children)
       // if (child !== undefined){
       //   for (let i = 0; i < child.length; i++) {
@@ -490,7 +559,7 @@ export default {
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
       this.Questionnaire.Text = this.QuesText
       this.sendAndSaveNewQues(this.Questionnaire)
-      // setTimeout(this.sendRequest,500)
+      setTimeout(this.sendRequest,500)
     },
 
 
@@ -672,6 +741,7 @@ export default {
     modifyQuestion(item){
       // console.log("aaa")
       // console.log(item)
+      this.isCanChangeItem = false;
 
       let Question = this.changeDataStructToBackend(item,'sendQuestion');
 
@@ -850,6 +920,7 @@ export default {
 
       bus.$emit('SaveEdited')
       let length = this.QuesList.length;
+      this.isCanChangeItem = true
       this.QuesList.splice(length,0,SubjectObj);
 
       this.editingQuestion = SubjectObj;
@@ -1004,6 +1075,7 @@ export default {
       for (let i = 0; i < index; i++) {
         height+=QuesItems[i].clientHeight;
       }
+
       // height-=10*index;
       height -= 8;
       this.$refs.vs.scrollTo({
@@ -1087,9 +1159,9 @@ export default {
     continueDesign(Ques){
       let params = this.$route.query;
       this.QuesId = Number(params.id)===0?Ques.id:Number(params.id);
-      this.QuesTitle = Ques.title;
-      this.QuesText = Ques.Text;
-      this.isShowQuesNum = Ques.isShowSubNum
+      // this.QuesTitle = Ques.title;
+      // this.QuesText = Ques.Text;
+      // this.isShowQuesNum = Ques.isShowSubNum
     },
 
     // 调整问卷格式
@@ -1113,6 +1185,7 @@ export default {
       this.QuesText = Questionnaire.Text
       this.QuesTitle = Questionnaire.Title
 
+      console.log('aaa')
       let Questions = Questionnaire.Question.sort(function(a,b){
         return a.Number - b.Number;
       });
@@ -1134,10 +1207,11 @@ export default {
               edit:0,
               describe: questionItem.Describe,
               question: questionItem.Stem,
-              choices:[],
+              choices: [],
               radio: 0,
               Must:questionItem.Must,
             }
+
             for (let j = 0; j < questionItem.Choice.length; j++) {
               QuesInfo.choices.push(questionItem.Choice[j].Text);
             }
@@ -1205,8 +1279,10 @@ export default {
       }
       // console.log(this.QuesList)
       Ques.Question = this.QuesList
-      this.editingQuestion = Ques.Question[0];
+      this.editingQuestion = Ques.Question[0]===undefined?{}:Ques.Question[0];
+      // console.log(this.editingQuestion)
       this.Questionnaire = Ques
+      console.log('bbb')
       // console.log(Questionnaire);
     },
 
@@ -1658,7 +1734,7 @@ export default {
     /*border-top-left-radius: 20px;*/
     /*opacity: .7;*/
     transform: translateY(-15px);
-    box-shadow: 0 0 10px rgba(0,0,0,.5);
+    box-shadow: 0 0 2px rgba(0,0,0,.5);
     background-color: white;
     /*border-bottom: 1px solid #BDBDBD;*/
     position: relative;
@@ -1693,21 +1769,21 @@ export default {
 
   .designContent .designPreview .QuesList .QuesItem .OptActive {
     /*display: flex;*/
-    bottom: 35px;
+    bottom: 20px;
     /*justify-content: end;*/
   }
 
   .designContent .designPreview .QuesList .QuesItem .options ul {
-    width: 70%;
+    width: 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-left: 500px;
+    margin-left: 350px;
   }
 
   .designContent .designPreview .QuesList .QuesItem .options ul li {
     height: 25px;
-    width: 20%;
+    width: 35%;
     display: inline-block;
     line-height: 25px;
     background-color: white;
@@ -1716,23 +1792,29 @@ export default {
     box-shadow: 0 0 3px rgba(0,0,0,.5);
     color: #A4A4A4;
     transition: .4s;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .designContent .designPreview .QuesList .QuesItem .options ul li:hover {
     cursor: pointer;
     /*border: 1px solid #2E9AFE;*/
-    background-color: #FAAC58;
+    /*background-color: #FAAC58;*/
     transform: scale(1.05);
-    font-weight: 600;
+    /*font-weight: 600;*/
     /*background-image: linear-gradient(to left,#00FFFF,#01A9DB);*/
-    color: #FAFAFA;
+    /*color: #FAFAFA;*/
   }
 
   .designContent .designPreview .QuesList .QuesItemHover {
     cursor: move;
     /*transform: scale(1.01);*/
     background-color: rgba(250,250,250,.6);
+  }
+
+
+  .editContain {
+    width: 100%;
+    height: 80vh;
   }
 
 </style>

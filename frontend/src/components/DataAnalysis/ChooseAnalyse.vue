@@ -41,6 +41,8 @@
     <div  class="Echarts" v-if="Chart=='饼状图'" >
       <div style="width:100%;height:600px" id="pie"></div>
     </div>
+
+
     <div  class="Echarts" v-if="Chart=='环形图'" >
       <div style="width:100%;height:600px"  id="circle"></div>
     </div>
@@ -256,9 +258,11 @@ export default {
         temp={name:this.ChooseData[i].name,max:M}
         a.push(temp)
       }
+
       for(let i=0;i<this.ChooseData.length;i++){
         b.push(this.ChooseData[i].value)
       }
+
       option = {
         title: {
           text: this.QesData.Question
@@ -287,7 +291,6 @@ export default {
       };
 
       option && myChart.setOption(option);
-
     },
     getData(){
       request({
@@ -296,7 +299,6 @@ export default {
         data: {
           questionnaireID:this.QuestionnaireId,
           questionNumber: this.Qesid
-
         }
       }).then(res=>{
         console.log(res);
@@ -313,9 +315,20 @@ export default {
     }
   },
   mounted(){
+    console.log(this.number)
+    console.log(this.id)
     this.Qesid=this.number
     this.QuestionnaireId=this.id;
-    this.getData();
+    setTimeout(this.getData,200)
+    // ();
+  },
+  watch: {
+    number(newNumber){
+      this.Qesid=newNumber
+    },
+    id(newId){
+      this.QuestionnaireId=newId;
+    }
   },
 
 }
