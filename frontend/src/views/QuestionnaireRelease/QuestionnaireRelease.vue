@@ -233,7 +233,7 @@ export default {
     // 将问卷导出为word
     exportDocument(){
       let  pra = {
-        username: this.$store.state.personalInfo.username,
+        username: this.$route.query.username,
         id: this.QuesId
       }
       request({
@@ -254,7 +254,7 @@ export default {
       this.$router.push({
         path: '/Management',
         query: {
-          username: this.$store.state.personalInfo.username
+          username: this.$route.query.username,
         }
       })
     },
@@ -264,7 +264,7 @@ export default {
       this.$router.push({
         path: '/design',
         query: {
-          username: this.$store.state.personalInfo.username,
+          username: this.$route.query.username,
           id: this.QuesId
         }
       });
@@ -286,7 +286,7 @@ export default {
 
       let pra = {
         id: this.DesignedQuestionnaire.id,
-        username: this.$store.state.personalInfo.username,
+        username: this.$route.query.username,
         Open: this.DesignedQuestionnaire.Open
       }
 
@@ -355,7 +355,7 @@ export default {
 
       let pra = {
         id: this.DesignedQuestionnaire.id,
-        username: this.$store.state.personalInfo.username,
+        username: this.$route.query.username,
         Open: this.DesignedQuestionnaire.Open
       }
 
