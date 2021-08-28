@@ -11,13 +11,21 @@
                   type="textarea">
         </el-input>
       </el-form-item>
+      <el-form-item >
+        <el-input v-model="multiChoice.describe"
+                  placeholder="请输入描述"
+                  type="textarea" style="font-size:12px">
+        </el-input>
+
+      </el-form-item>
     </el-form>
+    <div class="LeftDiv">
     <el-radio-group v-model="multiChoice.radio" style="display: block">
       <el-form  style="margin-left: 20px" label-width="80px" :inline="true" class="demo-form-inline" v-for="(choice,i) in multiChoice.choices"  >
       <el-form-item  ><label>{{i+1}}.</label></el-form-item>
       <el-form-item  >
         <el-input   v-model="multiChoice.choices[i]"
-                    placeholder="作答区域"
+                    placeholder="请输入选项"
                     type="textarea"
                     >
         </el-input>
@@ -28,6 +36,7 @@
 
     </el-form>
     </el-radio-group>
+    </div>
     <div class="RightDiv">
       <el-form :inline="true"  class="demo-form-inline">
         <el-form-item class="RightElement" >
@@ -54,13 +63,15 @@
     </div>
   </div>
 
-
   <div v-else class="InnerDiv" >
     <div >
-      <label v-if="multiChoice.Must===true" style="color: red" >*</label>
+      <label v-if="multiChoice.Must==true" style="color: red" >*</label>
       <label>多选题 - {{multiChoice.question }}</label>
-      <el-divider></el-divider>
     </div>
+    <div >
+      <label  style="font-size: 12px;color: darkgrey"> {{multiChoice.describe}} </label>
+    </div>
+    <el-divider content-position="left" class="el-divider-top"></el-divider>
     <el-checkbox-group  v-model="multiChoice.radio" class="InnerDiv"  >
       <el-checkbox  v-for="(choice,i) in multiChoice.choices" :label="multiChoice.choices[i]" :key="choice"
                 style="margin-left: 60px;margin-bottom:10px;display: block"
@@ -83,6 +94,7 @@ export default {
     return {
       multiChoice:{
         edit:1,
+        describe:"",
         question:"",
         choices:["",""],
         radio:[],
@@ -100,6 +112,10 @@ export default {
       this.multiChoice.question = this.FatherData.question;
       this.multiChoice.choices = this.FatherData.choices;
       this.multiChoice.radio = this.FatherData.radio;
+      this.multiChoice.describe = this.FatherData.describe;
+      this.multiChoice.max = this.FatherData.max;
+      this.multiChoice.min = this.FatherData.min;
+      this.multiChoice.Must = this.FatherData.Must;
     }
     // this.multiChoice.edit = this.FatherData.edit;
     // this.multiChoice.question = this.FatherData.question;
@@ -116,6 +132,7 @@ export default {
         this.multiChoice = {
           edit:1,
           question:"",
+          describe:"",
           choices:["",""],
           radio:[],
           max:1,
@@ -190,6 +207,13 @@ export default {
   display: inline;
   margin-left: 20px
 }
-
+.LeftDiv{
+  text-align: left;
+  margin-left:70px;
+  margin-bottom:20px ;
+}
+.el-divider-top{
+  margin-top: 5px;
+}
 </style>
 

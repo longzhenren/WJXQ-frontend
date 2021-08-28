@@ -1,26 +1,48 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import CreateQuestion from "../views/CreateQuestionnaire/CreateQuestion";
+import Home from '../views/Home.vue'
 import QuestionType from "../views/CreateQuestionnaire/QuestionType";
 import DesignPage from "../views/DesignQues/DesignPage";
 import QuestionnaireRelease from "../views/QuestionnaireRelease/QuestionnaireRelease";
-import AnswerQuestionnaire from "../views/AnswerQuestionnaire/AnswerQuestionnaire.vue";
+import DataAnalysis from "../views/DataAnalysis/DataAnalysis";
+import AnswerQuestionnaire from "../views/AnswerQuestionnaire/AnswerQuestionnaire";
+
+
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    redirect: '/createques'
+    name: 'Home',
+    component: Home
   },
   {
-    path: '/createques',
-    name: 'CreateQuestion',
-    component: CreateQuestion
+    path: '/Register',
+    name: 'Register',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Register.vue')
+  },
+  {
+    path: '/Login',
+    name: 'Login',
+    component: ()=>import('../views/Login.vue')
+  },
+  {
+    path: '/Management',
+    name: 'Management',
+    component: ()=>import('../views/Management.vue')
   },
   {
     path: '/questype',
     name: 'QuestionType',
     component: QuestionType
+  },
+  {
+    path: '/dataanalysis',
+    name: 'DataAnalysis',
+    component: DataAnalysis
   },
   {
     path: '/design',
@@ -37,7 +59,6 @@ const routes = [
     name: 'AnswerQuestionnaire',
     component: AnswerQuestionnaire
   },
-
 ]
 
 const router = new VueRouter({

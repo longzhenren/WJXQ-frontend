@@ -1,7 +1,9 @@
 <template>
   <div class="QueType">
     <nav class="TypeNav">
-
+      <div class="back" @click="BackToManageHome">
+        返回首页
+      </div>
     </nav>
 
     <div class="TypeList" >
@@ -11,7 +13,7 @@
           <div class="type">
             <div class="title">{{ item.title }}</div>
             <div class="intro">{{ item.intro }}</div>
-            <div class="confirm" @click="CreateNewQues">创建</div>
+            <div class="confirm" @click="CreateNewQues(index+1)">创建</div>
           </div>
         </li>
 
@@ -48,6 +50,8 @@ export default {
   },
   data(){
     return {
+
+
       // 控制鼠标是否移动到问卷项上
       isCreate: false,
 
@@ -61,6 +65,7 @@ export default {
         id: 0,
         title: '',
         Text: '',
+        Type: 1,
       },
 
       QuesTypes: [
@@ -69,26 +74,25 @@ export default {
           intro: '丰富题型，强大逻辑' +
               '问卷密码，红包抽奖',
         },
-        // {
-        //   title: '考试',
-        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
-        //
-        // },
-        // {
-        //   title: '投票',
-        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
-        //
-        // },
-        // {
-        //   title: '表单',
-        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
-        //
-        // },
-        // {
-        //   title: '测评',
-        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
-        //
-        // },
+        {
+          title: '投票',
+          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+
+        },
+        {
+          title: '报名',
+          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+
+        },
+        {
+          title: '考试问卷',
+          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+
+        },
+        {
+          title: '疫情打卡问卷',
+          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+        },
         // {
         //   title: '评估',
         //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
@@ -125,21 +129,68 @@ export default {
   methods: {
 
 
-    CreateNewQues(){
+    // 返回首页
+    BackToManageHome(){
+      this.$router.push({
+        path: '/Management',
+        query: {
+          username: this.$store.state.personalInfo.username
+        }
+      })
+    },
+
+    CreateNewQues(index){
 
       this.dialogFormVisible=true
+      this.QuesForm.Type = index
+      // console.log(this.dialogFormVisible)
+    },
+
+
+    // 转到设计页面
+    sendRequest(){
+      this.$router.push({
+        path: '/design',
+        query: {
+          username: this.$store.state.personalInfo.username,
+          id: this.QuesForm.id
+        }
+      });
+    },
+
+    Confirm(){
+      if (this.QuesForm.title==='' ){
+        this.$message({
+          showClose: true,
+          message: '请输入问卷标题',
+          type: 'error'
+        });
+        return
+      }
+      else if (this.QuesForm.Text === ''){
+        this.$message({
+          showClose: true,
+          message: '请输入问卷描述',
+          type: 'error'
+        });
+        return
+      }
+
       let pra = {
         Title: this.QuesForm.title,
         Text: this.QuesForm.Text,
         ShowNumber:false,
         Open:false,
+        username: this.$store.state.personalInfo.username,
+        Type: this.QuesForm.Type
       }
       request({
         url: '/question/createQuestionnaire',
         method: 'post',
         data: pra
       }).then(res=>{
-        // console.log(res)
+        console.log(this.$store.state.personalInfo)
+        console.log(res)
         // if (res.data.message === 'Success'){
         //
         // }
@@ -149,14 +200,8 @@ export default {
       }).catch(err=>{
         // console.log(err)
       })
-      // console.log(this.dialogFormVisible)
-    },
+      setTimeout(this.sendRequest,1000)
 
-
-    Confirm(){
-
-
-      this.$router.push('/design');
     }
   }
 }
@@ -178,6 +223,29 @@ export default {
     height: 20%;
   }
 
+.TypeNav .back {
+  /*background-color: black;*/
+  width: 8%;
+  height: 40%;
+  margin-top: 3%;
+  margin-left: 3%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #A4A4A4;
+  letter-spacing: 2px;
+  transition: .4s;
+}
+
+.TypeNav .back:hover {
+  box-shadow: 0 0 10px rgba(0,0,0,.4);
+  background-color: #F2F2F2;
+  color: #6E6E6E;
+  font-weight: 600;
+  font-size: 18px;
+  cursor: pointer;
+}
+
   .TypeList {
     width: 100%;
     height: 75vh;
@@ -190,6 +258,7 @@ export default {
 .TypeList ul {
   display: grid;
   grid-template-rows: repeat(2,1fr);
+  /*grid-template-rows: 3fr 2fr;*/
   grid-template-columns: repeat(3,1fr);
   column-gap: 10px;
   row-gap: 10px;

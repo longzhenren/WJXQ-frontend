@@ -1,15 +1,26 @@
+
+
+
 <template>
 
   <div v-if="singleChoice.edit==1" style="text-align: left">
     <el-form  label-width="80px"  >
-
-      <el-form-item label="单选题">
+      <el-form-item label="单选题" style="margin-bottom: 10px">
         <el-input v-model="singleChoice.question"
                   placeholder="请输入问题"
                   type="textarea">
         </el-input>
+
+      </el-form-item>
+      <el-form-item >
+        <el-input v-model="singleChoice.describe"
+                  placeholder="请输入描述"
+                  type="textarea" style="font-size:12px">
+        </el-input>
+
       </el-form-item>
     </el-form>
+    <div class="LeftDiv">
 
   <el-radio-group v-model="singleChoice.radio"   class="InnerDiv" >
 
@@ -29,7 +40,7 @@
     </el-form>
 
   </el-radio-group>
-
+    </div>
     <div class="RightDiv">
 
       <el-checkbox v-model="singleChoice.Must" class="RightElement" >必答题</el-checkbox>
@@ -45,12 +56,16 @@
   </div>
   <div v-else  class="InnerDiv" >
       <div >
+
         <label v-if="singleChoice.Must==true" style="color: red" >*</label>
               <label  >单选题 - {{singleChoice.question}}</label>
-        <el-divider></el-divider>
-      </div>
-    <el-radio-group v-model="singleChoice.radio"  class="InnerDiv"  >
 
+      </div>
+      <div >
+        <label  style="font-size: 12px;color: darkgrey"> {{singleChoice.describe}} </label>
+      </div>
+    <el-divider content-position="left" class="el-divider-top"></el-divider>
+    <el-radio-group v-model="singleChoice.radio"  class="InnerDiv"  >
       <el-radio   v-for="(choice,i) in singleChoice.choices" :label="singleChoice.choices[i]"
                   style="margin-left: 60px;margin-bottom:10px;display: block"
                   >
@@ -74,6 +89,7 @@ export default {
         id:"",
         number:"",
         edit:1,
+        describe: "",
         question:"",
         choices:["",""],
         radio: 0,
@@ -87,7 +103,9 @@ export default {
       this.singleChoice.edit = this.FatherData.edit;
       this.singleChoice.question = this.FatherData.question;
       this.singleChoice.choices = this.FatherData.choices;
+      this.singleChoice.describe = this.FatherData.describe;
       this.singleChoice.radio = this.FatherData.radio;
+      this.singleChoice.Must = this.FatherData.Must;
       // this.singleChoice = this.FatherData
     }
   },
@@ -102,6 +120,7 @@ export default {
           id:"",
           number:"",
           edit:1,
+          describe: "",
           question:"",
           choices:["",""],
           radio: 0,
@@ -118,7 +137,7 @@ export default {
       let find = false;
       for (let i = 0; i < this.singleChoice.choices.length; i++) {
         for (let j = i + 1; j < this.singleChoice.choices.length; j++) {
-          if (this.singleChoice.choices[i]=== this.singleChoice.choices[j] ) {
+          if (this.singleChoice.choices[i]== this.singleChoice.choices[j] ) {
             find = true; break;
           }
         }
@@ -156,6 +175,13 @@ export default {
   display: inline;
   margin-left: 20px
 }
-
+.LeftDiv{
+  text-align: left;
+  margin-left:70px;
+  margin-bottom:20px ;
+}
+.el-divider-top{
+  margin-top: 5px;
+}
 </style>
 

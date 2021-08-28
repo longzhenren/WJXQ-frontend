@@ -1,6 +1,6 @@
 <template>
   <div class="AnswerQuestionnaire">
-    <div class="content">
+    <div class="content" v-if="state == 0">
       <!-- 问卷标题 -->
       <h3>{{ Title }}</h3>
 
@@ -64,7 +64,7 @@
           <el-input
             placeholder="回答区域"
             type="textarea"
-            v-model="item.Answer"
+            v-model="item.AnswerText"
           ></el-input>
         </div>
 
@@ -83,9 +83,11 @@
       <!-- 提交按钮 -->
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
-    <div class="bottom">
-        <el-link type="info" href="/">问卷星球&nbsp;</el-link>
+    <div class="bottom" v-if="state == 0">
+      <el-link type="info" href="/">问卷星球&nbsp;</el-link>
     </div>
+    <div v-if="state == 1"><p>问卷已关闭</p></div>
+    <div v-if="state == 2"><p>已提交</p></div>
   </div>
 </template>
 
@@ -95,106 +97,145 @@ export default {
   name: "AnswerQuestionnaire",
   data() {
     return {
+      isWatch: false,
+      state: 0, //0：开放 1：关闭 2：提交
       ip: "",
-      id: this.$route.params.id,
+      Encodeid: this.$route.params.id,
+      questionnaireID: 0,
+      submissionID: 0,
       Title: "",
       ShowNumber: true,
       Text: "",
       Question: [],
     };
   },
-
+  computed: {
+    newQuestion() {
+      return JSON.parse(JSON.stringify(this.Question));
+    },
+  },
+  watch: {
+    newQuestion: {
+      handler(val, old) {
+        if (this.isWatch) this.autoSave(val, old);
+        else this.isWatch = true;
+      },
+      deep: true,
+    },
+  },
   methods: {
-    //提交
-    submit() {
-      //检测是否答完
-      let flag = true;
-      var q;
+    autoSave: _.debounce(function(val, old) {
+      if (!_.eq(val, old) && this.state !=2) {
+        this.$message.success("已自动保存");
+        this.save();
+        console.log("自动保存", val);
+      }
+    }, 3000),
+    save() {
+      let q;
       for (q in this.Question) {
         let i = this.Question[q];
-        if (i.Must == true && i.Type == 1 && i.RadioValue == 0) flag = false;
-        if (i.Must == true && i.Type == 2 && i.CheckList == []) flag = false;
-        if (i.Must == true && i.Type == 3 && i.Answer == "") flag = false;
-        if (i.Must == true && i.Type == 4 && i.Score == 0) flag = false;
-      }
-      if (flag == false) this.$message.error("请回答所有带*题目");
-      //向后端发送答案（按题分类）
-      else {
-        for (q in this.Question) {
-          let i = this.Question[q];
-          if (i.Type == 1)
-            request({
-              url: "/submit/savans",
-              method: "post",
-              headers: { "Content-Type": "application/json" },
-              data: {
-                submissionID: this.id,
-                questionID: i.id,
-                answerSelectionIDSet: [i.RadioValue],
-              },
-            });
-          if (i.Type == 2)
-            request({
-              url: "/submit/savans",
-              method: "post",
-              headers: { "Content-Type": "application/json" },
-              data: {
-                submissionID: this.id,
-                questionID: i.id,
-                answerSelectionIDSet: i.CheckList,
-              },
-            });
-          if (i.Type == 3)
-            request({
-              url: "/submit/savans",
-              method: "post",
-              headers: { "Content-Type": "application/json" },
-              data: {
-                submissionID: this.id,
-                questionID: i.id,
-                answerSelectionIDSet: i.Answer,
-              },
-            });
-          if (i.Type == 4)
-            request({
-              url: "/submit/savans",
-              method: "post",
-              headers: { "Content-Type": "application/json" },
-              data: {
-                submissionID: this.id,
-                questionID: i.id,
-                answerSelectionIDSet: i.Score,
-              },
-            });
+        if (i.Type == 1) {
+          request({
+            url: "/submit/savans",
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            data: {
+              submissionID: this.submissionID,
+              questionID: i.id,
+              answerSelectionIDSet: [i.RadioValue],
+            },
+          });
         }
-        this.$message.success("提交成功");
+        if (i.Type == 2)
+          request({
+            url: "/submit/savans",
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            data: {
+              submissionID: this.submissionID,
+              questionID: i.id,
+              answerSelectionIDSet: i.CheckList,
+            },
+          });
+        if (i.Type == 3)
+          request({
+            url: "/submit/savans",
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            data: {
+              submissionID: this.submissionID,
+              questionID: i.id,
+              answerText: i.AnswerText,
+            },
+          });
+        if (i.Type == 4)
+          request({
+            url: "/submit/savans",
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            data: {
+              submissionID: this.submissionID,
+              questionID: i.id,
+              answerScore: i.Score,
+            },
+          });
+        //console.log(i.id);
       }
+    },
+    submit() {
+      this.save();
+      request({
+        url: "/submit/submit",
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        data: {
+          submissionID: this.submissionID,
+        },
+      }).then((res) => {
+        console.log("总提交", res.data);
+        if (res.data.code === -1) this.$message.warning("有必答题未做");
+        else this.state = 2;
+      });
     },
     //排序
     sortRule(a, b) {
       return a.Number - b.Number;
     },
   },
-
   mounted() {
     //获取客户ip
     this.ip = localStorage.getItem("Ip");
-    console.log(this.ip);
-    //加载问卷
+    //console.log(this.ip);
+    //判断是否为预览
+    let pra;
+    if (this.$route.query.Mode === undefined) {
+      pra = {
+        EncodeID: this.Encodeid,
+        Mode: "",
+      };
+    } else {
+      pra = {
+        EncodeID: this.Encodeid,
+        Mode: this.$route.query.Mode,
+      };
+    }
+    //请求问卷数据
     request({
       url: "/question/answerQuestionnaire",
       method: "post",
-      data: {
-        EncodeID: this.id,
-      },
+      data: pra,
     })
       .then((res) => {
-        console.log(res);
+        console.log('源数据',res);
+        //存储问卷信息
+        if (res.data.Message === "Questionnaire is closed") this.state = 1;
         var Questionnaire = res.data.Questionnaire;
         this.Title = Questionnaire.Title;
         this.ShowNumber = Questionnaire.ShowNumber;
         this.Text = Questionnaire.Text;
-        //对this.Question[]赋值
+        this.questionnaireID = Questionnaire.id;
+        //存储题目数据并排序
         var i;
         for (i in Questionnaire.Question) {
           var q = Questionnaire.Question[i];
@@ -246,7 +287,7 @@ export default {
               Type: 3,
               Must: q.Must,
               Number: q.Number,
-              Answer: "",
+              AnswerText: "",
             });
           }
           if (q.Type == 4) {
@@ -266,7 +307,20 @@ export default {
           }
         }
         this.Question.sort(this.sortRule);
-        console.log(this.Question);
+        console.log("获取数据", this.Question);
+        //创建提交
+        request({
+          url: "/submit/crtsub",
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          data: {
+            submitUID: this.ip,
+            questionnaireID: this.questionnaireID,
+          },
+        }).then((res) => {
+          this.submissionID = res.data.submissionID;
+          console.log("submissionID", this.submissionID);
+        });
       })
       .catch((err) => {
         console.log(err);

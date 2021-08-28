@@ -1,7 +1,11 @@
 <template>
   <div class="designPage">
     <nav class="designNav">
-      <div class="QuesPreview"> 预览</div>
+      <div class="QuesPreview" @click="goPreview"> 预览</div>
+
+      <div class="BackHome">
+
+      </div>
 
       <div class="release" @click="designDone"> 编辑完成</div>
     </nav>
@@ -14,23 +18,42 @@
         </div>
 
 <!--        题型组件库-->
+
+
         <div class="components" v-if="ShowNum===0">
 
-          <div class="choices" v-for="(item,index) in QuesTypeList">
-            <div class="title"> {{ item.type }}</div>
-            <ul>
-              <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
-            </ul>
+<!--          <div class="choices" v-for="(item,index) in QuesTypeList">-->
+<!--&lt;!&ndash;            <div class="title"> {{ item.type }}</div>&ndash;&gt;-->
+
+<!--          </div>-->
+          <el-collapse v-model="activeName" accordion v-for="(item,index) in QuesTypeList" >
+            <el-collapse-item :name="index" class="choices">
+              <template slot="title">
+                <div class="title"> {{ item.type }}</div>
+              </template>
+              <ul ref="choices">
+                <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
+              </ul>
+            </el-collapse-item>
+          </el-collapse>
+
+
+          <div class="choicesPreview" ref="choicesPreview">
+            <div class="arrow"></div>
+            题目预览
           </div>
 
         </div>
 
 
 <!--        该问卷的大纲-->
-        <div class="outline" v-else >
+        <div class="outline" v-else>
           <ul ref="outline_nav">
+            <li class="outlineFirstItem">
+              {{ QuesTitle }}
+            </li>
             <li v-for="(item,index) in QuesList" class="outlineItem" @click="IndexNav(index)">
-              <span v-if="isShowQuesNum">{{ item.idx + 1 }}</span>
+              <span>{{ item.idx + 1 }}. </span>
               {{ item.Stem }}
             </li>
           </ul>
@@ -41,11 +64,11 @@
 
       <div class="designPreview">
 
-          <div class="QuesBase">
-            <div class="QuesTitle">{{ QuesTitle }}</div>
+          <div class="QuesBase" >
+            <div class="QuesTitle" @click="editQuestionnaireHead">{{ QuesTitle }}</div>
 
-            <div class="QuesIntro">
-              {{ QuesText }}
+            <div class="QuesIntro" @click="editQuestionnaireHead">
+              点击可修改问卷信息
             </div>
 
             <div class="AutoNumSwitch">
@@ -62,16 +85,17 @@
 
         <vue-scroll ref="vs"
             :ops="ops" >
-          <ul class="QuesList" v-if="QuesList.length!==0">
+          <ul class="QuesList" v-if="QuesList.length!==0" ref="list">
 
               <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="item.isDraggable"
                   @dragstart="handleDragStart($event,item)"
                   @dragover.prevent="handleDragOver($event)"
                   @dragenter="handleDragEnter($event,item)"
                   @dragend="handleDragEnd($event,item)">
-                <span v-if="isShowQuesNum">{{ item.idx + 1 }}</span>
-                {{ item.Stem }}
 
+<!--                {{ item.Stem }}-->
+                <span v-if="isShowQuesNum">{{ item.idx + 1 }}. </span>
+                <span v-else></span>
                 <div class="componentsItem" @mouseover="OverDrag(index,item)" @mouseleave="LeaveDrag(index,item)">
                   <SingleChoose v-if="item.type==='singleChoice'" ref="child"
                                 @saveSingleData="SingleChoiceSave($event,item)"
@@ -112,7 +136,42 @@
 
         </vue-scroll>
 
+
+
+        <div class="quickbtn">
+
+        </div>
+
       </div>
+
+<!--      编辑问卷侧边栏-->
+      <div class="editQuestion">
+<!--        该题目基本信息-->
+        <div class="quesInfo">
+
+        </div>
+
+
+      </div>
+
+      <el-dialog title="修改问卷头信息" :visible.sync="dialogFormVisible">
+        <el-form >
+          <el-form-item label="问卷标题">
+            <el-input v-model="QuesTitle" autocomplete="off" placeholder="请输入标题"></el-input>
+          </el-form-item>
+
+          <el-form-item label="问卷描述">
+            <el-input v-model="QuesText" autocomplete="off" placeholder="请输入标题"></el-input>
+          </el-form-item>
+
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="Confirm">确定修改</el-button>
+        </div>
+
+
+      </el-dialog>
+
     </div>
 
   </div>
@@ -127,6 +186,7 @@ import FillBlank from "../../components/QuestionTemplates/FillBlank";
 import Evaluate from "../../components/QuestionTemplates/Evaluate";
 import {request} from "../../network/request";
 
+
 export default {
   name: "DesignPage",
   components:{
@@ -137,11 +197,41 @@ export default {
   },
   data(){
     return {
+
+      dialogFormVisible: false,
+
+      activeName: 0,
+
       ops: {
-        vuescroll: {},
+        vuescroll: {
+          mode: 'native',
+          sizeStrategy: 'percent',
+          detectResize: true,
+          /** 锁定一种滚动方向， 锁定的方向为水平或者垂直方向上滑动距离较大的那个方向 */
+          locking: true,
+        },
         scrollPanel: {},
-        rail: {},
-        bar: {}
+        rail: {
+          background: '#A9F5F2',
+          opacity: .2,
+          size: '6px',
+          specifyBorderRadius: false,
+          gutterOfEnds: null,
+          gutterOfSide: '2px',
+          keepShow: false
+        },
+        bar: {
+          showDelay: 300,
+          onlyShowBarOnScroll: true,
+          keepShow: false,
+          background: '#2ECCFA',
+          opacity: .8,
+          hoverStyle: false,
+          specifyBorderRadius: false,
+          minSize: false,
+          size: '6px',
+          disable: false,
+        }
       },
 
 
@@ -156,6 +246,7 @@ export default {
           details: [
               '单选',
               '多选',
+              '下拉',
           ]
         },
         {
@@ -218,7 +309,9 @@ export default {
         // 发布时间
         ReleaseTime: '',
         // 是否显示题号
-        isShowSubNum: false
+        isShowSubNum: false,
+
+        EncodeID: '',
       },
 
       // 当前正在拖动的元素
@@ -229,129 +322,254 @@ export default {
     bus.$emit('NewQuesDesigned',this.Questionnaire)
   },
   methods: {
+
+    Confirm(){
+      this.Questionnaire.Text = this.QuesText;
+      this.Questionnaire.title = this.QuesTitle;
+      this.dialogFormVisible = false;
+    },
+
+    // 编辑题目标题及说明
+    editQuestionnaireHead(){
+      this.dialogFormVisible = true;
+    },
+
+
+    // 进行预览
+    goPreview(){
+      let psthH = '/answer/'+this.Questionnaire.EncodeID
+      this.$router.push({
+        path: psthH,
+        query: {
+          Mode: 'preview',
+        }
+      })
+    },
+
+    // 转到发布页面
+    sendRequest(){
+      this.$router.push({
+        path: '/release',
+        query: {
+          username: this.$route.query.username,
+          id: this.QuesId
+        }
+      });
+    },
+
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
       let child = this.$refs.child;
-      for (let i = 0; i < child.length; i++) {
-        child[i].save();
+      if (child !== undefined){
+        for (let i = 0; i < child.length; i++) {
+          // console.log(child[i].singleChoice.edit);
+          let edit;
+          if (child[i].singleChoice!==undefined) {
+            edit= child[i].singleChoice.edit;
+          }
+          else if ( child[i].multiChoice!==undefined){
+            edit= child[i].multiChoice.edit;
+          }
+          else if (child[i].fillBlank!==undefined){
+            edit= child[i].fillBlank.edit;
+          }
+          else if (child[i].evaluate!==undefined){
+            edit= child[i].evaluate.edit;
+          }
+          if (edit === 1) {
+            child[i].save();
+          }
+        }
       }
-      this.$message({
-        showClose: true,
-        message: '保存成功',
-        type: 'success'
-      });
+
       this.Questionnaire.title = this.QuesTitle;
       this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
       this.Questionnaire.Text = this.QuesText
-      // this.sendAndSaveNewQues(this.Questionnaire)
-      // this.$router.push('/release')
+      this.sendAndSaveNewQues(this.Questionnaire)
+      setTimeout(this.sendRequest,500)
     },
 
     // 创建问卷，向后端发送数据
     sendAndSaveNewQues(Ques){
-      console.log(Ques);
+      // console.log(Ques);
       let  FinalQuestionnaire = {
         id: 0,
-        CreateUser: '',
-        CreateTime: '',
-        UpdateTime: '',
-        ReleaseTime: '',
-        Open: false,
+        // Open: false,
         Text: '',
         Title: '',
         Question: [],
         ShowNumber: false,
+        username: this.$route.query.username,
       }
-      FinalQuestionnaire.id=Ques.id;
+      FinalQuestionnaire.id = this.QuesId;
       FinalQuestionnaire.Title = Ques.title;
-      FinalQuestionnaire.CreateTime = Ques.CreateTime;
-      FinalQuestionnaire.Open = Ques.Open;
-      FinalQuestionnaire.CreateUser = Ques.CreateUser;
-      FinalQuestionnaire.ReleaseTime = Ques.ReleaseTime;
-      FinalQuestionnaire.UpdateTime = Ques.UpdateTime;
+      FinalQuestionnaire.Text = Ques.Text;
+      // FinalQuestionnaire.Open = Ques.Open;
       FinalQuestionnaire.ShowNumber = Ques.isShowSubNum;
       for (let i = 0; i < Ques.Question.length; i++) {
+        console.log(Ques.Question[i])
         let QuesItem = Ques.Question[i];
-        if (QuesItem.type === 'singleChoice'){
-          let singleChoice = {
-            id: QuesItem.id,
-            Stem: QuesItem.Stem,
-            Type: 1,
-            // ChoiceCount: 1,
-            Questionnaire: Ques.id,
-            Choice: [],
-            Number: i,
-            Must: QuesItem.subData.Must,
-          }
-          for (let j = 0; j < QuesItem.subData.choices.length; j++) {
-            let CItem = QuesItem.subData.choices[j];
-            // console.log(CItem)
-            let Item = {
-              Text: CItem,
-            }
-            singleChoice.Choice.push(Item);
-          }
-          FinalQuestionnaire.Question.push(singleChoice);
-        }
-
-        else if (QuesItem.type === 'multiChoose'){
-          let mutiChoice= {
-            Stem: '',
-            Type: 2,
-            maxCount: 1,
-            minCount: 1,
-            Choice: [],
-          }
-          mutiChoice.Stem = QuesItem.Stem;
-          mutiChoice.Choice = QuesItem.subData.choices;
-          mutiChoice.maxCount = QuesItem.subData.max;
-          mutiChoice.minCount = QuesItem.subData.min;
-          FinalQuestionnaire.Question.push(mutiChoice);
-        }
+        let Question = this.changeDataStructToBackend(QuesItem);
+        FinalQuestionnaire.Question.push(Question);
       }
+
 
 
       // console.log(FinalQuestionnaire)
-      // request({
-      //   url: '/question/modifyQuestionnaire',
-      //   method: 'post',
-      //   data: FinalQuestionnaire
-      // }).then(res=>{
-      //   console.log(res)
-      // }).catch(err=>{
-      //   console.log(err)
-      // })
-    },
-
-
-
-    // 获得已创建设计未完成的问卷
-
-    getNeedDesignQuestionnaire(CreateUser,QuesId){
       request({
-        url: '/question/getQuestionnaire',
-        method: 'GET',
-        params: {
-          CreateUser: CreateUser,
+        url: '/question/modifyQuestionnaire',
+        method: 'post',
+        data: FinalQuestionnaire
+      }).then(res=>{
+        console.log(res)
+        if (res.data.Message === 'Success'){
+          this.$message({
+            showClose: true,
+            message: '保存成功',
+            type: 'success'
+          });
         }
+      }).catch(err=>{
+        console.log(err)
       })
     },
 
 
 
-    ShowItem(item){
-      console.log(item)
+
+    // 展示题目预览
+    showChoicesPreview(){
+      let choices = this.$refs.choices;
+      // console.log(choices)
+      let timer=null;
+      let choicesPreview = this.$refs.choicesPreview;
+      for (let i = 0; i < choices.length; i++) {
+        let choice = choices[i];
+        // console.log(choice)
+        let li = choice.children;
+        for (let j = 0; j < li.length; j++) {
+          let liElement = li[j];
+          liElement.addEventListener('mouseover',function () {
+            let top = liElement.offsetTop;
+            timer = setTimeout(function () {
+              choicesPreview.style.top = top+'px';
+              choicesPreview.style.display = 'block'
+            },500)
+
+
+          })
+          liElement.addEventListener('mouseout',function () {
+            // let top = liElement.offsetTop;
+            choicesPreview.style.display = 'none'
+            clearTimeout(timer);
+            // choicesPreview.style.top = top
+          })
+        }
+        // console.log(li)
+      }
+      // for (let i = 0; i < choic; i++) {
+      //
+      // }
+    },
+
+    // 向后端传送数据前进行格式转换
+    changeDataStructToBackend(item,mode){
+      let type =0;
+      let Question;
+      switch (item.type) {
+        case 'singleChoice' :
+          type=1;
+          break;
+        case 'multiChoose' :
+          type=2;
+          break;
+        case 'fillBlank' :
+          type=3;
+          break;
+        case 'evaluate' :
+          type=4;
+          break;
+      }
+      if (mode==='sendQuestion'){
+         Question = {
+          id: item.id===undefined?0:item.id,
+          Stem: item.Stem,
+          Type: type,
+           // MaxChoice: item.max===undefined?
+           MaxChoice: item.subData.max===undefined?0:item.subData.max,
+           MinChoice: item.subData.min===undefined?0:item.subData.min,
+          Questionnaire: this.QuesId===undefined?0:this.QuesId,
+          Must: item.subData.Must===undefined?false:item.subData.Must,
+          Number: item.idx,
+          Choice: [],
+          Describe: item.subData.describe,
+          username: this.$route.query.username
+        }
+      }
+      else {
+         Question = {
+          id: item.id===undefined?0:item.id,
+          Stem: item.Stem,
+          Type: type,
+           MaxChoice: item.subData.max===undefined?0:item.subData.max,
+           MinChoice: item.subData.min===undefined?0:item.subData.min,
+          Questionnaire: this.QuesId===undefined?0:this.QuesId,
+          Must: item.subData.Must===undefined?false:item.subData.Must,
+          Number: item.idx,
+          Choice: [],
+          Describe: item.subData.describe,
+        }
+      }
+
+      let choices = item.subData.choices;
+      let describes = item.subData.describes;
+      let level = item.subData.level;
+      // console.log(choices)
+      if (choices!==undefined){
+        for (let i = 0; i <choices.length ; i++) {
+          let CItem = {
+            Text: choices[i],
+          }
+          Question.Choice.push(CItem);
+        }
+      }
+      if (describes !== undefined && level !== undefined){
+        for (let i = 0; i <describes.length ; i++) {
+          let CItem = {
+            Text: describes[i],
+            Score: level[i],
+          }
+          Question.Choice.push(CItem);
+        }
+      }
+      return Question;
+    },
+
+    // 题目修改保存
+    modifyQuestion(item){
+      // console.log("aaa")
+      // console.log(item)
+      let Question = this.changeDataStructToBackend(item,'sendQuestion');
+
+      // console.log(Question)
+      request({
+        url: '/question/modifyQuestion',
+        method: 'post',
+        data: Question
+      }).then(res=>{
+        console.log(res)
+      }).catch( err=> {
+        console.log(err);
+      })
     },
 
     // 单选题数据保存
     SingleChoiceSave(val,item){
-      // console.log(item);
-      // console.log(item)
-      // console.log(val)
       item.subData = val;
       item.Stem=val.question
-      // console.log(item)
+
+      this.modifyQuestion(item);
     },
 
 
@@ -359,19 +577,25 @@ export default {
     MultiChoiceSave(val,item){
       item.subData = val;
       item.Stem=val.question
+
+      this.modifyQuestion(item);
     },
 
     // 填空数据保存
     FillBlankSave(val,item){
       item.subData = val;
       item.Stem=val.Questionnaire
-      console.log(val)
+      // console.log(val)
+
+      this.modifyQuestion(item);
     },
 
     // 评价数据保存
     EvaluateSave(val,item){
       item.subData = val;
       item.Stem=val.question
+
+      this.modifyQuestion(item);
     },
 
     // 增加题目
@@ -392,17 +616,18 @@ export default {
                id: 0,
             }
               pra = {
-              Questionnaire: this.Questionnaire.id,
+                Questionnaire: this.QuesId,
               Type: 1,
               MinChoice: 1,
               MaxChoice: 1,
               Stem: Opt.Stem,
+                username: this.$store.state.personalInfo.username,
               Number: Opt.idx,
             }
 
             this.addNewQuestionToBackend(Opt,pra)
 
-            this.addNewQuesToQuesList(Opt);
+            // this.addNewQuesToQuesList(Opt);
             break;
 
             // 增加多选
@@ -417,15 +642,16 @@ export default {
             }
 
             pra = {
-              Questionnaire: this.Questionnaire.id,
+              Questionnaire: this.QuesId,
               Type: 2,
               MinChoice: 1,
               MaxChoice: 2,
               Stem: Opt.Stem,
               Number: Opt.idx,
+              username: this.$store.state.personalInfo.username
             }
             this.addNewQuestionToBackend(Opt,pra)
-            this.addNewQuesToQuesList(Opt);
+            // this.addNewQuesToQuesList(Opt);
             break;
 
             // 增加下拉菜单
@@ -434,6 +660,7 @@ export default {
             break;
         }
       }
+
       // 增加填空题
       else if (type===1){
         Opt = {
@@ -445,14 +672,15 @@ export default {
         }
 
         pra = {
-          Questionnaire: this.Questionnaire.id,
+          Questionnaire: this.QuesId,
           Type: 3,
           Stem: Opt.Stem,
+          username: this.$store.state.personalInfo.username,
           Number: Opt.idx,
         }
 
         this.addNewQuestionToBackend(Opt,pra)
-        this.addNewQuesToQuesList(Opt);
+        // this.addNewQuesToQuesList(Opt);
       }
       // 增加评分题
       else if (type===2){
@@ -465,14 +693,15 @@ export default {
         }
 
         pra = {
-          Questionnaire: this.Questionnaire.id,
+          Questionnaire: this.QuesId,
           Type: 4,
           Stem: Opt.Stem,
           Number: Opt.idx,
+          username: this.$store.state.personalInfo.username
         }
 
         this.addNewQuestionToBackend(Opt,pra)
-        this.addNewQuesToQuesList(Opt);
+        // this.addNewQuesToQuesList(Opt);
       }
     },
 
@@ -481,10 +710,26 @@ export default {
       request({
         url: '/question/createQuestion',
         method: 'post',
-        data: pra
+        data: pra,
       }).then(res=>{
         console.log(res)
-        Opt.id=res.data.id
+        if (res.data.Message === 'Success'){
+          this.$message({
+            showClose: true,
+            message: '创建题目成功',
+            type: 'success'
+          });
+          Opt.id=res.data.id
+          this.addNewQuesToQuesList(Opt);
+        }
+        else {
+          this.$message({
+            showClose: true,
+            message: '添加失败',
+            type: 'error'
+          });
+        }
+
       }).catch(err=>{
         console.log(err)
       })
@@ -494,6 +739,7 @@ export default {
     addNewQuesToQuesList(SubjectObj){
       let length = this.QuesList.length;
       this.QuesList.splice(length,0,SubjectObj);
+      this.IndexNav(length);
     },
 
     // 删除题目列表中的题目
@@ -507,9 +753,33 @@ export default {
         });
         return;
       }
+      let quesListElement = quesList[index];
+      // console.log(quesListElement)
+      console.log(quesListElement.id)
+      let  deleteItem ={
+        id: quesListElement.id,
+        username: this.$store.state.personalInfo.username
+      }
+      request({
+        url: '/question/deleteQuestion',
+        method: 'post',
+        data: deleteItem
+      }).then(res=> {
+        console.log(res)
+        if (res.data.Message === 'Success'){
+          this.$message({
+            showClose: true,
+            message: '删除成功',
+            type: 'success'
+          });
+        }
+      }).catch(err=>{
+        console.log(err)
+      })
       quesList.splice(index,1);
       for (let i = 0; i < quesList.length; i++) {
         quesList[i].idx=i;
+        this.modifyQuestion(quesList[i]);
       }
     },
 
@@ -517,7 +787,7 @@ export default {
     // 上移
     moveUp(index){
       // console.log('上')
-      console.log(this.QuesList)
+      // console.log(this.QuesList)
       let quesList = this.QuesList;
       if (index===0){
         this.$message({
@@ -530,25 +800,57 @@ export default {
       //
       let src = quesList[index];
       let dest = quesList[index-1];
+      // this.moveUpQuesAni(index,index-1);
       // console.log(src)
       // console.log(dest)
       quesList.splice(index,1,dest);
       quesList.splice(index-1,1,src);
-      console.log(this.QuesList)
-      for (let i = 0; i <= index; i++) {
-        console.log(quesList[i])
-        // quesList[i].idx=i;
-      }
+      // console.log(this.QuesList)
+      // for (let i = 0; i <= index; i++) {
+      //   console.log(quesList[i])
+      //   // quesList[i].idx=i;
+      // }
+
       for (let i = 0; i <= index; i++) {
         // console.log(quesList[i])
         quesList[i].idx=i;
+        this.modifyQuestion(quesList[i]);
+      }
+    },
+
+
+    showOptions(){
+      if (this.$refs.list) {
+        let children = this.$refs.list.children;
+        // console.log(children)
+        for (let i = 0; i < children.length; i++) {
+          let child = children[i];
+          child.addEventListener("mouseover",function () {
+            child.classList.add('QuesItemHover')
+            let element = child.querySelector(".options");
+            // console.log(element)
+            if (!element.classList.contains('OptActive')){
+              element.classList.add('OptActive')
+            }
+
+          })
+          child.addEventListener('mouseout',function () {
+            child.classList.remove('QuesItemHover')
+            let element = child.querySelector(".options");
+            // console.log(element)
+            if (element.classList.contains('OptActive')){
+              element.classList.remove('OptActive')
+            }
+            // element.classList.remove('OptActive')
+          })
+        }
       }
     },
 
     // 下移
     moveDown(index){
       // console.log('下')
-      console.log(this.QuesList)
+      // console.log(this.QuesList)
       let quesList = this.QuesList;
       if (index===quesList.length-1){
         this.$message({
@@ -564,10 +866,9 @@ export default {
       quesList.splice(index+1,1,src);
       for (let i = 0; i < quesList.length; i++) {
         quesList[i].idx=i;
+        this.modifyQuestion(quesList[i]);
       }
     },
-
-
 
     // 快速导航
     IndexNav(index){
@@ -576,6 +877,8 @@ export default {
       for (let i = 0; i < index; i++) {
         height+=QuesItems[i].clientHeight;
       }
+      // height-=10*index;
+      height -= 8;
       this.$refs.vs.scrollTo({
         y: height
       },
@@ -600,7 +903,7 @@ export default {
     // 切换工具栏
     changeDesignTools(idx){
       this.ShowNum=idx
-      // console.log(this.ShowNum)
+      console.log(this.ShowNum)
     },
 
 
@@ -630,6 +933,7 @@ export default {
 
       for (let i = 0; i < newItems.length; i++) {
         newItems[i].idx=i;
+        this.modifyQuestion(newItems[i]);
       }
 
       this.QuesList = newItems
@@ -637,34 +941,181 @@ export default {
 
     // 接受输入的问卷标题
     acceptQuesTitle(Ques){
-      console.log(Ques)
-      console.log(Ques.id)
-      console.log(Ques.title)
-      console.log(Ques.Text)
+      let params = this.$route.query;
       this.QuesTitle=Ques.title;
       this.QuesText = Ques.Text;
-      this.QuesId = Ques.id;
-
-      // console.log(this.QuesTitle)
-
+      this.QuesId = Number(params.id)===0?Ques.id:Number(params.id);
+      localStorage.QuesId = this.QuesId
+      localStorage.QuesText = this.QuesText
+      localStorage.QuesTitle = this.QuesTitle
+      // this.Questionnaire.id = this.QuesId
+      // this.Questionnaire.title = this.QuesTitle
+      // this.Questionnaire.Text = this.QuesText
+      console.log(typeof this.QuesId)
+      // this.getQuestionnaire(this.QuesId)
     },
 
 
     // 从发布页面接受原先的问卷继续设计
     continueDesign(Ques){
-      this.QuesId = Ques.id;
+      let params = this.$route.query;
+      this.QuesId = Number(params.id)===0?Ques.id:Number(params.id);
       this.QuesTitle = Ques.title;
       this.QuesText = Ques.Text;
-      this.QuesList = Ques.Question
       this.isShowQuesNum = Ques.isShowSubNum
-      console.log(Ques)
     },
 
+    // 调整问卷格式
+    adjustDataStruct(Questionnaire){
+      let Ques = {
+        id: Questionnaire.id,
+        Title: Questionnaire.Title,
+        // CreateUser: '',
+        CreateTime: Questionnaire.CreateTime,
+        UpdateTime: Questionnaire.UpdateTime,
+        ReleaseTime: Questionnaire.ReleaseTime ,
+        ShowNumber: Questionnaire.ShowNumber,
+        Open: Questionnaire.Open,
+        Text: Questionnaire.Text,
+        Question: [],
+        EncodeID: Questionnaire.EncodeID
+      }
+      this.isShowQuesNum = Questionnaire.ShowNumber
+      this.QuesText = Questionnaire.Text
+      this.QuesTitle = Questionnaire.Title
+
+      let Questions = Questionnaire.Question.sort(function(a,b){
+        return a.Number - b.Number;
+      });
+
+
+      this.QuesList = [];
+      for (let i = 0; i < Questions.length; i++) {
+        let questionItem = Questions[i];
+        // console.log(questionItem)
+        let type ;
+        let QuesInfo ;
+        switch (questionItem.Type) {
+          case 1 :
+            type='singleChoice';
+            console.log(questionItem.Describe)
+            QuesInfo ={
+              id:"",
+              number:"",
+              edit:0,
+              describe: questionItem.Describe,
+              question: questionItem.Stem,
+              choices:[],
+              radio: 0,
+              Must:questionItem.Must,
+            }
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.choices.push(questionItem.Choice[j].Text);
+            }
+            // console.log(QuesInfo)
+            break;
+          case 2 :
+            type='multiChoose';
+            QuesInfo = {
+              edit:0,
+              describe:questionItem.Describe,
+              question:questionItem.Stem,
+              choices:[],
+              radio:[],
+              max:questionItem.MaxChoice,
+              min:questionItem.MinChoice,
+              Must:questionItem.Must,
+            }
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.choices.push(questionItem.Choice[j].Text);
+            }
+            break;
+          case 3 :
+            type='fillBlank';
+            QuesInfo = {
+              id:"",
+              Number:"",
+              edit:0,
+              describe:questionItem.Describe,
+              Questionnaire:questionItem.Stem,
+              Must: questionItem.Must,
+              Answer:""
+            }
+            break;
+          case 4 :
+            type='evaluate';
+            QuesInfo = {
+              edit:0,
+              question:questionItem.Stem,
+              score:null,
+              describe:questionItem.Describe,
+              describes:[],
+              level:[],
+              radio:[],
+              Must: questionItem.Must,
+            }
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              let choiceElement = questionItem.Choice[j];
+              QuesInfo.describes.push(choiceElement.Text);
+              QuesInfo.level.push(choiceElement.Score);
+            }
+            // console.log(QuesInfo)
+            break;
+        }
+        let DesignQuestionItem = {
+          Stem: questionItem.Stem,
+          idx: questionItem.Number,
+          isDraggable: true,
+          subData: QuesInfo,
+          type: type,
+          id: questionItem.id
+        }
+        this.QuesList.push(DesignQuestionItem)
+      }
+      // console.log(this.QuesList)
+      Ques.Question = this.QuesList
+      this.Questionnaire = Ques
+      // console.log(Questionnaire);
+    },
+
+    // 向后端发送请求接受问卷信息
+    getQuestionnaire(){
+      console.log(typeof this.QuesId)
+      console.log(this.QuesId)
+
+      this.QuesId = Number(this.$route.query.id)
+
+      // 获取问卷
+      request({
+        url: '/question/questionnaireID',
+        method: 'get',
+        params: {
+          id: this.QuesId
+        }
+      }).then(res=>{
+        console.log(res);
+        if (res.data.Message !== 'No Such Questionnaire'){
+          this.adjustDataStruct(res.data.Questionnaire);
+        }
+      }).catch(err=>{
+        // console.log(err)
+      })
+    },
 
   },
+  updated() {
+    // console.log(this.$refs.list)
+    this.showChoicesPreview();
+    this.showOptions();
+  },
   mounted() {
+    // this.showOptions();
+
+    // console.log(this.$refs.list);
+
     this.Questionnaire.id = this.QuesId
   },
+
   created() {
     // 从创建页面转到设计页面
     bus.$on('createNewQues',this.acceptQuesTitle)
@@ -672,12 +1123,33 @@ export default {
     // 从发布页面转会设计页面
     bus.$on('backToDesign',this.continueDesign)
 
+    // console.log(this.QuesId)
+
+    setTimeout(this.getQuestionnaire,200);
+
   },
   watch: {
     QuesList(newList,oldList){
       this.QuesList=newList;
       // console.log(this.QuesList)
       // this.ShowOptions();
+    },
+
+    QuesId(newID){
+      localStorage.QuesId = newID
+      console.log(localStorage.QuesId)
+    },
+
+    QuesTitle(newTitle){
+      localStorage.QuesTitle = newTitle
+    },
+
+    QuesText(newText){
+      localStorage.QuesText = newText
+    },
+
+    Questionnaire(newText){
+      localStorage.Questionnaire = newText
     }
   }
 }
@@ -690,7 +1162,7 @@ export default {
     background-color: #E6E6E6;
   }
   .designNav {
-    background-color: #380B61;
+    background-color: #2E2E2E;
     height: 6vh;
     position: relative;
   }
@@ -738,7 +1210,7 @@ export default {
   }
 
   .designContent {
-    width: 80vw;
+    width: 95vw;
 
     box-sizing: border-box;
     height: 94vh;
@@ -746,9 +1218,24 @@ export default {
     padding-top: 10px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 2fr 7fr;
+    grid-template-columns: 15fr 50fr 30fr;
     column-gap: 15px;
   }
+
+  .designContent .editQuestion {
+    height: 98%;
+    background-color: pink;
+
+  }
+
+  .designContent .editQuestion .quesInfo {
+    background-color: #58ACFA;
+    height: 20%;
+    width: 95%;
+    margin: 0 auto;
+    margin-top: 5px;
+  }
+
 
   .designContent .designComponent {
     background-color: white;
@@ -757,6 +1244,7 @@ export default {
     box-shadow: 0 0 10px rgba(0,0,0,.2);
     /*box-sizing: border-box;*/
     padding: 10px;
+    /*width: 15vw;*/
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -791,7 +1279,28 @@ export default {
 
   .designContent .designComponent .components {
     /*background-color: greenyellow;*/
+    position: relative;
     height: 90%;
+  }
+
+  .designContent .designComponent .components .choicesPreview {
+    height: 150px;
+    width: 500px;
+    position: absolute;
+    left: 15vw;
+    display: none;
+    background-color: white;
+    box-shadow: 0 0 2px rgba(0,0,0,.4);
+    z-index: 99;
+  }
+
+  .designContent .designComponent .components .choicesPreview .arrow {
+    background-color: white;
+    width: 20px;
+    height: 20px;
+    /*top: 50px;*/
+    transform: translate(-30%,50%) rotate(45deg) ;
+    /*transform: ;*/
   }
 
   .designContent .designComponent .components .choices {
@@ -811,23 +1320,33 @@ export default {
 
   .designContent .designComponent .components .choices ul {
     display: flex;
-    justify-content: space-around;
-    /*height: 70%;*/
-    flex-direction: column;
-    /*align-content: space-around;*/
+    justify-content: start;
+    /**/
+    flex-direction: row;
+    flex-wrap: wrap;
   }
   .designContent .designComponent .components .choices ul li {
-    width: 100%;
-    height: 40px;
+    width: 45%;
+    /*flex: 40%;*/
+    height: 30px;
+    margin: 5px;
     /*background-color: red;*/
     text-align: left;
-    margin-left: 20px;
-
+    line-height: 30px;
+    box-sizing: border-box;
+    padding-left: 10px;
+    transition: .4s;
+    color: #58ACFA;
+    font-weight: 600;
+    word-spacing: 5px;
+    letter-spacing: 5px;
   }
 
   .designContent .designComponent .components .choices ul li:hover {
-    color: #58ACFA;
+    background-color: #58ACFA;
     cursor: pointer;
+    color: white;
+    border-radius: 99999px;
   }
 
 
@@ -836,20 +1355,55 @@ export default {
     height: 90%;
   }
 
-  .designContent .designComponent .outline .outlineItem {
-    height: 30px;
+  .designContent .designComponent .outline .outlineFirstItem {
+    height: 50px;
     border-bottom: 1px solid rgba(0,0,0,.2);
     line-height: 30px;
+    box-sizing: border-box;
+    padding: 10px 5px;
     text-align: start;
+    font-size: 18px;
+    color: #A4A4A4;
+    transition: .4s;
+  }
+  .designContent .designComponent .outline .outlineItem {
+    height: 50px;
+    border-bottom: 1px solid rgba(0,0,0,.2);
+    line-height: 30px;
+    box-sizing: border-box;
+    padding: 10px 5px;
+    text-align: start;
+    transition: .4s all ease-in-out;
+
+  }
+
+  .designContent .designComponent .outline .outlineItem:hover {
+    cursor: pointer;
+    color: #58ACFA;
+    font-weight: 500;
+    background-color: #F2F2F2;
   }
 
   .designContent .designPreview {
     /*background-color: blue;*/
     box-sizing: border-box;
     height: 92vh;
+    /*width: 60vw;*/
     /*position: relative;*/
+    position: relative;
     overflow: hidden;
     box-shadow: 0 0 10px rgba(0,0,0,.2);
+  }
+
+
+  .designContent .designPreview .quickbtn {
+    background-color: pink;
+    width: 5%;
+    height: 10%;
+    position: absolute;
+    top: 20%;
+    right: -10% ;
+    z-index: 2;
   }
 
 
@@ -862,27 +1416,37 @@ export default {
     padding-top: 20px ;
     position: relative;
     box-sizing: border-box;
+    z-index: 1;
   }
 
   .designContent .designPreview  .QuesBase .QuesTitle {
     font-size: 22px;
     color: #A4A4A4;
     font-weight: 600;
+    cursor: pointer;
   }
 
   .designContent .designPreview  .QuesBase .QuesIntro {
     /*background-color: #58ACFA;*/
-    width: 40%;
+    /*width: 40%;*/
     height: 30%;
     position: absolute;
     bottom: 20px;
     left: 20px;
     text-align: left;
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 14px;
+    /*font-weight: 600;*/
     display: flex;
     align-items: center;
-    color: #A4A4A4;
+    /*color: #A4A4A4;*/
+    cursor: pointer;
+    transition: .4s all ease-in-out;
+  }
+
+  .designContent .designPreview  .QuesBase .QuesIntro:hover {
+    text-decoration: underline;
+    color: #58ACFA;
+    font-style: oblique;
   }
 
   .designContent .designPreview  .QuesBase .AutoNumSwitch {
@@ -924,20 +1488,58 @@ export default {
 
   .designContent .designPreview .QuesList {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /*justify-content: center;*/
+    /*background-color: #A9E2F3;*/
+    /*opacity: .75;*/
     padding-bottom: 138px;
+    margin-top: 9px;
+    z-index: 1;
   }
 
   .designContent .designPreview .QuesList .QuesItem {
     width: 100%;
-    min-height: 130px;
+    min-height: 50px;
     padding-top: 20px;
-    padding-bottom: 10%;
-    /*margin: 20px 0;*/
+    padding-bottom: 5%;
+    padding-left: 25px;
+    padding-right: 25px;
+    /*box-sizing: ;*/
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    /*justify-content: space-around;*/
+    /*margin-bottom: 15px ;*/
+    /*margin: 8px 0;*/
+    /*z-index: 2;*/
+    /*margin-bottom: -10px;*/
+    /*position: relative;*/
+    /*top: -10px;*/
+    /*border-bottom-right-radius: 20px;*/
+    /*border-bottom-left-radius: 20px;*/
+    /*border-top-right-radius: 20px;*/
+    /*border-top-left-radius: 20px;*/
+    /*opacity: .7;*/
+    transform: translateY(-15px);
+    box-shadow: 0 0 10px rgba(0,0,0,.5);
     background-color: white;
-    border-bottom: 1px solid #BDBDBD;
+    /*border-bottom: 1px solid #BDBDBD;*/
     position: relative;
+    transition: .4s all ease-in-out;
 
-    z-index: 44;
+    /*z-index: 2;*/
+  }
+
+  .designContent .designPreview .QuesList .QuesItem span {
+    width: 10px;
+    height: 10px;
+  }
+
+  .designContent .designPreview .QuesList .QuesItem .componentsItem {
+    width: 80%;
+    /*height: 100%;*/
   }
 
   .designContent .designPreview .QuesList .QuesItem .options {
@@ -945,11 +1547,19 @@ export default {
     width: 100%;
     height: 10%;
     position: absolute;
-    bottom: 25px;
+    padding-right: 10px;
+    /*bottom: 31px;*/
     /*display: none;*/
+    bottom: -15%;
+    transition: .4s all ease-in-out;
     display: flex;
-
     justify-content: space-around;
+  }
+
+  .designContent .designPreview .QuesList .QuesItem .OptActive {
+    /*display: flex;*/
+    bottom: 35px;
+    /*justify-content: end;*/
   }
 
   .designContent .designPreview .QuesList .QuesItem .options ul {
@@ -957,32 +1567,37 @@ export default {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-left: 350px;
+    margin-left: 500px;
   }
 
   .designContent .designPreview .QuesList .QuesItem .options ul li {
     height: 25px;
     width: 20%;
     display: inline-block;
-    /*margin: 0;*/
-    /*padding: 0;*/
     line-height: 25px;
-    /*background-color: pink;*/
-    font-size: 14px;
+    background-color: white;
+    opacity: .7;
+    /*border-radius: 10px;*/
+    box-shadow: 0 0 3px rgba(0,0,0,.5);
     color: #A4A4A4;
-    border: 1px solid #A4A4A4;
-    /*z-index: 200;*/
+    transition: .4s;
+    font-size: 16px;
   }
 
   .designContent .designPreview .QuesList .QuesItem .options ul li:hover {
     cursor: pointer;
-    border: 1px solid #2E9AFE;
-    background-image: linear-gradient(to left,#00FFFF,#01A9DB);
-    color: white;
+    /*border: 1px solid #2E9AFE;*/
+    background-color: #FAAC58;
+    transform: scale(1.05);
+    font-weight: 600;
+    /*background-image: linear-gradient(to left,#00FFFF,#01A9DB);*/
+    color: #FAFAFA;
   }
 
-  .designContent .designPreview .QuesList .QuesItem:hover {
+  .designContent .designPreview .QuesList .QuesItemHover {
     cursor: move;
+    /*transform: scale(1.01);*/
+    background-color: rgba(250,250,250,.6);
   }
 
 </style>

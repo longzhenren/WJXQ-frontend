@@ -7,30 +7,41 @@
     <el-form  label-width="80px"  >
       <el-form-item label="评分题" v-if="evaluate.edit==1" >
         <el-input v-model="evaluate.question"
-                  placeholder="请输入描述"
+                  placeholder="请输入问题"
                   type="textarea">
         </el-input>
+      </el-form-item>
+      <el-form-item v-if="evaluate.edit==1" >
+        <el-input  v-model="evaluate.describe"
+                  placeholder="请输入描述"
+                  type="textarea" style="font-size:12px">
+        </el-input>
+
       </el-form-item>
       <div v-else >
         <label v-if="evaluate.Must==true" style="color: red" >*</label>
         <label>评分题 - {{evaluate.question }}</label>
-        <el-divider></el-divider>
+        <div >
+          <label  style="font-size: 12px;color: darkgrey"> {{evaluate.describe}} </label>
+        </div>
+        <el-divider class="el-divider-top"></el-divider>
+
       </div>
     </el-form>
     <div class="LeftDiv">
     <el-rate
         v-model="evaluate.score"
         show-text
-        :texts="evaluate.describe"
-        :max="evaluate.describe.length"
+        :texts="evaluate.describes"
+        :max="evaluate.describes.length"
     > </el-rate>
     </div>
 
 <div class="LeftDiv" v-if="evaluate.edit==1">
-      <el-form  style="margin-left: 20px" label-width="80px" :inline="true" class="demo-form-inline" v-for="(choice,i) in evaluate.describe"  >
+      <el-form  style="margin-left: 20px" label-width="80px" :inline="true" class="demo-form-inline" v-for="(choice,i) in evaluate.describes"  >
         <el-form-item  ><label>{{i+1}}.</label></el-form-item>
         <el-form-item  >
-          <el-input   v-model="evaluate.describe[i]"
+          <el-input   v-model="evaluate.describes[i]"
                       placeholder="描述">
           </el-input>
         </el-form-item>
@@ -45,9 +56,10 @@
         <el-form-item >
           <el-button type="danger" icon="el-icon-delete" @click=del(i) circle></el-button>
         </el-form-item>
+
       </el-form>
 </div>
-    <div class="RightDiv" v-if="evaluate.edit===1">
+    <div class="RightDiv" v-if="evaluate.edit==1">
       <el-form :inline="true"  class="demo-form-inline">
         <el-form-item class="RightElement" >
           <el-checkbox v-model="evaluate.Must">必答题</el-checkbox>
@@ -57,7 +69,7 @@
           <el-button type="success" @click="save" class="RightElement"  >保存</el-button>
         </el-form-item>
       </el-form>
-      <el-divider content-position="left"></el-divider>
+      <el-divider content-position="left" class="el-divider-top"></el-divider>
     </div>
     <div class="RightDiv" v-else>
       <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement" >修改</el-button></el-divider>
@@ -79,7 +91,8 @@ export default {
         edit:1,
         question:"",
         score:null,
-        describe:["不行","很棒"],
+        describe:"",
+        describes:["不行","很棒"],
         level:["1","2"],
         radio:[],
         Must:true,
@@ -95,6 +108,7 @@ export default {
       this.evaluate.radio = this.FatherData.radio;
       this.evaluate.score = this.FatherData.score;
       this.evaluate.describe = this.FatherData.describe;
+      this.evaluate.describes = this.FatherData.describes;
       this.evaluate.level = this.FatherData.level;
       this.evaluate.Must = this.FatherData.Must;
       return
@@ -111,7 +125,8 @@ export default {
           edit:1,
           question:"",
           score:null,
-          describe:["不行","很棒"],
+          describe:"",
+          describes:["不行","很棒"],
           level:["1","2"],
           radio:[],
           Must:true,
@@ -121,11 +136,11 @@ export default {
   },
   methods: {
     del:function (i){
-      this.evaluate.describe.splice(i,1)
+      this.evaluate.describes.splice(i,1)
       this.evaluate.level.splice(i,1)
     },
     add: function() {
-      this.evaluate.describe.push("")
+      this.evaluate.describes.push("")
       this.evaluate.level.push((this.evaluate.level.length+1).toString())
       this.evaluate.score=null
     },
@@ -175,6 +190,8 @@ export default {
   display: inline;
   margin-left: 20px
 }
-
+.el-divider-top{
+  margin-top: 5px;
+}
 </style>
 
