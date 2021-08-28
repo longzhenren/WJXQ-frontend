@@ -6,17 +6,17 @@
   <div  class="InnerDiv" >
       <div >
 
-        <label v-if="singleChoice.Must==true" style="color: red" >*</label>
-              <label  >单选题 - {{singleChoice.question}}</label>
+        <label v-if="QesData.Must==true" style="color: red" >*</label>
+              <label  >单选题 - {{ QesData.question }}</label>
 
       </div>
       <div >
-        <label  style="font-size: 12px;color: darkgrey"> {{singleChoice.describe}} </label>
+        <label  class="describe"> {{ QesData.describe }} </label>
       </div>
     <el-divider content-position="left" class="el-divider-top"></el-divider>
-    <el-radio-group v-model="singleChoice.radio"  class="InnerDiv"  >
-      <el-radio   v-for="(choice,i) in singleChoice.choices" :label="singleChoice.choices[i]"
-                  style="margin-left: 0px;margin-bottom:10px;display: block"
+    <el-radio-group v-model="QesData.radio" class="InnerDiv"  >
+      <el-radio v-for="(choice,i) in QesData.choices" :label="QesData.choices[i]"
+                class="Choice"
                   >
       </el-radio>
     </el-radio-group>
@@ -34,7 +34,7 @@ export default {
   },
   data () {
     return {
-      singleChoice:{
+      QesData:{
         id:"",
         number:"",
         edit:1,
@@ -49,12 +49,12 @@ export default {
   mounted() {
     // console.log(this.FatherData)
     if ( this.FatherData.question!==null && this.FatherData.question!=={} && this.FatherData.question!==undefined ){
-      this.singleChoice.edit = this.FatherData.edit;
-      this.singleChoice.question = this.FatherData.question;
-      this.singleChoice.choices = this.FatherData.choices;
-      this.singleChoice.describe = this.FatherData.describe;
-      this.singleChoice.radio = this.FatherData.radio;
-      this.singleChoice.Must = this.FatherData.Must;
+      this.QesData.edit = this.FatherData.edit;
+      this.QesData.question = this.FatherData.question;
+      this.QesData.choices = this.FatherData.choices;
+      this.QesData.describe = this.FatherData.describe;
+      this.QesData.radio = this.FatherData.radio;
+      this.QesData.Must = this.FatherData.Must;
       // this.singleChoice = this.FatherData
     }
   },
@@ -62,10 +62,10 @@ export default {
   watch: {
     FatherData(newData,oldData){
       if ( newData.edit!==null && newData.edit!=={} && newData.edit!==undefined ){
-        this.singleChoice = newData;
+        this.QesData = newData;
       }
       else  {
-        this.singleChoice = {
+        this.QesData = {
           id:"",
           number:"",
           describe: "",
@@ -79,13 +79,13 @@ export default {
   },
   methods: {
     add: function() {
-      this.singleChoice.choices.push("")
+      this.QesData.choices.push("")
     },
     save: function() {
       let find = false;
-      for (let i = 0; i < this.singleChoice.choices.length; i++) {
-        for (let j = i + 1; j < this.singleChoice.choices.length; j++) {
-          if (this.singleChoice.choices[i]== this.singleChoice.choices[j] ) {
+      for (let i = 0; i < this.QesData.choices.length; i++) {
+        for (let j = i + 1; j < this.QesData.choices.length; j++) {
+          if (this.QesData.choices[i]== this.QesData.choices[j] ) {
             find = true; break;
           }
         }
@@ -94,12 +94,12 @@ export default {
       if(find){
         alert("不可以存在重复项")
       }else {
-        this.singleChoice.edit=0
-        this.$emit('saveSingleData',this.singleChoice)
+        this.QesData.edit=0
+        this.$emit('saveSingleData',this.QesData)
       }
     },
     edit: function() {
-      this.singleChoice.edit=1
+      this.QesData.edit=1
     }
   }
 }
@@ -115,21 +115,16 @@ export default {
   text-align: left;
   margin-left:10px;
 }
-.RightDiv{
-  text-align: right;
-  margin-left:70px;
-}
-.RightElement{
-  display: inline;
-  margin-left: 20px
-}
-.LeftDiv{
-  text-align: left;
-  margin-left:70px;
-  margin-bottom:20px ;
-}
+
 .el-divider-top{
   margin-top: 5px;
+}
+.describe{
+  font-size: 12px;
+  color: darkgrey
+}
+.Choice{
+  margin-left: 0px;margin-bottom:10px;display: block
 }
 </style>
 

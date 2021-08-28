@@ -156,11 +156,13 @@
                 <span slot="title">题目编辑</span>
               </template>
               <el-menu-item-group>
-                <SingleChooseEdit></SingleChooseEdit>
+<!--                <SingleChooseEdit></SingleChooseEdit>-->
+<!--                <MultiChooseEdit></MultiChooseEdit>-->
+<!--                <EvaluateEdit></EvaluateEdit>-->
+                <FillBlankEdit></FillBlankEdit>
               </el-menu-item-group>
 
             </el-submenu>
-
 
           </el-menu>
 
@@ -201,11 +203,17 @@ import FillBlank from "../../components/QuestionTemplates/FillBlank";
 import Evaluate from "../../components/QuestionTemplates/Evaluate";
 import SingleChooseEdit from "@/components/QuestionTemplates/TemplatesEdit/SingleChooseEdit";
 import {request} from "../../network/request";
+import MultiChooseEdit from "@/components/QuestionTemplates/TemplatesEdit/MultiChooseEdit";
+import EvaluateEdit from "@/components/QuestionTemplates/TemplatesEdit/EvaluateEdit";
+import FillBlankEdit from "@/components/QuestionTemplates/TemplatesEdit/FillBlankEdit";
 
 
 export default {
   name: "DesignPage",
   components:{
+    FillBlankEdit,
+    EvaluateEdit,
+    MultiChooseEdit,
     SingleChoose,
     MultiChoose,
     FillBlank,

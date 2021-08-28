@@ -3,18 +3,33 @@
 
 <template>
 
-  <div v-else class="InnerDiv" >
-    <div >
-      <label v-if="QesData.Must==true" style="color: red" >*</label>
-      <label>填空题 - {{ QesData.Questionnaire }}</label>
-    </div>
-    <div >
-      <label  class="describe" > {{ QesData.describe }} </label>
-    </div>
-    <el-divider content-position="left" class="el-divider-top"></el-divider>
-    <el-input placeholder="回答区域" type="textarea" v-model="QesData.Answer" class="Choice"></el-input>
+  <div class="InnerDiv"  >
 
+
+    <el-form  class="InnerDiv">
+      <label class="InnerElement">问题</label>
+      <el-input class="InnerElement" v-model="QesData.question"
+                placeholder="请输入问题"
+                type="textarea">
+      </el-input>
+
+      <label class="InnerElement">描述</label>
+      <el-input v-model="QesData.describe"
+                placeholder="请输入描述" class="InnerElement"
+                type="textarea" style="font-size:12px">
+      </el-input>
+    </el-form>
+
+    <el-button  @click="save" >保存</el-button>
+    <el-divider content-position="center">题目设置</el-divider>
+    <el-form>
+      <el-form-item class="left">
+        <el-checkbox v-model="QesData.Must">必答题</el-checkbox>
+      </el-form-item>
+
+    </el-form>
   </div>
+
 
 </template>
 
@@ -28,7 +43,7 @@ export default {
       QesData:{
         id:"",
         Number:"",
-        describe:"这是一个描述",
+        describe:"",
         Questionnaire:"",
         Must: true,
         Answer:""
@@ -83,41 +98,28 @@ export default {
 }
 </script>
 <style scoped>
-/deep/ .el-radio{
-  display: block;
-  line-height: 23px;
-  white-space: normal;
-  alignment: left;
-}
-
-
-.RightDiv{
-  text-align: right;
-  margin-left:70px;
-}
-.RightElement{
-  display: inline;
-  margin-left: 20px
-}
-.LeftDiv{
-  text-align: left;
-  margin-left:70px;
-  margin-bottom:20px ;
-}
 .InnerDiv{
-  text-align: left;
   margin-left:10px;
+  margin-right: 10px;
+}
+.InnerElement{
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.InnerElementLeft{
+  margin-left:10px;
+  margin-right: 10px;
+  alignment: left;
+  text-align: left;
 }
 
-.el-divider-top{
-  margin-top: 5px;
+.centerElement{
+  text-align: center;
+  vertical-align: middle;
+  display: table-cell;
 }
-.describe{
-  font-size: 12px;
-  color: darkgrey
-}
-.Choice{
-  margin-left: 0px;margin-bottom:10px;display: block
+.left{
+  text-align: left;
 }
 </style>
 
