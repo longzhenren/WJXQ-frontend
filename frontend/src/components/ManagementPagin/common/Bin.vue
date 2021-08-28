@@ -33,18 +33,19 @@
         width="120">
         <template slot-scope="scope">
           <el-button
-            style="text-align: center"
+            class="myHover"
             @click.native.prevent="resetQues(scope.$index, DeletedQuestionnaires)"
             type="text"
             size="small">
-            恢复
+            <span class="recycle">恢复</span>
           </el-button>
 
           <el-button
+            class="myHover"
             @click.native.prevent="reallyDeleteQues(scope.$index, DeletedQuestionnaires)"
             type="text"
             size="small">
-            彻底删除
+            <span >彻底删除</span>
           </el-button>
         </template>
       </el-table-column>
@@ -124,5 +125,14 @@ export default {
 </script>
 
 <style scoped>
-
+.recycle{
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  left: 10px;
+  letter-spacing: 31px;
+}
+.myHover:hover{
+  color:orangered;
+}
 </style>

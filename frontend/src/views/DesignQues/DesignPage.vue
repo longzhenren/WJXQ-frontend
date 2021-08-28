@@ -351,7 +351,7 @@ export default {
       this.$router.push({
         path: '/release',
         query: {
-          username: this.$store.state.personalInfo.username,
+          username: this.$route.query.username,
           id: this.QuesId
         }
       });
@@ -400,7 +400,7 @@ export default {
         Title: '',
         Question: [],
         ShowNumber: false,
-        username: this.$store.state.personalInfo.username
+        username: this.$route.query.username,
       }
       FinalQuestionnaire.id = this.QuesId;
       FinalQuestionnaire.Title = Ques.title;

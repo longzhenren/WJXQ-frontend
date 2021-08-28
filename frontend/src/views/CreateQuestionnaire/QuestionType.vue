@@ -13,7 +13,7 @@
           <div class="type">
             <div class="title">{{ item.title }}</div>
             <div class="intro">{{ item.intro }}</div>
-            <div class="confirm" @click="CreateNewQues">创建</div>
+            <div class="confirm" @click="CreateNewQues(index+1)">创建</div>
           </div>
         </li>
 
@@ -65,6 +65,7 @@ export default {
         id: 0,
         title: '',
         Text: '',
+        Type: 1,
       },
 
       QuesTypes: [
@@ -74,22 +75,22 @@ export default {
               '问卷密码，红包抽奖',
         },
         {
-          title: '考试',
-          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
-
-        },
-        {
           title: '投票',
           intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
 
         },
         {
-          title: '疫情防控问卷',
+          title: '报名',
           intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
 
         },
         {
-          title: '报名',
+          title: '考试问卷',
+          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+
+        },
+        {
+          title: '疫情打卡问卷',
           intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
         },
         // {
@@ -138,10 +139,10 @@ export default {
       })
     },
 
-    CreateNewQues(){
+    CreateNewQues(index){
 
       this.dialogFormVisible=true
-
+      this.QuesForm.Type = index
       // console.log(this.dialogFormVisible)
     },
 
@@ -158,12 +159,30 @@ export default {
     },
 
     Confirm(){
+      if (this.QuesForm.title==='' ){
+        this.$message({
+          showClose: true,
+          message: '请输入问卷标题',
+          type: 'error'
+        });
+        return
+      }
+      else if (this.QuesForm.Text === ''){
+        this.$message({
+          showClose: true,
+          message: '请输入问卷描述',
+          type: 'error'
+        });
+        return
+      }
+
       let pra = {
         Title: this.QuesForm.title,
         Text: this.QuesForm.Text,
         ShowNumber:false,
         Open:false,
         username: this.$store.state.personalInfo.username,
+        Type: this.QuesForm.Type
       }
       request({
         url: '/question/createQuestionnaire',
@@ -239,6 +258,7 @@ export default {
 .TypeList ul {
   display: grid;
   grid-template-rows: repeat(2,1fr);
+  /*grid-template-rows: 3fr 2fr;*/
   grid-template-columns: repeat(3,1fr);
   column-gap: 10px;
   row-gap: 10px;

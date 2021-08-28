@@ -13,7 +13,7 @@ export default new Vuex.Store({
       email:''
     },
     manageCurrentState:'状态',
-    manageCurrentOrder:'时间正序',
+    manageCurrentOrder:'时间倒序',
     manageKey:'',
     leftMenuCurrent:0
   },
