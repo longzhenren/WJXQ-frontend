@@ -149,6 +149,21 @@
 <!--        该题目基本信息-->
         <div class="quesInfo">
 
+          <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+            <el-submenu index="1">
+              <template slot="title">
+                <i class="el-icon-location"></i>
+                <span slot="title">题目编辑</span>
+              </template>
+              <el-menu-item-group>
+                <SingleChooseEdit></SingleChooseEdit>
+              </el-menu-item-group>
+
+            </el-submenu>
+
+
+          </el-menu>
+
         </div>
 
 
@@ -184,6 +199,7 @@ import bus from "../../assets/utils/bus";
 import MultiChoose from "../../components/QuestionTemplates/MultiChoose";
 import FillBlank from "../../components/QuestionTemplates/FillBlank";
 import Evaluate from "../../components/QuestionTemplates/Evaluate";
+import SingleChooseEdit from "@/components/QuestionTemplates/TemplatesEdit/SingleChooseEdit";
 import {request} from "../../network/request";
 
 
@@ -193,15 +209,15 @@ export default {
     SingleChoose,
     MultiChoose,
     FillBlank,
-    Evaluate
+    Evaluate,
+
+    SingleChooseEdit
   },
   data(){
     return {
 
       dialogFormVisible: false,
-
       activeName: 0,
-
       ops: {
         vuescroll: {
           mode: 'native',

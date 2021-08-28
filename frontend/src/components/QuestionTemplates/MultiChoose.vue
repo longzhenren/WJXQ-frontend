@@ -93,7 +93,6 @@ export default {
   data () {
     return {
       multiChoice:{
-        edit:1,
         describe:"",
         question:"",
         choices:["",""],

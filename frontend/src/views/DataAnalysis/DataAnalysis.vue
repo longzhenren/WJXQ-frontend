@@ -116,7 +116,8 @@
 
                   <DataAnalysisList
                       :questions="Questionnaire.Question"
-                    :father-need-show-questions="NeedShowQuestions"></DataAnalysisList>
+                    :father-need-show-questions="NeedShowQuestions"
+                  :id="this.id"></DataAnalysisList>
                 </vue-scroll>
 
 
@@ -344,6 +345,7 @@ import CrossAnalysis from "./CrossAnalysis";
       // 获取当前问卷
       getNowQuestionnaire(){
         let QuesId = Number(this.$route.query.id)
+        this.id=this.$route.query.id
         console.log(QuesId)
 
         request({
@@ -459,7 +461,7 @@ import CrossAnalysis from "./CrossAnalysis";
 
         // 问卷列表
         QuestionnaireList: [],
-
+        id:"",
         // 当前问卷
         Questionnaire: {
 

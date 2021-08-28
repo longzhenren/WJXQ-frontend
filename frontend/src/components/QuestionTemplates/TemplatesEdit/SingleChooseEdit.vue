@@ -3,28 +3,62 @@
 
 <template>
 
-  <div  class="InnerDiv" >
-      <div >
+  <div >
+    <el-form  class="InnerDiv">
+        <label class="InnerElement">问题</label>
+        <el-input class="InnerElement" v-model="singleChoice.question"
+                  placeholder="请输入问题"
+                  type="textarea">
+        </el-input>
 
-        <label v-if="singleChoice.Must==true" style="color: red" >*</label>
-              <label  >单选题 - {{singleChoice.question}}</label>
 
-      </div>
-      <div >
-        <label  style="font-size: 12px;color: darkgrey"> {{singleChoice.describe}} </label>
-      </div>
-    <el-divider content-position="left" class="el-divider-top"></el-divider>
-    <el-radio-group v-model="singleChoice.radio"  class="InnerDiv"  >
-      <el-radio   v-for="(choice,i) in singleChoice.choices" :label="singleChoice.choices[i]"
-                  style="margin-left: 0px;margin-bottom:10px;display: block"
-                  >
-      </el-radio>
-    </el-radio-group>
+        <label class="InnerElement">描述</label>
+        <el-input v-model="singleChoice.describe"
+                  placeholder="请输入描述" class="InnerElement"
+                  type="textarea" style="font-size:12px">
+        </el-input>
 
-<!--    <div class="RightDiv">-->
-<!--      <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement"  >修改</el-button></el-divider>-->
-<!--    </div>-->
+    </el-form>
+    <div class="InnerElementLeft" >
+
+
+
+    <el-form  :inline="true"  v-for="(choice,i) in singleChoice.choices"  >
+      <el-row :gutter="10" class="InnerElement" type="flex"  justify="center" >
+        <el-col :span="2" class="centerElement" >
+          <label  >{{i+1}}.</label>
+        </el-col>
+        <el-col :span="18">
+          <el-input   v-model="singleChoice.choices[i]"
+                      placeholder="请输入选项"
+                      type="textarea">
+          </el-input>
+        </el-col >
+        <el-col :span="2" class="centerElement">
+          <el-button  icon="el-icon-delete"   type="text" @click="singleChoice.choices.splice(i,1)" ></el-button>
+        </el-col>
+      </el-row>
+
+
+
+    </el-form>
+
+    </div>
+    <div class="InnerDiv">
+
+
+
+     <el-button  @click="add" class="RightElement"  >新建选项</el-button>
+     <el-button  @click="save" class="RightElement" >保存</el-button>
+      <el-divider content-position="center">题目设置</el-divider>
+      <el-checkbox v-model="singleChoice.Must" class="RightElement" >必答题</el-checkbox>
+
   </div>
+
+
+
+  </div>
+
 </template>
 
 <script>
@@ -38,9 +72,9 @@ export default {
         id:"",
         number:"",
         edit:1,
-        describe: "这是一个描述",
+        describe: "",
         question:"",
-        choices:["选项1","选项2"],
+        choices:["",""],
         radio: 0,
         Must:true,
       }
@@ -68,9 +102,10 @@ export default {
         this.singleChoice = {
           id:"",
           number:"",
+          edit:1,
           describe: "",
           question:"",
-          choices:["选项1","选项2"],
+          choices:["",""],
           radio: 0,
           Must:true,
         }
@@ -112,24 +147,26 @@ export default {
   alignment: left;
 }
 .InnerDiv{
-  text-align: left;
   margin-left:10px;
+  margin-right: 10px;
 }
-.RightDiv{
-  text-align: right;
-  margin-left:70px;
+.InnerElement{
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
-.RightElement{
-  display: inline;
-  margin-left: 20px
-}
-.LeftDiv{
+.InnerElementLeft{
+  margin-left:10px;
+  margin-right: 10px;
+  alignment: left;
   text-align: left;
-  margin-left:70px;
-  margin-bottom:20px ;
 }
-.el-divider-top{
-  margin-top: 5px;
+.Rightdown{
+  alignment: bottom;
+}
+.centerElement{
+  text-align: center;
+  vertical-align: middle;
+  display: table-cell;
 }
 </style>
 

@@ -58,7 +58,6 @@ export default {
       fillBlank:{
         id:"",
         Number:"",
-        edit:1,
         describe:"",
         Questionnaire:"",
         Must: true,

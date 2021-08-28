@@ -9,26 +9,10 @@
           </div>
 
 
-<!--          <ChooseAnalyse></ChooseAnalyse>-->
-<!--          <div class="DataTable">-->
-<!--            &lt;!&ndash;                            原始数据表&ndash;&gt;-->
-<!--            <div class="basicData">-->
-<!--              <span>原始数据表</span>-->
-<!--              <div class="basicDataTable"></div>-->
-<!--            </div>-->
-
-
-<!--            &lt;!&ndash;                            数据分析表&ndash;&gt;-->
-<!--            <div class="analysisData">-->
-<!--              <span>数据分析结果</span>-->
-<!--              <div class="analysisDataTable"></div>-->
-<!--            </div>-->
-<!--          </div>-->
-
 <!--          <controlList @changeShowState="changeChartState($event,index)"></controlList>-->
 
-          <div class="TableContainer">
-            <ChooseAnalyse></ChooseAnalyse>
+          <div class="TableContainer" >
+            <ChooseAnalyse :id="Qesid" :number="index"></ChooseAnalyse>
           </div>
 
           <el-divider></el-divider>
@@ -59,12 +43,15 @@ export default {
       }
     },
     title: String,
+    id:String,
   },
   mounted() {
     // console.log(this.FatherNeedShowQuestions)
 
     this.NeedShowQuestions = this.Questions
-    // console.log(this.NeedShowQuestions)
+    this.Qesid=this.id;
+    console.log("Qesid:"+this.Qesid)
+    console.log(this.NeedShowQuestions)
   },
   watch: {
     Questions(newQues){
@@ -81,6 +68,7 @@ export default {
   data(){
     return {
       NeedShowQuestions: [],
+      Qesid: "0",
     }
   },
   methods: {

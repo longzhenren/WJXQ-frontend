@@ -88,7 +88,6 @@ export default {
   data () {
     return {
       evaluate:{
-        edit:1,
         question:"",
         score:null,
         describe:"",

@@ -26,7 +26,7 @@
       </el-table-column>
       <el-table-column
           prop="value"
-          label="地址"
+          label="数量"
           sortable>
       </el-table-column>
     </el-table>
@@ -55,40 +55,21 @@
 
 <script>
 import echarts from "echarts";
+import {request} from "@/network/request";
 
 export default {
   name: "ChooseAnalyse",
   data() {
     return {
+      QuestionnaireId:0,
+      QesId:0,
       QesData:{
         Type: "单选题",
-        Number:2,
         Question: "This is a Question",
         Describe:"This is a describe",
         Must: true,
         Total: 37},
-      ChooseData: [{
-        number:1,
-        name: "选项一",
-        value: 3
-      },{
-        number:2,
-        name: "选项二",
-        value: 5
-      }, {
-        number:3,
-        name: "选项三",
-        value: 12
-      }, {
-        number:4,
-        name: "选项四",
-        value: 10
-      },{
-        number:5,
-        name: "选项五",
-        value: 7
-      }
-      ],
+      ChooseData: [],
       AnswerData: [],
       TableTypes:['原始数据','数据表'],
       DataTable:['数据表'],
@@ -97,6 +78,10 @@ export default {
       pie:true
     }
   },
+  props:[
+    'id',
+    'number'
+  ],
   methods:{
     Tab:function (type){
       if(type=='饼状图'){
@@ -253,7 +238,7 @@ export default {
       option && myChart.setOption(option);
 
     },
-    load_Radar(){
+    load_Radar() {
       let echarts = require('echarts');
       let chartDom = document.getElementById('Radar' );
       let myChart = echarts.init(chartDom);
@@ -303,10 +288,34 @@ export default {
 
       option && myChart.setOption(option);
 
+    },
+    getData(){
+      request({
+        url: '/submit/qesrep',
+        method: 'post',
+        data: {
+          questionnaireID:this.QuestionnaireId,
+          questionNumber: this.Qesid
+
+        }
+      }).then(res=>{
+        console.log(res);
+        if (res.data.Message !== 'No Such Questionnaire'){
+          // this.Questionnaire = res.data.Questionnaire
+          this.QesData=res.data.QesData,
+          this.ChooseData=res.data.ChooseData,
+          this.AnswerData=res.data.AnswerData
+
+        }
+      }).catch(err=>{
+        console.log(err)
+      })
     }
   },
   mounted(){
-
+    this.Qesid=this.number
+    this.QuestionnaireId=this.id;
+    this.getData();
   },
 
 }
