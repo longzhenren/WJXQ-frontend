@@ -105,7 +105,7 @@
             :ops="ops" >
           <ul class="QuesList" v-if="QuesList.length!==0" ref="list">
 
-              <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="item.isDraggable"
+              <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="true"
                   @dragstart="handleDragStart($event,item)"
                   @dragover.prevent="handleDragOver($event)"
                   @dragenter="handleDragEnter($event,item)"
@@ -116,21 +116,21 @@
                 <span v-else></span>
                 <div class="componentsItem" @mouseover="OverDrag(index,item)" @mouseleave="LeaveDrag(index,item)">
                   <SingleChoose v-if="item.type==='singleChoice'" ref="child"
-                                @saveSingleData="SingleChoiceSave($event,item)"
+                                @SaveQes="SaveQes($event,item)"
                                 :item-index="index"
                                 :father-data="item.subData"></SingleChoose>
 
                   <MultiChoose v-else-if="item.type==='multiChoose'" ref="child"
                                :father-data="item.subData"
-                               @saveMultiData="MultiChoiceSave($event,item)"></MultiChoose>
+                               @save="SaveQes($event,item)"></MultiChoose>
 
                   <FillBlank v-else-if="item.type==='fillBlank'" ref="child"
                               :father-data="item.subData"
-                              @saveBlankData="FillBlankSave($event,item)"></FillBlank>
+                              @save="SaveQes($event,item)"></FillBlank>
 
                   <Evaluate v-else-if="item.type==='evaluate'" ref="child"
                             :father-data="item.subData"
-                            @saveEvaluateData="EvaluateSave($event,item)"></Evaluate>
+                            @save="SaveQes($event,item)"></Evaluate>
                 </div>
 
 
@@ -176,7 +176,6 @@
             <span slot="title">题目编辑</span>
           </template>
           <el-menu-item-group>
-            <div v-if="isCanChangeItem">
               <SingleChooseEdit v-if="editingQuestion.type === 'singleChoice'"
                                 :father-data="editingQuestion.subData"
                                 :need-send-idx="editingQuestion.index"
@@ -193,13 +192,7 @@
                              :father-data="editingQuestion.subData"
                              :need-send-idx="editingQuestion.index"
                              ref="childEdit"></FillBlankEdit>
-            </div>
 
-            <div v-else>
-              <el-empty
-                  image="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                  description="编辑完成"></el-empty>
-            </div>
 
           </el-menu-item-group>
 
@@ -657,12 +650,9 @@ export default {
       }
       return Question;
     },
-
-    // 题目修改保存
-    modifyQuestion(item){
+    modifyQuestionSuccess(item){
       // console.log("aaa")
       // console.log(item)
-      this.isCanChangeItem = false;
 
       let Question = this.changeDataStructToBackend(item,'sendQuestion');
 
@@ -672,45 +662,51 @@ export default {
         method: 'post',
         data: Question
       }).then(res=>{
-        console.log(res)
+        this.$message.success("题目 "+ (item.idx+1) +" 保存成功")
       }).catch( err=> {
         console.log(err);
       })
     },
 
-    // 单选题数据保存
-    SingleChoiceSave(val,item){
+    // 题目修改保存
+    modifyQuestion(item){
+      // console.log("aaa")
+      // console.log(item)
+
+      let Question = this.changeDataStructToBackend(item,'sendQuestion');
+
+      // console.log(Question)
+      request({
+        url: '/question/modifyQuestion',
+        method: 'post',
+        data: Question
+      }).then(res=>{
+      }).catch( err=> {
+        console.log(err);
+      })
+    },
+
+    // 题目数据保存
+    SaveQes(val, item){
       item.subData = val;
       item.Stem=val.question
-
-      this.modifyQuestion(item);
+      console.log("SaveQes")
+      this.modifyQuestionSuccess(item);
     },
 
 
-    // 多选数据保存
-    MultiChoiceSave(val,item){
-      item.subData = val;
-      item.Stem=val.question
 
-      this.modifyQuestion(item);
-    },
 
     // 填空数据保存
-    FillBlankSave(val,item){
-      item.subData = val;
-      item.Stem=val.Questionnaire
-      // console.log(val)
+    // SaveQes(val, item){
+    //   item.subData = val;
+    //   item.Stem=val.Questionnaire
+    //   // console.log(val)
+    //
+    //   this.modifyQuestion(item);
+    // },
 
-      this.modifyQuestion(item);
-    },
 
-    // 评价数据保存
-    EvaluateSave(val,item){
-      item.subData = val;
-      item.Stem=val.question
-
-      this.modifyQuestion(item);
-    },
 
     // 增加题目
     addNewQues(type,QuesNum){
@@ -851,9 +847,11 @@ export default {
 
     // 增加新题目到列表中
     addNewQuesToQuesList(SubjectObj){
-      let length = this.QuesList.length;
 
+      bus.$emit('SaveEdited')
+      let length = this.QuesList.length;
       this.QuesList.splice(length,0,SubjectObj);
+
       this.editingQuestion = SubjectObj;
       this.editingQuestion.index = length
       this.IndexNav(length);
@@ -863,6 +861,7 @@ export default {
     // 修改题目
     changeQuestions(index){
       console.log('需要改的题目',index)
+      bus.$emit('SaveEdited')
       let quesList = this.QuesList;
       let quesListElement = quesList[index];
       this.editingQuestion = quesListElement;
@@ -1283,6 +1282,9 @@ export default {
 
     Questionnaire(newText){
       localStorage.Questionnaire = newText
+    },
+    editingQuestion(n,o){
+
     }
   }
 }

@@ -140,8 +140,16 @@ export default {
   },
   methods: {
     del:function (i){
-      this.QesData.describes.splice(i,1)
-      this.QesData.level.splice(i,1)
+      if(this.QesData.choices.length>2)
+      {
+        this.QesData.describes.splice(i,1)
+        this.QesData.level.splice(i,1)
+      }
+      else {
+        this.$message.warning("分数分级不可以少于2")
+      }
+
+
     },
     add: function() {
       this.QesData.describes.push("")
@@ -157,7 +165,7 @@ export default {
         }
       }
       if(find){
-        alert("选项分数设置不可以为空")
+        this.$message.warning("选项分数设置不可以为空")
       }else {
         this.QesData.edit=0
         bus.$emit('saveEvaluateData',this.QesData,this.needSendIdx)

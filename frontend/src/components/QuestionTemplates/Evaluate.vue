@@ -5,30 +5,19 @@
 
   <div class="InnerDiv"  >
     <el-form  label-width="80px"  >
-      <el-form-item label="评分题" v-if="QesData.edit==1" >
-        <el-input v-model="QesData.question"
-                  placeholder="请输入问题"
-                  type="textarea">
-        </el-input>
-      </el-form-item>
-      <el-form-item v-if="QesData.edit==1" >
-        <el-input  v-model="QesData.describe"
-                  placeholder="请输入描述"
-                  type="textarea" style="font-size:12px">
-        </el-input>
 
-      </el-form-item>
-      <div v-else >
+
+
+      <div >
         <label v-if="QesData.Must==true" style="color: red" >*</label>
         <label>评分题 - {{ QesData.question }}</label>
         <div >
           <label  class="describe"> {{ QesData.describe }} </label>
         </div>
-        <el-divider class="el-divider-top"></el-divider>
 
       </div>
     </el-form>
-    <div class="Choice">
+    <div class="InnerDiv">
     <el-rate
         v-model="QesData.score"
         show-text
@@ -147,6 +136,7 @@ export default {
 </script>
 <style scoped>
 .InnerDiv{
+  margin-top:20px;
   text-align: left;
   margin-left:10px;
 }
