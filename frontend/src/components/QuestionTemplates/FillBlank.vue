@@ -3,63 +3,39 @@
 
 <template>
 
-  <div class="InnerDiv" v-if="fillBlank.edit==1" >
-    <el-form  label-width="80px"  >
-      <el-form-item label="填空题">
-        <el-input v-model="fillBlank.Questionnaire"
-                  placeholder="请输入问题"
-                  type="textarea">
-        </el-input>
-      </el-form-item>
-      <el-form-item >
-        <el-input v-model="fillBlank.describe"
-                  placeholder="请输入描述"
-                  type="textarea" style="font-size:12px">
-        </el-input>
-
-      </el-form-item>
-    </el-form>
-    <el-input placeholder="回答区域" type="textarea"  :disabled="true" class="InnerDiv2"></el-input>
-    <div class="RightDiv">
-      <el-form :inline="true"  class="demo-form-inline">
-        <el-form-item>
-        <el-checkbox v-model="fillBlank.Must" class="RightElement">必答题</el-checkbox>
-          <el-button type="success" @click="save" class="RightElement" >保存</el-button>
-        </el-form-item>
-      </el-form>
-      <el-divider content-position="left"></el-divider>
-    </div>
-  </div>
-
   <div v-else class="InnerDiv" >
     <div >
-      <label v-if="fillBlank.Must==true" style="color: red" >*</label>
-      <label>填空题 - {{ fillBlank.Questionnaire }}</label>
+      <label v-if="QesData.Must==true" style="color: red" >*</label>
+      <label>填空题 - {{ QesData.Questionnaire }}</label>
     </div>
     <div >
-      <label  style="font-size: 12px;color: darkgrey"> {{fillBlank.describe}} </label>
+      <label  class="describe" > {{ QesData.describe }} </label>
     </div>
     <el-divider content-position="left" class="el-divider-top"></el-divider>
-    <el-input placeholder="回答区域" type="textarea" v-model="fillBlank.Answer" class="InnerDiv2"></el-input>
-    <div class="RightDiv">
-      <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement" >修改</el-button></el-divider>
-    </div>
+    <el-input placeholder="回答区域" type="textarea" v-model="QesData.Answer" class="Choice"></el-input>
+
   </div>
 
 </template>
 
 <script>
+import bus from "../../assets/utils/bus";
+
 export default {
   props:{
-    FatherData: Object
+    FatherData: {
+      type: Object,
+      default(){
+        return {}
+      }
+    }
   },
   data () {
     return {
-      fillBlank:{
+      QesData:{
         id:"",
-        Number:"",
-        edit:1,
-        describe:"",
+        Number: 0,
+        describe:"这是一个描述",
         Questionnaire:"",
         Must: true,
         Answer:""
@@ -70,11 +46,11 @@ export default {
   mounted() {
     // console.log(this.FatherData)
     if ( this.FatherData.Questionnaire!==null && this.FatherData.Questionnaire!=={} && this.FatherData.Questionnaire!==undefined ){
-      this.fillBlank.edit = this.FatherData.edit;
-      this.fillBlank.Answer = this.FatherData.Answer;
-      this.fillBlank.Must = this.FatherData.Must;
-      this.fillBlank.describe = this.FatherData.describe;
-      this.fillBlank.Questionnaire = this.FatherData.Questionnaire;
+      this.QesData.edit = this.FatherData.edit;
+      this.QesData.Answer = this.FatherData.Answer;
+      this.QesData.Must = this.FatherData.Must;
+      this.QesData.describe = this.FatherData.describe;
+      this.QesData.Questionnaire = this.FatherData.Questionnaire;
       return
     }
   },
@@ -82,11 +58,11 @@ export default {
   watch: {
     FatherData(newData,oldData){
       if ( newData.edit!==null && newData.edit!=={} && newData.edit!==undefined ){
-        this.fillBlank = newData;
+        this.QesData = newData;
         return
       }
       else  {
-        this.fillBlank = {
+        this.QesData = {
           id:"",
           Number:"",
           edit:1,
@@ -98,17 +74,26 @@ export default {
       }
     },
   },
+  created() {
+    bus.$on('saveBlankData',this.saveData)
+  },
   methods: {
-
+    // 保存数据
+    saveData(QesData){
+      console.log('内部',QesData)
+      this.QesData = QesData
+      this.save()
+      // this.$emit('saveBlankData',this.QesData)
+    },
 
     save: function() {
 
-        this.fillBlank.edit=0
-        this.$emit('saveBlankData',this.fillBlank)
+        this.QesData.edit=0
+        this.$emit('saveBlankData',this.QesData)
 
     },
     edit: function() {
-      this.fillBlank.edit=1
+      this.QesData.edit=1
     }
   }
 }
@@ -120,14 +105,8 @@ export default {
   white-space: normal;
   alignment: left;
 }
-.InnerDiv{
-  text-align: left;
-  margin-left:10px;
-}
-.InnerDiv2{
-  text-align: left;
-  margin-left:80px;
-}
+
+
 .RightDiv{
   text-align: right;
   margin-left:70px;
@@ -141,8 +120,20 @@ export default {
   margin-left:70px;
   margin-bottom:20px ;
 }
+.InnerDiv{
+  text-align: left;
+  margin-left:10px;
+}
+
 .el-divider-top{
   margin-top: 5px;
+}
+.describe{
+  font-size: 12px;
+  color: darkgrey
+}
+.Choice{
+  margin-left: 0px;margin-bottom:10px;display: block
 }
 </style>
 
