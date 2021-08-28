@@ -1,6 +1,6 @@
 <template>
   <div class="dev">
-    <button id="backBtn" @click="backClicked"></button>
+    <button id="backBtn" @click="backClicked">返回首页</button>
     <el-popover
       placement="top-start"
       width="180"
@@ -91,7 +91,7 @@ span[class=userLogo]::after{
   line-height: 70px;
   vertical-align: middle;
   font-family: icomoon;
-  content: '\e911';
+  content: '\e968';
   top: -3px;
   left:30px;
 }

@@ -94,8 +94,8 @@
               <div class="quesLink">
                 <input id="links" type="text" v-model="QuesLink">
                 <div class="operations">
-                  <button @click="copyLink">复制</button>
-                  <button @click="openQuesLink">打开</button>
+                  <button @click="copyLink" class="button-3d">复制</button>
+                  <button @click="openQuesLink" class="button-3d">打开</button>
                 </div>
               </div>
             </div>
@@ -133,19 +133,7 @@
       </div>
 
       <div class="settings" v-if="topNavCurrent===2">
-        <div class="baseSetting">
-
-        </div>
-
-        <div class="ansTimesSetting">
-
-        </div>
-
-        <div class="submitSetting">
-
-        </div>
-
-
+        <QuestionnaireSetting :nows-questionnaire="DesignedQuestionnaire"></QuestionnaireSetting>
       </div>
     </div>
 
@@ -172,11 +160,13 @@
 import bus from "../../assets/utils/bus";
 import {request} from "../../network/request";
 import QRCode from "../../components/QRCode";
+import QuestionnaireSetting from "./QuestionnaireSetting";
 
 export default {
   name: "QuestionnaireRelease",
   components:{
-    QRCode
+    QRCode,
+    QuestionnaireSetting
   },
   data(){
     return{
@@ -511,9 +501,14 @@ export default {
 </script>
 
 <style scoped>
+  body {
+    background:#F2F2F2;
+  /*!important;*/
+  }
+
   .questionnaireRelease {
     width: 100vw;
-    height: 100vh;
+    /*height: 100vh;*/
     background-color: #F2F2F2;
   }
   .releaseMenu {
@@ -628,9 +623,11 @@ export default {
      width: 50%;
      height: 80%;
      position: absolute;
-     left: 50%;
+     left: 314px;
+     /*left: calc(50% - 269px);*/
      top: 16%;
-     transform: translateX(-50%);
+     /*margin: 0 auto;*/
+     /*transform: translateX(-50%);*/
    }
   .release>div {
     width: 100%;
@@ -727,7 +724,7 @@ export default {
   /*}*/
 
   .release .settings {
-
+    background-color: #F2F2F2;
   }
 
   .release .status .check div span:first-child {
@@ -837,24 +834,30 @@ export default {
   }
 
   .release .status  .link .generateLink .quesLink .operations button {
-    border: 0;
-    outline: none;
-    background-image: linear-gradient(to left,#A9D0F5,#58FAF4);
+    /*border: 0;*/
+    /*outline: none;*/
+    /*background-color: transparent;*/
+    /*!*background-image: linear-gradient(to left,#A9D0F5,#58FAF4);*!*/
     width: 20%;
     height: 80%;
-    border-radius: 999999999px;
-    color: #848484;
+    background-color: rgba(46,154,254,.5);
+    color: white;
+    /*border-radius: 999999999px;*/
+    /*color: #01DF74;*/
+    font-weight: 600;
   }
 
-  .release .status  .link .generateLink .quesLink .operations button:hover {
-    /*background-image: linear-gradient(to left,,#58FAF4);
-    */
-    cursor: pointer;
-    background-image: none;
-    background-color: white;
-    box-shadow: 0 0 4px rgba(0,0,0,.2);
-    color: #58ACFA;
-  }
+
+  /*.release .status  .link .generateLink .quesLink .operations button:hover {*/
+  /*  !*background-image: linear-gradient(to left,,#58FAF4);*/
+  /*  *!*/
+  /*  cursor: pointer;*/
+  /*  !*background-image: none;*!*/
+  /*  !*background-color: white;*!*/
+  /*  !*box-shadow: 0 0 4px rgba(0,0,0,.2);*!*/
+  /*  !*color: #58ACFA;*!*/
+  /*}*/
+
 
   .release .status  .link .erweima {
     /*background-color: red;*/
@@ -868,9 +871,24 @@ export default {
     margin-left: 0;
   }
 
+  .release .status  .link  .erweima div {
+    padding: 0;
+    margin: 0;
+  }
+
+  .release .status  .link  .generateLink div {
+    padding: 0;
+    margin: 0;
+  }
+
   .release .status  .link .erweima .code {
-    width: 150px;
-    height: 150px;
+    width: 170px;
+    height: 170px;
+    display: flex;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #f2f2f2;
     margin: 0;
   }
 

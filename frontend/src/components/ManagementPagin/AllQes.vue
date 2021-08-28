@@ -1,5 +1,6 @@
 <template>
   <div class="allQes">
+
     <Srh class="srh"></Srh>
     <QesCard class="qesCard" v-for="(questionnaire,i) in closeQes" :QesInfo="closeQes[i]" v-if="(($store.state.manageCurrentState==='状态')||($store.state.manageCurrentState==='未发布'))&&closeQes[i].Title.indexOf($store.state.manageKey)!==-1"></QesCard>
     <QesCard class="qesCard" v-for="(questionnaire,i) in openQes" :QesInfo="openQes[i]" v-if="(($store.state.manageCurrentState==='状态')||($store.state.manageCurrentState==='已发布'))&&openQes[i].Title.indexOf($store.state.manageKey)!==-1"></QesCard>
@@ -88,7 +89,7 @@ export default {
   },
   components: {
       Srh,
-      QesCard
+      QesCard,
     },
   created() {
     this.getManageQes()
@@ -100,9 +101,8 @@ export default {
 
 <style scoped>
 .allQes{
-  position: absolute;
-  top: 70px;
-  right: 15%;
+  margin-top: 20px;
+  margin-left: 30%;
   width: 55%;
 }
 .srh{

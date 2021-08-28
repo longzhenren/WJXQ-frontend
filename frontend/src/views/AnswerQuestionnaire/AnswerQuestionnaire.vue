@@ -132,7 +132,9 @@ export default {
                 questionID: i.id,
                 answerSelectionIDSet: [i.RadioValue],
               },
-            });
+            }).then(res=> {
+              console.log(res)
+            });;
           if (i.Type == 2)
             request({
               url: "/submit/savans",
@@ -143,7 +145,9 @@ export default {
                 questionID: i.id,
                 answerSelectionIDSet: i.CheckList,
               },
-            });
+            }).then(res=> {
+              console.log(res)
+            });;
           if (i.Type == 3)
             request({
               url: "/submit/savans",
@@ -154,7 +158,9 @@ export default {
                 questionID: i.id,
                 answerSelectionIDSet: i.Answer,
               },
-            });
+            }).then(res=> {
+              console.log(res)
+            });;
           if (i.Type == 4)
             request({
               url: "/submit/savans",
@@ -165,13 +171,15 @@ export default {
                 questionID: i.id,
                 answerSelectionIDSet: i.Score,
               },
+            }).then(res=> {
+              console.log(res)
             });
         }
         this.$message.success("提交成功");
       }
-      setTimeout(function () {
-        this.$router.replace('')
-      },500)
+      // setTimeout(function () {
+      //   // this.$router.replace('')
+      // },500)
     },
     //排序
     sortRule(a, b) {

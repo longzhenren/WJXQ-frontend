@@ -8,6 +8,9 @@ import axios from "axios";
 import VueCookies from 'vue-cookies'
 import vuescroll from 'vuescroll/dist/vuescroll-native';
 import "./assets/css/base.css"
+import "./assets/css/buttons.css"
+
+
 Vue.use(VueCookies)
 
 Vue.config.productionTip = false;

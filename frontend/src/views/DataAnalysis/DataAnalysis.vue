@@ -77,12 +77,15 @@
           <div class="QuesModeData" v-if="switchMode===0">
             <vue-scroll ref="vs"
                         :ops="ops" >
-              <ul>
+              <ul v-if="Questionnaire.Question.length !==0 ">
                 <li class="head">问卷题目</li>
                 <li v-for="(Ques,index) in  Questionnaire.Question" @click="IndexNav(index)">
                   {{Ques.Number+1}}. {{ Ques.Stem }}
                 </li>
               </ul>
+              <div v-else>
+                <el-empty description="题目列表为空" v-if="Questionnaire.Question.length===0"></el-empty>
+              </div>
             </vue-scroll>
           </div>
 
@@ -114,7 +117,9 @@
 
                   <el-divider></el-divider>
 
-                  <DataAnalysisList
+                  <el-empty description="暂无数据" v-if="Questionnaire.Question.length===0"></el-empty>
+
+                  <DataAnalysisList v-else
                       :questions="Questionnaire.Question"
                     :father-need-show-questions="NeedShowQuestions"></DataAnalysisList>
                 </vue-scroll>
@@ -169,11 +174,13 @@
 
     <div class="AnswerTable" v-else-if="currentPos===1">
       <div class="AnswerNav">
-
+        原始答卷数据
       </div>
 
 
-      <div class="Answers"></div>
+      <div class="Answers">
+        原始答卷数据表
+      </div>
     </div>
 
 

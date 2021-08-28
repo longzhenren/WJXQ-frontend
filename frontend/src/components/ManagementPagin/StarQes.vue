@@ -98,9 +98,8 @@ export default {
 
 <style scoped>
 .starQes{
-  position: absolute;
-  top: 70px;
-  right: 15%;
+  margin-top: 20px;
+  margin-left: 30%;
   width: 55%;
 }
 .srh{

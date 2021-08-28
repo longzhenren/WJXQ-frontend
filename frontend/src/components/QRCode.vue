@@ -10,7 +10,6 @@ export default {
   components: {
     QRCode
   },
-
   props: {
     Urlpath: String,
     CodeHeight: Number,
@@ -22,17 +21,11 @@ export default {
 
     }
   },
-
-  created() {
-    console.log(this.Urlpath)
-  },
-
   mounted() {
     this.$nextTick (function () {
       this.qrcode();
     })
   },
-
   methods: {
     qrcode () {
       let qrcode = new QRCode('qrcode', {
@@ -41,6 +34,7 @@ export default {
         text: this.Urlpath
       })
     },
+
 
     downloadE() {
       let canvasData = this.$refs.qrcode.getElementsByTagName('canvas')

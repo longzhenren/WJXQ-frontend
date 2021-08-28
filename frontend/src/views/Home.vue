@@ -1,6 +1,9 @@
 <template>
   <div class="home">
-    <Nav></Nav>
+    <div style="width: 100vw;height:100vh">
+      <Nav class="nav"></Nav>
+      <img class="img" src="../assets/imgs/background.jpg" alt="" style="width: 100%; height:100%">
+    </div>
   </div>
 </template>
 
@@ -25,3 +28,12 @@ export default {
   }
 }
 </script>
+<style scoped>
+.nav{
+  z-index: 0;
+  /*display: inline-block;*/
+}
+.img{
+  z-index: -1;
+}
+</style>
