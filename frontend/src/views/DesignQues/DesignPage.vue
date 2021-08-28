@@ -26,9 +26,6 @@
 <!--&lt;!&ndash;            <div class="title"> {{ item.type }}</div>&ndash;&gt;-->
 
 <!--          </div>-->
-
-
-
           <div v-if="Questionnaire.Type === 2">
             <el-collapse v-model="activeName" v-for="(item,index) in VoteQuesTypeList">
               <el-collapse-item :name="index" class="choices">
@@ -57,17 +54,6 @@
               </el-collapse-item>
             </el-collapse>
           </div>
-
-
-<!--            <el-collapse-item :name="index" class="choices" v-if="Questionnaire.Type === 2">-->
-<!--              <template slot="title">-->
-<!--                <div class="title"> {{ item.type }}</div>-->
-<!--              </template>-->
-<!--              <ul ref="choices">-->
-<!--                <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>-->
-<!--              </ul>-->
-<!--            </el-collapse-item>-->
-
 
 
           <div class="choicesPreview" ref="choicesPreview">
@@ -131,6 +117,7 @@
                 <div class="componentsItem" @mouseover="OverDrag(index,item)" @mouseleave="LeaveDrag(index,item)">
                   <SingleChoose v-if="item.type==='singleChoice'" ref="child"
                                 @saveSingleData="SingleChoiceSave($event,item)"
+                                :item-index="index"
                                 :father-data="item.subData"></SingleChoose>
 
                   <MultiChoose v-else-if="item.type==='multiChoose'" ref="child"
@@ -152,6 +139,7 @@
                     <li @click="deleteQues(index)">删除</li>
                     <li @click="moveUp(index)">上移</li>
                     <li @click="moveDown(index)">下移</li>
+                    <li @click="changeQuestions(index)">修改</li>
                   </ul>
                 </div>
 
@@ -180,8 +168,44 @@
       <div class="editQuestion">
 <!--        该题目基本信息-->
         <div class="quesInfo">
-
         </div>
+       <el-menu default-active="1" class="el-menu-vertical-demo">
+        <el-submenu index="1">
+          <template slot="title">
+            <i class="el-icon-location"></i>
+            <span slot="title">题目编辑</span>
+          </template>
+          <el-menu-item-group>
+            <div v-if="isCanChangeItem">
+              <SingleChooseEdit v-if="editingQuestion.type === 'singleChoice'"
+                                :father-data="editingQuestion.subData"
+                                :need-send-idx="editingQuestion.index"
+                                ref="childEdit"></SingleChooseEdit>
+              <MultiChooseEdit v-else-if="editingQuestion.type === 'multiChoose'"
+                               :father-data="editingQuestion.subData"
+                               :need-send-idx="editingQuestion.index"
+                               ref="childEdit"></MultiChooseEdit>
+              <EvaluateEdit v-else-if="editingQuestion.type === 'evaluate'"
+                            :father-data="editingQuestion.subData"
+                            :need-send-idx="editingQuestion.index"
+                            ref="childEdit"></EvaluateEdit>
+              <FillBlankEdit v-else-if="editingQuestion.type === 'fillBlank'"
+                             :father-data="editingQuestion.subData"
+                             :need-send-idx="editingQuestion.index"
+                             ref="childEdit"></FillBlankEdit>
+            </div>
+
+            <div v-else>
+              <el-empty
+                  image="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+                  description="编辑完成"></el-empty>
+            </div>
+
+          </el-menu-item-group>
+
+        </el-submenu>
+
+      </el-menu>
       </div>
 
       <el-dialog title="修改问卷头信息" :visible.sync="dialogFormVisible">
@@ -214,24 +238,36 @@ import bus from "../../assets/utils/bus";
 import MultiChoose from "../../components/QuestionTemplates/MultiChoose";
 import FillBlank from "../../components/QuestionTemplates/FillBlank";
 import Evaluate from "../../components/QuestionTemplates/Evaluate";
+import SingleChooseEdit from "../../components/QuestionTemplates/TemplatesEdit/SingleChooseEdit";
 import {request} from "../../network/request";
+import MultiChooseEdit from "../../components/QuestionTemplates/TemplatesEdit/MultiChooseEdit";
+import EvaluateEdit from "../../components/QuestionTemplates/TemplatesEdit/EvaluateEdit";
+import FillBlankEdit from "../../components/QuestionTemplates/TemplatesEdit/FillBlankEdit";
 
 
 export default {
   name: "DesignPage",
   components:{
+    FillBlankEdit,
+    EvaluateEdit,
+    MultiChooseEdit,
     SingleChoose,
     MultiChoose,
     FillBlank,
-    Evaluate
+    Evaluate,
+
+    SingleChooseEdit
   },
   data(){
     return {
 
+      // 当前编辑的题目
+      editingQuestion: {
+
+      },
+
       dialogFormVisible: false,
-
-      activeName: ['1'],
-
+      activeName: 0,
       ops: {
         vuescroll: {
           mode: 'native',
@@ -293,7 +329,6 @@ export default {
         },
       ],
 
-
       // 带有特殊题型的问题列表
       // 投票问题列表
       VoteQuesTypeList: [
@@ -332,12 +367,16 @@ export default {
 
       ],
 
+
       ShowNum: 0,
 
       // 以下为需要传给后端进行保存的数据
       // 是否开启自动显示题号
       isShowQuesNum: false,
 
+
+      // 是否可以修改题目
+      isCanChangeItem: true,
 
       // 问卷ID
       QuesId: 0,
@@ -377,7 +416,7 @@ export default {
         ReleaseTime: '',
         // 是否显示题号
         isShowSubNum: false,
-        Type: 1,
+
         EncodeID: '',
       },
 
@@ -426,36 +465,42 @@ export default {
 
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
-      let child = this.$refs.child;
-      if (child !== undefined){
-        for (let i = 0; i < child.length; i++) {
-          // console.log(child[i].singleChoice.edit);
-          let edit;
-          if (child[i].singleChoice!==undefined) {
-            edit= child[i].singleChoice.edit;
-          }
-          else if ( child[i].multiChoice!==undefined){
-            edit= child[i].multiChoice.edit;
-          }
-          else if (child[i].fillBlank!==undefined){
-            edit= child[i].fillBlank.edit;
-          }
-          else if (child[i].evaluate!==undefined){
-            edit= child[i].evaluate.edit;
-          }
-          if (edit === 1) {
-            child[i].save();
-          }
-        }
-      }
+      let child = this.$refs.childEdit;
+      // console.log(chi)
+      console.log(child)
+      child.save();
+      // console.log(child.$children)
+      // if (child !== undefined){
+      //   for (let i = 0; i < child.length; i++) {
+      //     // console.log(child[i].singleChoice.edit);
+      //     let edit;
+      //     if (child[i].QesData!==undefined) {
+      //       edit= child[i].QesData.edit;
+      //     }
+      //     // else if ( child[i].multiChoice!==undefined){
+      //     //   edit= child[i].multiChoice.edit;
+      //     // }
+      //     // else if (child[i].fillBlank!==undefined){
+      //     //   edit= child[i].fillBlank.edit;
+      //     // }
+      //     // else if (child[i].evaluate!==undefined){
+      //     //   edit= child[i].evaluate.edit;
+      //     // }
+      //     if (edit === 1) {
+      //       child[i].save();
+      //     }
+      //   }
+      // }
 
       this.Questionnaire.title = this.QuesTitle;
       this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
       this.Questionnaire.Text = this.QuesText
       this.sendAndSaveNewQues(this.Questionnaire)
-      setTimeout(this.sendRequest,500)
+      // setTimeout(this.sendRequest,500)
     },
+
+
 
     // 创建问卷，向后端发送数据
     sendAndSaveNewQues(Ques){
@@ -617,6 +662,8 @@ export default {
     modifyQuestion(item){
       // console.log("aaa")
       // console.log(item)
+      this.isCanChangeItem = false;
+
       let Question = this.changeDataStructToBackend(item,'sendQuestion');
 
       // console.log(Question)
@@ -688,7 +735,7 @@ export default {
               MinChoice: 1,
               MaxChoice: 1,
               Stem: Opt.Stem,
-                username: this.$store.state.personalInfo.username,
+                username: this.$route.query.username,
               Number: Opt.idx,
             }
 
@@ -715,7 +762,7 @@ export default {
               MaxChoice: 2,
               Stem: Opt.Stem,
               Number: Opt.idx,
-              username: this.$store.state.personalInfo.username
+              username: this.$route.query.username,
             }
             this.addNewQuestionToBackend(Opt,pra)
             // this.addNewQuesToQuesList(Opt);
@@ -742,7 +789,7 @@ export default {
           Questionnaire: this.QuesId,
           Type: 3,
           Stem: Opt.Stem,
-          username: this.$store.state.personalInfo.username,
+          username: this.$route.query.username,
           Number: Opt.idx,
         }
 
@@ -764,7 +811,7 @@ export default {
           Type: 4,
           Stem: Opt.Stem,
           Number: Opt.idx,
-          username: this.$store.state.personalInfo.username
+          username: this.$route.query.username,
         }
 
         this.addNewQuestionToBackend(Opt,pra)
@@ -805,8 +852,22 @@ export default {
     // 增加新题目到列表中
     addNewQuesToQuesList(SubjectObj){
       let length = this.QuesList.length;
+
       this.QuesList.splice(length,0,SubjectObj);
+      this.editingQuestion = SubjectObj;
+      this.editingQuestion.index = length
       this.IndexNav(length);
+      console.log(this.editingQuestion)
+    },
+
+    // 修改题目
+    changeQuestions(index){
+      console.log('需要改的题目',index)
+      let quesList = this.QuesList;
+      let quesListElement = quesList[index];
+      this.editingQuestion = quesListElement;
+      this.editingQuestion.index = index
+      this.isCanChangeItem =true;
     },
 
     // 删除题目列表中的题目
@@ -825,7 +886,7 @@ export default {
       console.log(quesListElement.id)
       let  deleteItem ={
         id: quesListElement.id,
-        username: this.$store.state.personalInfo.username
+        username: this.$route.query.username,
       }
       request({
         url: '/question/deleteQuestion',
@@ -1045,9 +1106,9 @@ export default {
         Open: Questionnaire.Open,
         Text: Questionnaire.Text,
         Question: [],
-        Settings: Questionnaire.Settings,
-        EncodeID: Questionnaire.EncodeID,
         Type: Questionnaire.Type,
+        Settings: Questionnaire.Settings,
+        EncodeID: Questionnaire.EncodeID
       }
       this.isShowQuesNum = Questionnaire.ShowNumber
       this.QuesText = Questionnaire.Text
@@ -1070,7 +1131,7 @@ export default {
             console.log(questionItem.Describe)
             QuesInfo ={
               id:"",
-              number:"",
+              Number:questionItem.Number,
               edit:0,
               describe: questionItem.Describe,
               question: questionItem.Stem,
@@ -1091,6 +1152,7 @@ export default {
               question:questionItem.Stem,
               choices:[],
               radio:[],
+              Number:questionItem.Number,
               max:questionItem.MaxChoice,
               min:questionItem.MinChoice,
               Must:questionItem.Must,
@@ -1103,7 +1165,7 @@ export default {
             type='fillBlank';
             QuesInfo = {
               id:"",
-              Number:"",
+              Number:questionItem.Number,
               edit:0,
               describe:questionItem.Describe,
               Questionnaire:questionItem.Stem,
@@ -1121,6 +1183,7 @@ export default {
               describes:[],
               level:[],
               radio:[],
+              Number:questionItem.Number,
               Must: questionItem.Must,
             }
             for (let j = 0; j < questionItem.Choice.length; j++) {
@@ -1143,6 +1206,7 @@ export default {
       }
       // console.log(this.QuesList)
       Ques.Question = this.QuesList
+      this.editingQuestion = Ques.Question[0];
       this.Questionnaire = Ques
       // console.log(Questionnaire);
     },
@@ -1165,7 +1229,6 @@ export default {
         console.log(res);
         if (res.data.Message !== 'No Such Questionnaire'){
           this.adjustDataStruct(res.data.Questionnaire);
-          console.log(this.Questionnaire)
         }
       }).catch(err=>{
         // console.log(err)
@@ -1294,13 +1357,13 @@ export default {
 
   .designContent .editQuestion {
     height: 98%;
-    background-color: pink;
+    /*background-color: pink;*/
 
   }
 
   .designContent .editQuestion .quesInfo {
-    background-color: #58ACFA;
-    height: 20%;
+    /*background-color: #58ACFA;*/
+    height: 5%;
     width: 95%;
     margin: 0 auto;
     margin-top: 5px;
@@ -1617,7 +1680,7 @@ export default {
     width: 100%;
     height: 10%;
     position: absolute;
-    padding-right: 10px;
+    padding-right: 50px;
     /*bottom: 31px;*/
     /*display: none;*/
     bottom: -15%;
