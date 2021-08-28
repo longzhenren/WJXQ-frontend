@@ -3,18 +3,17 @@
     <nav class="topNav">
 <!--      切换问卷-->
       <div class="switchQuestionnaire">
-<!--        <el-dropdown trigger="click">-->
+        <el-dropdown trigger="click">
           <span class="el-dropdown-link">
-            {{ Questionnaire.Title }}(ID:{{Questionnaire.id}} )
-<!--            <i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
+            {{ Questionnaire.Title }}(ID:{{Questionnaire.id}} )<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
 
-<!--          <el-dropdown-menu slot="dropdown">-->
-<!--            <el-dropdown-item  v-for="(Ques,index) in QuestionnaireList">-->
-<!--              {{Ques.id}}-->
-<!--            </el-dropdown-item>-->
-<!--          </el-dropdown-menu>-->
-<!--        </el-dropdown>-->
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item  v-for="(Ques,index) in QuestionnaireList">
+
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
 <!--      数据分析-->
       <div class="analysisTab">
@@ -78,15 +77,12 @@
           <div class="QuesModeData" v-if="switchMode===0">
             <vue-scroll ref="vs"
                         :ops="ops" >
-              <ul v-if="!isEmpty">
+              <ul>
                 <li class="head">问卷题目</li>
                 <li v-for="(Ques,index) in  Questionnaire.Question" @click="IndexNav(index)">
                   {{Ques.Number+1}}. {{ Ques.Stem }}
                 </li>
               </ul>
-              <div v-else>
-                <el-empty description="题目列表为空"></el-empty>
-              </div>
             </vue-scroll>
           </div>
 
@@ -118,11 +114,10 @@
 
                   <el-divider></el-divider>
 
-                  <el-empty description="暂无数据" v-if="isEmpty"></el-empty>
-
-                  <DataAnalysisList v-else
+                  <DataAnalysisList
                       :questions="Questionnaire.Question"
-                    :father-need-show-questions="NeedShowQuestions"></DataAnalysisList>
+                    :father-need-show-questions="NeedShowQuestions"
+                  :id="this.id"></DataAnalysisList>
                 </vue-scroll>
 
 
@@ -175,33 +170,11 @@
 
     <div class="AnswerTable" v-else-if="currentPos===1">
       <div class="AnswerNav">
-<!--        原始答卷数据-->
-        <ul>
-          <li :class="{AnswerNavActive: AnswerNavCurrent===0}" @click="changeAnswerNav(0)">
-            <i class="el-icon-caret-top"></i>
-            回到顶部
-          </li>
 
-          <li :class="{AnswerNavActive: AnswerNavCurrent===1}" @click="changeAnswerNav(1)">
-            <i class="el-icon-download"> </i>
-            下载数据
-          </li>
-
-          <li :class="{AnswerNavActive: AnswerNavCurrent===2}" @click="changeAnswerNav(2)">
-            <i class="el-icon-caret-bottom"></i>
-            回到底部
-          </li>
-        </ul>
       </div>
 
 
-      <div class="Answers">
-        <div class="title">
-          原始答卷数据表
-        </div>
-        <el-divider></el-divider>
-        <DataDownload></DataDownload>
-      </div>
+      <div class="Answers"></div>
     </div>
 
 
@@ -219,15 +192,13 @@
 import classification from "./classification";
 import DataAnalysisList from "./DataAnalysisList";
 import CrossAnalysis from "./CrossAnalysis";
-import DataDownload from "./DataDownload";
 
   export default {
     name: "DataAnalysis",
     components: {
       classification,
       DataAnalysisList,
-      CrossAnalysis,
-      DataDownload
+      CrossAnalysis
     },
     updated() {
         // this.updateHTMLHeight();
@@ -235,55 +206,6 @@ import DataDownload from "./DataDownload";
       // this.isShowQuick()
     },
     methods:{
-
-      // 下载excel表格
-      exportDocumentExcel(){
-        let  pra = {
-          // username: this.$store.state.personalInfo.username,
-          questionnaireID: this.Questionnaire.id
-        }
-        request({
-          url:'/submit/report',
-          method:'post',
-          data: pra,
-          responseType: "blob"
-        }).then(res=>{
-          console.log(res)
-          if ( res.data.Message ){
-          }
-          else {
-            this.download(res);
-          }
-
-        }).catch(err=>{
-          console.log()
-        })
-      },
-
-      download(res) {
-        if (!res.data) {
-          return;
-        }
-        let fileName = 'aaa.xls';
-        let url = window.URL.createObjectURL(new Blob([res.data]))
-        let link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = url
-        link.setAttribute('download', 'data.xlsx')
-        document.body.appendChild(link)
-        link.click()
-      },
-
-
-
-
-
-      changeAnswerNav(index){
-        this.AnswerNavCurrent = index
-        if (index===1) {
-          this.exportDocumentExcel();
-        }
-      },
 
       // // 判断是否显示固定菜单
       isShowQuick(tab,event){
@@ -416,13 +338,14 @@ import DataDownload from "./DataDownload";
         }
         // console.log(this.QuesList)
         Ques.Question = this.NeedShowQuestions
-        return Ques
+        this.Questionnaire = Ques
         // console.log(Questionnaire);
       },
 
       // 获取当前问卷
       getNowQuestionnaire(){
         let QuesId = Number(this.$route.query.id)
+        this.id=this.$route.query.id
         console.log(QuesId)
 
         request({
@@ -435,11 +358,7 @@ import DataDownload from "./DataDownload";
           console.log(res);
           if (res.data.Message !== 'No Such Questionnaire'){
             // this.Questionnaire = res.data.Questionnaire
-            this.Questionnaire = this.adjustDataStruct(res.data.Questionnaire)
-            if (this.Questionnaire.Question.length === 0){
-              this.isEmpty = true
-            }
-            // this.adjustDataStruct(res.data.Questionnaire)
+            this.adjustDataStruct(res.data.Questionnaire)
             console.log(this.Questionnaire)
           }
         }).catch(err=>{
@@ -456,48 +375,15 @@ import DataDownload from "./DataDownload";
       //   console.log(classify.offsetTop)
       //   html.style.height = height + classify.offsetTop + 'px';
       // },
-      // 获取问卷列表
-      getQuestionnaireList(){
-        request({
-          url: '/question/manageQuestionnaire',
-          method: 'post',
-          data: {
-            CreateUser: this.$route.query.username,
-            Open: true
-          }
-        }).then(res=>{
-          console.log(res);
-          if (res.data.Message !== 'No Such Questionnaire'){
-            // this.Questionnaire = res.data.Questionnaire
-            for (let i = 0; i < res.data.Questionnaire.length; i++) {
-              let questionnaireElement = res.data.Questionnaire[i];
-              let Questionnaire = this.adjustDataStruct(questionnaireElement);
-              this.QuestionnaireList.push(Questionnaire);
-            }
-            console.log(this.Questionnaire)
-          }
-        }).catch(err=>{
-          console.log(err)
-        })
-      },
+
     },
-
-
-
 
     created() {
       this.getNowQuestionnaire()
-
-
-      this.getQuestionnaireList();
     },
     data(){
       return {
-        AnswerNavCurrent: 0,
-
         isShowQuickNav: true,
-
-        isEmpty: false,
 
         // 在问题列表中,对于单个问题需要展示的图表
         QuesDataShowTable: 0,
@@ -575,7 +461,7 @@ import DataDownload from "./DataDownload";
 
         // 问卷列表
         QuestionnaireList: [],
-
+        id:"",
         // 当前问卷
         Questionnaire: {
 
@@ -921,69 +807,22 @@ body {
     /*background-color: white;*/
   }
 .AnswerTable .AnswerNav {
-  width: 4.5vw;
-  height: 25vh;
+  width: 15vw;
+  height: 50vh;
   background-color: white;
   position: absolute;
-  left: 15vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /*box-shadow: 0 0 5px rgba(0,0,0,.5);*/
+  left: 5vw;
+  box-shadow: 0 0 5px rgba(0,0,0,.5);
 }
-
-
-.AnswerTable .AnswerNav ul {
-  width: 100%;
-  height: 100%;
-  /*background-color: pink;*/
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.AnswerTable .AnswerNav ul li {
-  width: 100%;
-  cursor: pointer;
-  height: 30%;
-  display: flex;
-  flex-direction: column;
-  font-weight: 600;
-  transition: .4s;
-  justify-content: space-around;
-  align-items: center;
-  /*background-color: #58ACFA;*/
-}
-
-.AnswerTable .AnswerNav ul li:hover {
-  background-color: #58ACFA;
-  color: white;
-}
-
-.AnswerTable .AnswerNav ul .AnswerNavActive {
-  background-color: #58ACFA;
-  color: white;
-}
-
 
 .AnswerTable .Answers {
   width: 50%;
   height: 70%;
-  background-color: white;
+  background-color: #42b983;
   margin-left: 45vh;
   /*margin-top: 30%;*/
 }
 
-.AnswerTable .Answers  .title{
-  /*max-resolution: res;*/
-  height: 50px;
-  line-height: 50px;
-  font-weight: 600;
-  text-align: left;
-  padding-left: 30px;
-
-}
 
 
 
