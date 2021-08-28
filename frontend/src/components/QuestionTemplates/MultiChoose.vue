@@ -27,7 +27,8 @@ import bus from "../../assets/utils/bus";
 
 export default {
   props:{
-    FatherData: Object
+    FatherData: Object,
+    ItemIndex: Number,
   },
   data () {
     return {
@@ -86,9 +87,15 @@ export default {
   },
   methods: {
     // 保存数据
-    saveData(QesData){
-      this.QesData = QesData
-      this.save()
+    saveData(QesData,index){
+      if (index===this.ItemIndex){
+        console.log(index)
+        console.log(this.QesData)
+        this.QesData = QesData
+        this.save()
+      }
+      // this.QesData = QesData
+      // this.save()
       // this.$emit('saveMultiData',this.QesData)
     },
     del:function (i){

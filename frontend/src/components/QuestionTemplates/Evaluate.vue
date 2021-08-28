@@ -42,7 +42,8 @@ export default {
       default(){
         return {}
       }
-    }
+    },
+    ItemIndex: Number,
   },
   data () {
     return {
@@ -98,10 +99,15 @@ export default {
   },
   methods: {
     // 保存数据
-    saveData(QesData){
-      this.QesData = QesData
-      this.save()
-      // this.$emit('saveEvaluateData',this.QesData)
+    saveData(QesData,index){
+      // console.log(index)
+      // console.log(this.QesData.Number)
+      if (index===this.ItemIndex){
+        console.log(index)
+        console.log(this.QesData)
+        this.QesData = QesData
+        this.save()
+      }
     },
 
     del:function (i){

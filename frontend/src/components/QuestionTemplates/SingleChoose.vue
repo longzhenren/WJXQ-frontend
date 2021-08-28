@@ -102,6 +102,8 @@ export default {
       console.log("要保存的题号："+index)
       console.log("本体题号:"+this.QesData.Number)
       if (index===this.ItemIndex){
+        console.log(index)
+        console.log(this.QesData)
         this.QesData = QesData
         this.save()
       }
@@ -110,8 +112,8 @@ export default {
       this.QesData.choices.push("")
     },
     changeData(QesData,index){
-      console.log(index)
-      console.log(this.QesData.Number)
+      // console.log(index)
+      // console.log(this.QesData.Number)
       if (index===this.ItemIndex){
         this.QesData = QesData
       }

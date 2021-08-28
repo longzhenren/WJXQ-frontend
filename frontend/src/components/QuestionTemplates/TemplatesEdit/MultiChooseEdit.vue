@@ -156,6 +156,15 @@ export default {
         }
       }
     },
+    needSendIdx(newIndex,oldIndex){
+      // console.log('旧',oldIndex)
+      // console.log('新',newIndex)
+      this.needSendIdx = newIndex
+      // if (newIndex !== oldIndex) {
+      //   console.log('自动')
+      //   bus.$emit('saveSingleData',this.QesData,oldIndex)
+      // }
+    }
   },
   methods: {
     changeMax: function(){
@@ -191,7 +200,7 @@ export default {
       let find = false;
       for (let i = 0; i < this.QesData.choices.length; i++) {
         for (let j = i + 1; j < this.QesData.choices.length; j++) {
-          if (this.QesData.choices[i]== this.QesData.choices[j] ) {
+          if (this.QesData.choices[i]=== this.QesData.choices[j] ) {
             find = true; break;
           }
         }
@@ -199,7 +208,7 @@ export default {
       }
       if(find){
         this.$message.warning("不可以存在重复项")
-
+        return
       }else {
         this.QesData.edit=0
         bus.$emit('saveMultiData',this.QesData,this.needSendIdx);

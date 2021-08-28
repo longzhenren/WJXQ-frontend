@@ -41,7 +41,8 @@
         :op="ops3"
         ref="vss">
           <DataAnalysisList v-if="this.QuestionnaireQues.length!==0"
-                            :questions="QuestionnaireQues">
+                            :questions="QuestionnaireQues"
+                            :id="this.id">
           </DataAnalysisList>
 
           <div class="donotFind" v-else>
@@ -50,13 +51,7 @@
 
           <el-divider></el-divider>
         </vue-scroll>
-
-
-
-
       </div>
-
-
     </el-collapse>
 <!--    <div class="classificationTitle">-->
 <!--      <i class="el-icon-orange"></i>-->
@@ -74,12 +69,17 @@ export default {
   name: "classification",
   props: {
     Questions: Array,
+    // 当前问卷
+    Questionnaire: Object,
   },
   components: {
     DataAnalysisList
   },
   data(){
     return {
+      id: '',
+
+
       ops3: {
         vuescroll: {
           mode: 'native',
@@ -134,8 +134,19 @@ export default {
     // this.getNewClassfyHeight();
   },
   mounted() {
+
+    this.look()
+  },
+  created() {
+    // this.look()
   },
   methods: {
+
+    look(){
+      console.log('问卷',this.Questionnaire)
+      this.id = this.Questionnaire.id.toString()
+      console.log(this.id)
+    },
 
     handleChange(){
       let analysisData = this.$refs.analysisData;
