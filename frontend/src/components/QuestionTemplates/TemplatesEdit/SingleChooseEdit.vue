@@ -99,7 +99,10 @@ export default {
     };
   },
   created() {
-    bus.$on('SaveEdited',this.save)
+    bus.$on('SaveEdited',this.saveData)
+  },
+  beforeDestroy(){
+    bus.$off('SaveEdited',this.saveData)
   },
   mounted() {
     console.log(this.FatherData)
@@ -149,6 +152,14 @@ export default {
 
   },
   methods: {
+    saveData(index){
+      console.log("传入修改器 当前需要修改"+this.needSendIdx)
+      console.log("传入修改器 上一修改"+index)
+      if (index===this.needSendIdx){
+        console.log(index)
+        this.save()
+      }
+    },
     del:function (i){
       if(this.QesData.choices.length>2)
       {

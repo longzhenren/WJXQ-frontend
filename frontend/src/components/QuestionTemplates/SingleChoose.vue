@@ -86,6 +86,10 @@ export default {
     bus.$on('SaveSingleData',this.saveData)
     bus.$on('changeSingleData',this.changeData)
   },
+  beforeDestroy(){
+    bus.$off('SaveSingleData',this.saveData)
+    bus.$off('changeSingleData',this.changeData)
+  },
   methods: {
 
     del:function (i){
