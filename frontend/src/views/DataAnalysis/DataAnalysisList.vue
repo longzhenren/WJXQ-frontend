@@ -12,8 +12,16 @@
 <!--          <controlList @changeShowState="changeChartState($event,index)"></controlList>-->
 
           <div class="TableContainer">
-            <ChooseAnalyse :id="Qesid" :number="index"></ChooseAnalyse>
+            <div v-if="Ques.Type !== 3 && Ques.Type !== 4">
+              <ChooseAnalyse :id="Qesid" :number="index"></ChooseAnalyse>
+            </div>
+
+            <div v-else>
+              <BlankData :question-i-d="Ques.id"></BlankData>
+            </div>
           </div>
+
+
           <el-divider></el-divider>
         </li>
       </ul>
@@ -24,13 +32,15 @@
 <script>
 import controlList from "./controlList";
 import ChooseAnalyse from "../../components/DataAnalysis/ChooseAnalyse";
-
+import {request} from "../../network/request";
+import BlankData from "./BlankData";
 
 export default {
   name: "DataAnalysisList",
   components:{
     controlList,
-    ChooseAnalyse
+    ChooseAnalyse,
+    BlankData
   },
   props:{
     Questions: {
@@ -69,6 +79,7 @@ export default {
     }
   },
   methods: {
+
     // 修改问题列表需要展示的图表
     changeChartState(bool,index){
       // console.log(this.NeedShowQuestions)

@@ -71,7 +71,8 @@ export default {
         Question: "This is a Question",
         Describe:"This is a describe",
         Must: true,
-        Total: 37},
+        Total: 37
+      },
       ChooseData: [],
       BasicData: [],
       AnswerData: [],
@@ -84,6 +85,7 @@ export default {
   },
   props:[
     'id',
+    'QuesType',
     'number'
   ],
   methods:{

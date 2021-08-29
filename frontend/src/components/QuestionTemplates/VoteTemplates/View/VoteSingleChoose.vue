@@ -87,6 +87,7 @@ export default {
       this.QesData.describe = this.FatherData.describe;
       this.QesData.radio = this.FatherData.radio;
       this.QesData.Must = this.FatherData.Must;
+      this.QesData.Amount = this.FatherData.Amount;
       // this.singleChoice = this.FatherData
     }
   },
