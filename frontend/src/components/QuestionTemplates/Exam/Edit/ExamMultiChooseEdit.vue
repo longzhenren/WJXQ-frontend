@@ -34,7 +34,15 @@
             </el-input>
           </el-col >
           <el-col :span="2" class="centerElement">
-            <el-button  icon="el-icon-delete"   type="text" @click="QesData.choices.splice(i,1)" ></el-button>
+            <el-button  icon="el-icon-delete"   type="text" @click="del(i)" ></el-button>
+          </el-col>
+          <el-col :span="2" class="centerElement">
+            <el-tooltip v-if="QesData.answer[i]===true" class="item" content="正确选项" placement="right">
+              <el-button   icon="el-icon-success"  style="font-size: 15px;color: green" type="text" @click="setAnswer(i)" ></el-button>
+            </el-tooltip>
+            <el-tooltip  v-else class="item"  content="错误选项" placement="right">
+              <el-button  icon="el-icon-error"  type="text" style="font-size: 15px;color:darkgrey" @click="setAnswer(i)" ></el-button>
+            </el-tooltip>
           </el-col>
         </el-row>
 
@@ -57,18 +65,23 @@
 
         <div class="SetElement">
           <label>分数设置: </label>
-          <el-input type="number" :clearable="false" :autocomplete="true" @change="scoreChange" v-model="QesData.score"
+          <el-input type="number" :clearable="false"  @change="scoreChange" v-model="QesData.score"
                     style="max-width: 150px" :min="0">
             <template slot="append">分</template>>
           </el-input>
         </div>
         <div class="SetElement">
           <label>漏选得分: </label>
-          <el-input type="number" :clearable="false" :autocomplete="true"  v-model="QesData.HalfRightScore"
+          <el-input type="number" :clearable="false"  v-model="QesData.HalfRightScore"
                     style="max-width: 150px" :min="0" :max="QesData.score">
             <template slot="append">分</template>>
           </el-input>
         </div>
+        <div class="SetElement">
+          <label style="display: inline">正确选项: 第</label>
+          <label   v-for="(answer,i) in QesData.answer" v-if="answer===true"> [ {{i+1}} ]  </label>项
+
+        </div >
         <div class="SetElement">
           <el-checkbox v-model="QesData.Must">必答题</el-checkbox>     </div>
       </div>
@@ -112,6 +125,7 @@ export default {
 
 
         //settings
+        answer:[true,false],
         score:1,
         edit:1,
         Must:true,
@@ -186,7 +200,21 @@ export default {
         this.QesData.HalfRightScore=this.QesData.score
       }
     },
-
+    setAnswer:function (j){
+      let k=0;
+      let trueamount=0;
+      for (let i = 0; i < this.QesData.answer.length; i++) {
+        if(this.QesData.answer[i]===true){
+          trueamount++;
+          k=i;
+        }
+      }
+      if(this.QesData.Must==true&&trueamount==1&&j==k){
+        this.$message.warning("必选题请至少设置一个正确选项")
+      }else {
+        this.$set(this.QesData.answer,j,!this.QesData.answer[j]);
+      }
+    },
     saveData(index){
       console.log("传入修改器 当前需要修改"+this.needSendIdx)
       console.log("传入修改器 上一修改"+index)
@@ -195,26 +223,27 @@ export default {
         this.save()
       }
     },
-    changeMax: function(){
-      if(this.QesData.min>this.QesData.max){
-        this.QesData.min=this.QesData.max;
-      }
-    },
-    changeMin: function(){
-      if(this.QesData.min>this.QesData.max){
-        this.QesData.max=this.QesData.min;
-      }
-    },
+
     del:function (i){
       if(this.QesData.choices.length>2)
       {
         this.QesData.choices.splice(i,1)
-        if(this.QesData.max>this.QesData.choices.length){
-          this.QesData.max=this.QesData.choices.length
+        let trueamount=0;
+        for (let k = 0; k< this.QesData.answer.length; k++) {
+          if(this.QesData.answer[k]===true){
+            trueamount++;
+          }
         }
-        if(this.QesData.min>this.QesData.choices.length){
-          this.QesData.min=this.QesData.choices.length
+        console.log("zhengqueshu"+trueamount)
+        if( this.QesData.answer[i]==true&&trueamount==1){
+          if(i>=1){
+            this.$set(this.QesData.answer,i-1,true)
+          }
+          else {
+            this.$set(this.QesData.answer,i+1,true)
+          }
         }
+        this.QesData.answer.splice(i,1)
       }
       else {
         this.$message.warning("选项不可以少于2")

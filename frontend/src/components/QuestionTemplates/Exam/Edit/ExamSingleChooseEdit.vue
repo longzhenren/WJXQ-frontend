@@ -35,8 +35,17 @@
             </el-input>
           </el-col >
           <el-col :span="2" class="centerElement">
-            <el-button  icon="el-icon-delete"   type="text" @click="del" ></el-button>
+            <el-button  icon="el-icon-delete"   type="text" @click="del(i)" ></el-button>
           </el-col>
+          <el-col :span="2" class="centerElement">
+            <el-tooltip v-if="QesData.answer[i]===true" class="item" content="正确选项" placement="right">
+              <el-button   icon="el-icon-success"  style="font-size: 15px;color: green" type="text" @click="setAnswer(i)" ></el-button>
+            </el-tooltip>
+            <el-tooltip  v-else class="item"  content="错误选项" placement="right">
+              <el-button  icon="el-icon-error"  type="text" style="font-size: 15px;color:darkgrey" @click="setAnswer(i)" ></el-button>
+            </el-tooltip>
+          </el-col>
+
         </el-row>
 
 
@@ -57,13 +66,21 @@
 
         <div class="SetElement">
           <label>分数设置: </label>
-          <el-input type="number" :clearable="false" :autocomplete="true"  v-model="QesData.score"
+          <el-input type="number" :clearable="false"   v-model="QesData.score"
                     style="max-width: 150px" :min="0">
             <template slot="append">分</template>>
           </el-input>
         </div>
+
         <div class="SetElement">
-          <el-checkbox v-model="QesData.Must">必答题</el-checkbox>     </div>
+          <label style="display: inline">正确选项: 第</label>
+          <label   v-for="(answer,i) in QesData.answer" v-if="answer===true">[ {{i+1}} ]  </label>项
+
+        </div >
+        <div class="SetElement">
+          <el-checkbox v-model="QesData.Must">必答题</el-checkbox>
+        </div >
+
       </div>
     </div>
 
@@ -102,6 +119,8 @@ export default {
         radio: 0,
 
         //settings
+
+        answer:[true,false],
         score:1,
         edit:1,
         Must:true,
@@ -134,6 +153,8 @@ export default {
           describe: "",
           question:"",
           choices:["",""],
+
+          answer:[true,false],
           radio: 0,
           score:1,
           edit:1,
@@ -169,10 +190,28 @@ export default {
         this.save()
       }
     },
+    setAnswer:function (j){
+      for (let i = 0; i < this.QesData.answer.length; i++) {
+        if(this.QesData.answer[i]===true){
+          this.$set(this.QesData.answer,i,false);
+          break;
+        }
+      }
+      this.$set(this.QesData.answer,j,true);
+    },
     del:function (i){
-      if(this.QesData.choices>=2)
+      if(this.QesData.choices.length>2)
       {
         this.QesData.choices.splice(i,1)
+        if( this.QesData.answer[i]==true){
+          if(i>=1){
+            this.$set(this.QesData.answer,i-1,true)
+          }
+          else {
+            this.$set(this.QesData.answer,i+1,true)
+          }
+        }
+        this.QesData.answer.splice(i,1)
       }
       else {
         this.$message.warning("选项不可以少于2")
@@ -183,20 +222,23 @@ export default {
     },
     save: function() {
       let find = false;
+      let j=0;
       for (let i = 0; i < this.QesData.choices.length; i++) {
-        for (let j = i + 1; j < this.QesData.choices.length; j++) {
+        for ( j = i + 1; j < this.QesData.choices.length; j++) {
           if (this.QesData.choices[i]== this.QesData.choices[j] ) {
-            find = true; break;
+            find=true;
+            console.log(i,j)
+            this.$set(this.QesData.choices,j,this.QesData.choices[j]+"-重复项"+j.toString())
           }
         }
-        if (find) break;
       }
       if(find){
-        this.$message.warning("不可以存在重复项")
-      }else {
-        this.QesData.edit=0
-        bus.$emit('SaveData',this.QesData,this.needSendIdx)
+        this.$message.warning("不可以存在重复项,已为您添加标识，请您修改")
       }
+      // this.$emit('saveSingleData',this.QesData)
+      console.log("编辑保存"+this.needSendIdx);
+      bus.$emit('SaveData',this.QesData,this.needSendIdx)
+
     },
     edit: function() {
       this.QesData.edit=1
@@ -233,8 +275,7 @@ export default {
 }
 .SetElement{
   margin-top: 10px;
-  margin-bottom: 15px;
-  margin-left: 10px;
+  margin-bottom: 25px;
   alignment: left;
   text-align: left;
 }
