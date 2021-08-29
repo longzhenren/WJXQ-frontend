@@ -108,6 +108,8 @@
 
               <VoteSingleChoose v-else-if="ItemPreviewType==='VoteSingleChoose'" ref="child"></VoteSingleChoose>
 
+              <VoteMChoose v-else-if="ItemPreviewType==='VoteMultiChoose'" ref="child"></VoteMChoose>
+
               <Position v-else-if="ItemPreviewType==='Position'" ref="child"></Position>
             </div>
           </div>
@@ -789,9 +791,9 @@ export default {
                   case 0:
                     self.ItemPreviewType  = 'VoteSingleChoose';
                     break;
-                    case 1:
-                      this.ItemPreviewType = 'VoteMultiChoose';
-                      break;
+                  case 1:
+                    self.ItemPreviewType = 'VoteMultiChoose';
+                    break;
                 }
               }
               else if (self.Questionnaire.Type === 5){
@@ -866,14 +868,14 @@ export default {
           type=11;
           break;
       }
-      let TrueAnswer = null;
-      if(item.subData.answer!==undefined) {
-        for (let i = 0; i < item.subData.answer.length; i++) {
-          if (item.subData.answer[i]){
-            TrueAnswer = item.subData.choices[i];
-          }
-        }
-      }
+      // let TrueAnswer = null;
+      // if(item.subData.answer!==undefined) {
+      //   for (let i = 0; i < item.subData.answer.length; i++) {
+      //     if (item.subData.answer[i]){
+      //       TrueAnswer = item.subData.choices[i];
+      //     }
+      //   }
+      // }
 
       if (mode==='sendQuestion'){
          Question = {
@@ -887,8 +889,10 @@ export default {
           Must: item.subData.Must===undefined?false:item.subData.Must,
           Number: item.idx,
           Choice: [],
-           TrueAnswer: TrueAnswer,
-           Times: item.subData.score===undefined?null:item.subData.score,
+           // TrueAnswer: TrueAnswer,
+           // Times: item.subData.score===undefined?null:item.subData.score,
+           HalfScore: item.subData.HalfRightScore===undefined?0:item.subData.HalfRightScore,
+           Score: item.subData.score===undefined?0:item.subData.score,
           Describe: item.subData.describe,
           username: this.$route.query.username
         }
@@ -904,8 +908,9 @@ export default {
           Must: item.subData.Must===undefined?false:item.subData.Must,
           Number: item.idx,
           Choice: [],
-           TrueAnswer: TrueAnswer,
-           Times: item.subData.score===undefined?null:item.subData.score,
+           // TrueAnswer: TrueAnswer,
+           HalfScore: item.subData.HalfRightScore===undefined?0:item.subData.HalfRightScore,
+           Score: item.subData.score===undefined?0:item.subData.score,
           Describe: item.subData.describe,
         }
       }
@@ -913,14 +918,32 @@ export default {
       let choices = item.subData.choices;
       let describes = item.subData.describes;
       let level = item.subData.level;
+      let answer = item.subData.answer;
       // console.log(choices)
       if (choices!==undefined){
-        for (let i = 0; i <choices.length ; i++) {
-          let CItem = {
-            Text: choices[i],
+        if (answer!==undefined) {
+          for (let i = 0; i <choices.length ; i++) {
+            let CItem = {
+              Text: choices[i],
+              IsTrueAnswer: answer[i]
+            }
+            Question.Choice.push(CItem);
           }
-          Question.Choice.push(CItem);
         }
+        else {
+          for (let i = 0; i <choices.length ; i++) {
+            let CItem = {
+              Text: choices[i],
+            }
+            Question.Choice.push(CItem);
+          }
+        }
+        // for (let i = 0; i <choices.length ; i++) {
+        //   let CItem = {
+        //     Text: choices[i],
+        //   }
+        //   Question.Choice.push(CItem);
+        // }
       }
       if (describes !== undefined && level !== undefined){
         for (let i = 0; i <describes.length ; i++) {
@@ -947,6 +970,7 @@ export default {
         method: 'post',
         data: Question
       }).then(res=>{
+        console.log(res)
         this.$message.success("题目 "+ (item.idx+1) +" 保存成功")
       }).catch( err=> {
         console.log(err);
@@ -1416,17 +1440,6 @@ export default {
     },
 
 
-    // 判断鼠标是否经过子组件
-    OverDrag(index,item){
-      item.isDraggable=false;
-    },
-
-
-    // 判断鼠标离开组件
-    LeaveDrag(index,item){
-      item.isDraggable=true;
-    },
-
     // 切换工具栏
     changeDesignTools(idx){
       this.ShowNum=idx
@@ -1552,7 +1565,7 @@ export default {
               // console.log(questionItem.Describe)
               QuesInfo ={
                 answer:[],
-                score:questionItem.Times,
+                score:questionItem.Score,
                 id:"",
                 Number:questionItem.Number,
                 edit:0,
@@ -1567,15 +1580,10 @@ export default {
                 QuesInfo.choices.push(questionItem.Choice[j].Text);
               }
 
-              for (let j = 0; j < QuesInfo.choices.length; j++) {
-                if (questionItem.TrueAnswer === QuesInfo.choices[i]){
-                  QuesInfo.answer.push(true)
-                }
-                else {
-                  QuesInfo.answer.push(false)
-                }
-              }
-            // console.log(QuesInfo)
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.answer.push(questionItem.Choice[j].IsTrueAnswer);
+            }
+
             break;
           case 2 :
               type='multiChoose';
@@ -1600,10 +1608,11 @@ export default {
               // console.log(questionItem.Describe)
               QuesInfo ={
                 answer:[],
-                score:questionItem.Times,
+                score:questionItem.Score,
                 id:"",
                 Number:questionItem.Number,
                 edit:0,
+                HalfRightScore: questionItem.HalfScore,
                 describe: questionItem.Describe,
                 question: questionItem.Stem,
                 choices: [],
@@ -1615,16 +1624,11 @@ export default {
                 QuesInfo.choices.push(questionItem.Choice[j].Text);
               }
 
-              for (let j = 0; j < QuesInfo.choices.length; j++) {
-                if (questionItem.TrueAnswer === QuesInfo.choices[i]){
-                  QuesInfo.answer.push(true)
-                }
-                else {
-                  QuesInfo.answer.push(false)
-                }
+              for (let j = 0; j < questionItem.Choice.length; j++) {
+                QuesInfo.answer.push(questionItem.Choice[j].IsTrueAnswer);
               }
+              console.log('考试多选',QuesInfo)
               break;
-
           case 3 :
             type='fillBlank';
             QuesInfo = {
