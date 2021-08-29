@@ -221,7 +221,7 @@
               是否在投票前显示结果
             </template>
             <el-switch
-                v-model="SpecialSetting.isReorder"
+                v-model="SpecialSetting.isShowResultBeforeVote"
                 active-text="开启"
                 inactive-text="关闭">
             </el-switch>
@@ -280,11 +280,12 @@ export default {
 
       // 特殊设置
       SpecialSetting: {
+
         // 是否需要开启乱序
         isReorder: false,
 
         // 是否在投票前显示结果
-        isShowResultBeforeVote: false,
+        isShowResultBeforeVote: true,
 
       },
 

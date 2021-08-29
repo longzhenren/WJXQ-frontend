@@ -96,7 +96,7 @@ export default {
     // 保存数据
     saveData(QesData,index){
       console.log("要保存的题号："+index)
-      console.log("本体题号:"+this.QesData.Number)
+      console.log("本体题号:"+this.QesData.ItemIndex)
       if (index===this.ItemIndex){
         console.log(index)
         console.log(this.QesData)

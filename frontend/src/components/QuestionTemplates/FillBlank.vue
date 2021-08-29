@@ -57,6 +57,7 @@ export default {
     if ( this.FatherData.Questionnaire!==null && this.FatherData.Questionnaire!=={} && this.FatherData.Questionnaire!==undefined ){
       this.QesData.edit = this.FatherData.edit;
       this.QesData.Answer = this.FatherData.Answer;
+      this.QesData.Number = this.FatherData.Number
       this.QesData.Must = this.FatherData.Must;
       this.QesData.describe = this.FatherData.describe;
       this.QesData.Questionnaire = this.FatherData.Questionnaire;

@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import bus from "../../../assets/utils/bus";
+import bus from "../../../../assets/utils/bus";
 
 export default {
   props:{

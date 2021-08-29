@@ -8,12 +8,11 @@
       <label  >投票多选题 - {{ QesData.question }}</label>
 
     </div>
-    <div >
+    <div style="margin-bottom: 20px">
       <label  class="describe"> {{ QesData.describe }} </label>
     </div>
-    <el-divider content-position="left" class="el-divider-top"></el-divider>
 
-  <el-checkbox-group v-model="QesData.radio" class="InnerDiv"  >
+  <el-checkbox-group v-model="QesData.radio" class="InnerDiv">
     <el-row :gutter="10" class="Choice" type="flex" align="top" justify="left"  v-for="(choice,i) in QesData.choices" >
       <el-col :span="12">
         <el-checkbox :label="QesData.choices[i]" :key="choice"
@@ -22,21 +21,16 @@
         </el-checkbox>
 
       </el-col>
-      <el-col :span="2" v-if="QesData.Amount==true")>
+      <el-col :span="2" v-if="QesData.Amount==true">
         <label style="font-size: 12px" >0票</label>
       </el-col>
-      <el-col :span="10" v-if="QesData.Rate==true")>
-        <el-progress :percentage="0"  ></el-progress>
-      </el-col>
+<!--      <el-col :span="10" v-if="QesData.Rate==true">-->
+<!--        <el-progress :percentage="0"  ></el-progress>-->
+<!--      </el-col>-->
 
     </el-row>
 
   </el-checkbox-group >
-
-
-    <!--    <div class="RightDiv">-->
-    <!--      <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement"  >修改</el-button></el-divider>-->
-    <!--    </div>-->
   </div>
 </template>
 
@@ -46,7 +40,7 @@ import bus from "../../../../assets/utils/bus";
 export default {
   props:{
     FatherData: Object,
-    needSendIdx: {
+    ItemIndex: {
       type: Number,
       default() {
         return 0;
@@ -71,6 +65,50 @@ export default {
         Amount:true
       }
     };
+  },
+  mounted() {
+    // console.log(this.FatherData)
+    if ( this.FatherData.edit!==null && this.FatherData.edit!=={} && this.FatherData.edit!==undefined ) {
+      this.QesData.edit = this.FatherData.edit;
+      this.QesData.question = this.FatherData.question;
+      this.QesData.choices = this.FatherData.choices;
+      this.QesData.radio = this.FatherData.radio;
+      this.QesData.Number = this.FatherData.Number
+      this.QesData.describe = this.FatherData.describe;
+      this.QesData.max = this.FatherData.max;
+      this.QesData.min = this.FatherData.min;
+      this.QesData.Must = this.FatherData.Must;
+      this.QesData.Amount = this.FatherData.Amount;
+    }
+    // this.multiChoice.edit = this.FatherData.edit;
+    // this.multiChoice.question = this.FatherData.question;
+    // this.multiChoice.choices = this.FatherData.choices;
+    // this.multiChoice.radio = this.FatherData.radio;
+  },
+  watch: {
+    FatherData(newData,oldData){
+      if ( newData.edit!==null && newData.edit!=={} && newData.edit!==undefined ){
+        this.QesData = newData;
+        return
+      }
+      else  {
+        this.QesData = {
+          id:"",
+          number:"",
+          describe: "这是一个描述",
+          question:"",
+          choices:["选项1","选项2"],
+          radio: 0,
+
+          //settings
+          max:1,
+          min:1,
+          edit:1,
+          Must:true,
+          Amount:true
+        }
+      }
+    },
   },
   created() {
     bus.$on('SaveData',this.saveData)

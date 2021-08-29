@@ -33,6 +33,7 @@ export default {
   data () {
     return {
       QesData:{
+        id:"",
         describe:"这是一个描述",
         Number: 0,
         question:"",
@@ -52,6 +53,7 @@ export default {
       this.QesData.question = this.FatherData.question;
       this.QesData.choices = this.FatherData.choices;
       this.QesData.radio = this.FatherData.radio;
+      this.QesData.Number = this.FatherData.Number
       this.QesData.describe = this.FatherData.describe;
       this.QesData.max = this.FatherData.max;
       this.QesData.min = this.FatherData.min;
@@ -95,7 +97,7 @@ export default {
     // 保存数据
     saveData(QesData,index){
       console.log("要保存的题号："+index)
-      console.log("本体题号:"+this.QesData.Number)
+      console.log("本体题号:"+this.QesData.ItemIndex)
       if (index===this.ItemIndex){
         console.log(index)
         console.log(this.QesData)

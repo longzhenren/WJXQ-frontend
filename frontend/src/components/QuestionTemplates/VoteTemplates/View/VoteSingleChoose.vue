@@ -19,10 +19,10 @@
           <el-radio class="Choice" :label="QesData.choices[i]" >
           </el-radio>
         </el-col>
-        <el-col :span="2" v-if="QesData.Amount==true")>
+        <el-col :span="2" v-if="QesData.Amount==true">
           <label style="font-size: 12px" >0票</label>
         </el-col>
-        <el-col :span="10" v-if="QesData.Rate==true")>
+        <el-col :span="10" v-if="QesData.Rate==true">
           <el-progress :percentage="0"  ></el-progress>
         </el-col>
 
@@ -41,7 +41,7 @@ import bus from "../../../../assets/utils/bus";
 export default {
   props:{
     FatherData: Object,
-    needSendIdx: {
+    ItemIndex: {
       type: Number,
       default() {
         return 0;
@@ -61,7 +61,6 @@ export default {
         //settings
         edit:1,
         Must:true,
-        Rate:true,
         Amount:true
       }
     };
@@ -109,7 +108,7 @@ export default {
     // 保存数据
     saveData(QesData,index){
       console.log("要保存的题号："+index)
-      console.log("本体题号:"+this.QesData.Number)
+      console.log("本体题号:"+this.QesData.ItemIndex)
       if (index===this.ItemIndex){
         console.log(index)
         console.log(this.QesData)
