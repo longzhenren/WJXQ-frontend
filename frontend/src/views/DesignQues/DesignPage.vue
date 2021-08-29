@@ -44,6 +44,21 @@
             </el-collapse>
           </div>
 
+          <div v-if="Questionnaire.Type === 3">
+            <el-collapse v-model="activeName" v-for="(item,index) in SignUpLIst">
+              <el-collapse-item :name="index" class="choices">
+                <template slot="title">
+                  <div class="title">
+                    <i class="el-icon-stopwatch"></i>
+                    {{ item.type }}</div>
+                </template>
+                <ul ref="choices">
+                  <li v-for="(i,idx) in item.details" @click="addNewQues(item.type,idx)">{{i}}</li>
+                </ul>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+
           <div v-else-if="Questionnaire.Type === 5">
             <el-collapse v-model="activeName" v-for="(item,index) in AntiVirus">
               <el-collapse-item :name="index" class="choices">
@@ -111,6 +126,12 @@
               <VoteMChoose v-else-if="ItemPreviewType==='VoteMultiChoose'" ref="child"></VoteMChoose>
 
               <Position v-else-if="ItemPreviewType==='Position'" ref="child"></Position>
+
+
+              <EnrollSingleChoose v-else-if="ItemPreviewType==='EnrollSingleChoose'" ref="child"></EnrollSingleChoose>
+
+
+              <EnrollMChoose v-else-if="ItemPreviewType==='EnrollMChoose'" ref="child"></EnrollMChoose>
             </div>
           </div>
 
@@ -213,6 +234,16 @@
                                :father-data="item.subData"
                                :item-index="index"
                                @SaveQes="SaveQes($event,item)"></ExamMChoose>
+
+                  <EnrollSingleChoose v-else-if="item.type ==='EnrollSingleChoose'" ref="child"
+                                      :father-data="item.subData"
+                                      :item-index="index"
+                                      @SaveQes="SaveQes($event,item)"></EnrollSingleChoose>
+
+                  <EnrollMChoose v-else-if="item.type ==='EnrollMChoose'" ref="child"
+                                 :father-data="item.subData"
+                                 :item-index="index"
+                                 @SaveQes="SaveQes($event,item)"> </EnrollMChoose>
                 </div>
 
 
@@ -316,6 +347,16 @@
                                      :need-send-idx="editingQuestion.index"
                                      ref="childEdit"></ExamMultiChooseEdit>
 
+                <EnrollSingleChooseEdit v-else-if="editingQuestion.type === 'EnrollSingleChoose'"
+                                        :father-data="editingQuestion.subData"
+                                        :need-send-idx="editingQuestion.index"
+                                        ref="childEdit"></EnrollSingleChooseEdit>
+
+                <EnrollMultiChooseEdit v-else-if="editingQuestion.type === 'EnrollMChoose'"
+                                       :father-data="editingQuestion.subData"
+                                       :need-send-idx="editingQuestion.index"
+                                       ref="childEdit" ></EnrollMultiChooseEdit>
+
 <!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
 
 <!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
@@ -379,7 +420,10 @@ import ExamSingleChoose from "../../components/QuestionTemplates/Exam/View/ExamS
 import ExamSingleChooseEdit from "../../components/QuestionTemplates/Exam/Edit/ExamSingleChooseEdit";
 import ExamMChoose from "../../components/QuestionTemplates/Exam/View/ExamMChoose";
 import ExamMultiChooseEdit from "../../components/QuestionTemplates/Exam/Edit/ExamMultiChooseEdit";
-
+import EnrollSingleChoose from "../../components/QuestionTemplates/Enroll/View/EnrollSingleChoose";
+import EnrollSingleChooseEdit from "../../components/QuestionTemplates/Enroll/Edit/EnrollSingleChooseEdit";
+import EnrollMChoose from "../../components/QuestionTemplates/Enroll/View/EnrollMChoose";
+import EnrollMultiChooseEdit from "../../components/QuestionTemplates/Enroll/Edit/EnrollMultiChooseEdit";
 
 export default {
   name: "DesignPage",
@@ -402,6 +446,10 @@ export default {
     ExamSingleChooseEdit,
     ExamMChoose,
     ExamMultiChooseEdit,
+    EnrollSingleChooseEdit,
+    EnrollSingleChoose,
+    EnrollMChoose,
+    EnrollMultiChooseEdit
 
   },
   data(){
@@ -585,6 +633,36 @@ export default {
           details: [
             '获取定位',
           ],
+        }
+      ],
+
+      // 报名问卷
+      SignUpLIst: [
+        {
+          type: '选择',
+          details: [
+            '单选',
+            '多选',
+          ]
+        },
+        {
+          type: '填空',
+          details: [
+            '填空',
+          ]
+        },
+        {
+          type: '评分',
+          details: [
+            '评价',
+          ]
+        },
+        {
+          type: '报名',
+          details: [
+            '单项报名',
+            '多项报名'
+          ]
         }
       ],
 
@@ -806,6 +884,16 @@ export default {
                     //   break;
                 }
               }
+              else if (self.Questionnaire.Type === 3){
+                switch (j) {
+                  case 0:
+                    self.ItemPreviewType  = 'EnrollSingleChoose';
+                    break;
+                    case 1:
+                      self.ItemPreviewType = 'EnrollMChoose';
+                      break;
+                }
+              }
 
             }
             // console.log(self.ItemPreviewType )
@@ -860,6 +948,17 @@ export default {
         case 'Position' :
           type=5;
           break;
+
+        case 'EnrollSingleChoose' :
+          type=8;
+          break;
+
+
+        case 'EnrollMChoose' :
+          type=9;
+          break;
+
+
         case 'ExamSingleChoose' :
           type=10;
           break;
@@ -890,7 +989,7 @@ export default {
           Number: item.idx,
           Choice: [],
            // TrueAnswer: TrueAnswer,
-           // Times: item.subData.score===undefined?null:item.subData.score,
+           // Times: item.subData.Times===undefined?null:item.subData.Times,
            HalfScore: item.subData.HalfRightScore===undefined?0:item.subData.HalfRightScore,
            Score: item.subData.score===undefined?0:item.subData.score,
           Describe: item.subData.describe,
@@ -909,6 +1008,7 @@ export default {
           Number: item.idx,
           Choice: [],
            // TrueAnswer: TrueAnswer,
+           // Times: item.subData.Times===undefined?null:item.subData.Times,
            HalfScore: item.subData.HalfRightScore===undefined?0:item.subData.HalfRightScore,
            Score: item.subData.score===undefined?0:item.subData.score,
           Describe: item.subData.describe,
@@ -919,6 +1019,7 @@ export default {
       let describes = item.subData.describes;
       let level = item.subData.level;
       let answer = item.subData.answer;
+      let times = item.subData.Times;
       // console.log(choices)
       if (choices!==undefined){
         if (answer!==undefined) {
@@ -926,6 +1027,15 @@ export default {
             let CItem = {
               Text: choices[i],
               IsTrueAnswer: answer[i]
+            }
+            Question.Choice.push(CItem);
+          }
+        }
+        else if (times!==undefined){
+          for (let i = 0; i <choices.length ; i++) {
+            let CItem = {
+              Text: choices[i],
+              Times: times[i]
             }
             Question.Choice.push(CItem);
           }
@@ -938,12 +1048,6 @@ export default {
             Question.Choice.push(CItem);
           }
         }
-        // for (let i = 0; i <choices.length ; i++) {
-        //   let CItem = {
-        //     Text: choices[i],
-        //   }
-        //   Question.Choice.push(CItem);
-        // }
       }
       if (describes !== undefined && level !== undefined){
         for (let i = 0; i <describes.length ; i++) {
@@ -971,7 +1075,13 @@ export default {
         data: Question
       }).then(res=>{
         console.log(res)
-        this.$message.success("题目 "+ (item.idx+1) +" 保存成功")
+        if (res.data.Message === 'Success'){
+          this.$message.success("题目 "+ (item.idx+1) +" 保存成功")
+        }
+        else {
+          this.$message.warning("题目 "+ (item.idx+1) +" 失败")
+        }
+
       }).catch( err=> {
         console.log(err);
       })
@@ -991,6 +1101,12 @@ export default {
         method: 'post',
         data: Question
       }).then(res=>{
+        // if (res.data.Message === 'Success'){
+        //   this.$message.success("题目 "+ (item.idx+1) +" 保存成功")
+        // }
+        // else {
+        //   this.$message.warning("题目 "+ (item.idx+1) +" 失败")
+        // }
       }).catch( err=> {
         console.log(err);
       })
@@ -1235,6 +1351,60 @@ export default {
         }
       }
 
+      else if (type === '报名') {
+        switch (QuesNum) {
+            // 增加单选
+          case 0:
+            Opt = {
+              Stem: '单项报名',
+              idx: this.QuesList.length,
+              isDraggable: true,
+              subData: {},
+              type: 'EnrollSingleChoose',
+              id: 0,
+            }
+            pra = {
+              Questionnaire: this.QuesId,
+              Type: 8,
+              MinChoice: 1,
+              MaxChoice: 1,
+              Stem: Opt.Stem,
+              username: this.$route.query.username,
+              Number: Opt.idx,
+            }
+
+
+            this.addNewQuestionToBackend(Opt,pra)
+
+            // this.addNewQuesToQuesList(Opt);
+            break;
+
+            // 增加多选
+          case 1:
+            // console.log('增加多选')
+            Opt = {
+              Stem: '多项报名',
+              idx: this.QuesList.length,
+              isDraggable: true,
+              subData: {},
+              type: 'EnrollMChoose'
+            }
+
+            pra = {
+              Questionnaire: this.QuesId,
+              Type: 9,
+              MinChoice: 1,
+              MaxChoice: 2,
+              Stem: Opt.Stem,
+              Number: Opt.idx,
+              username: this.$route.query.username,
+            }
+            this.addNewQuestionToBackend(Opt,pra)
+            // this.addNewQuesToQuesList(Opt);
+            break;
+        }
+      }
+
     },
 
     // 增加新题目,向后端请求题目id
@@ -1269,7 +1439,6 @@ export default {
 
     // 增加新题目到列表中
     addNewQuesToQuesList(SubjectObj){
-
       bus.$emit('SaveEdited',this.editingQuestion.index)
       let length = this.QuesList.length;
       this.isCanChangeItem = true
@@ -1723,6 +1892,55 @@ export default {
             for (let j = 0; j < questionItem.Choice.length; j++) {
               QuesInfo.choices.push(questionItem.Choice[j].Text);
             }
+            break;
+            case 8:
+              type='EnrollSingleChoose';
+              console.log(questionItem.Describe)
+              QuesInfo ={
+                id:"",
+                Number:questionItem.Number,
+                edit:0,
+                describe: questionItem.Describe,
+                question: questionItem.Stem,
+                choices: [],
+                radio: 0,
+                Times: [],
+                Must:questionItem.Must,
+              }
+
+              for (let j = 0; j < questionItem.Choice.length; j++) {
+                QuesInfo.choices.push(questionItem.Choice[j].Text);
+                QuesInfo.Times.push(questionItem.Choice[j].Times);
+              }
+              break;
+
+          case 9:
+            type='EnrollMChoose';
+            console.log(questionItem.Describe)
+            QuesInfo ={
+              number:"",
+              //settings
+              max:questionItem.MaxChoice,
+              min:questionItem.MinChoice,
+              id:"",
+              Number:questionItem.Number,
+              edit:0,
+              describe: questionItem.Describe,
+              question: questionItem.Stem,
+              choices: [],
+              radio: 0,
+              Times: [],
+              Must:questionItem.Must,
+            }
+
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.choices.push(questionItem.Choice[j].Text);
+              QuesInfo.Times.push(questionItem.Choice[j].Times);
+            }
+            break;
+
+
+
         }
         let DesignQuestionItem = {
           Stem: questionItem.Stem,

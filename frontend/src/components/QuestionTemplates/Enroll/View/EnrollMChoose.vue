@@ -80,7 +80,7 @@ export default {
       this.QesData.max = this.FatherData.max;
       this.QesData.min = this.FatherData.min;
       this.QesData.Must = this.FatherData.Must;
-      this.QesData.Amount = this.FatherData.Amount;
+      this.QesData.Times = this.FatherData.Times;
     }
     // this.multiChoice.edit = this.FatherData.edit;
     // this.multiChoice.question = this.FatherData.question;
@@ -107,7 +107,7 @@ export default {
           min:1,
           edit:1,
           Must:true,
-          Amount:true
+          Times:[10,10]
         }
       }
     },
