@@ -137,6 +137,8 @@ export default {
       this.QesData.describe = this.FatherData.describe;
       this.QesData.radio = this.FatherData.radio;
       this.QesData.Must = this.FatherData.Must;
+      this.QesData.answer = this.FatherData.answer;
+      this.QesData.score = this.FatherData.score;
       // this.singleChoice = this.FatherData
     }
   },

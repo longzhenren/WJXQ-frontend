@@ -60,6 +60,7 @@ export default {
         choices:["选项1","选项2"],
         radio: 0,
 
+        answer:[true,false],
         //settings
         score:1,
         edit:1,
@@ -76,9 +77,10 @@ export default {
       this.QesData.choices = this.FatherData.choices;
       this.QesData.radio = this.FatherData.radio;
       this.QesData.Number = this.FatherData.Number
+      this.QesData.score = this.FatherData.score;
       this.QesData.describe = this.FatherData.describe;
-      this.QesData.max = this.FatherData.max;
-      this.QesData.min = this.FatherData.min;
+      this.QesData.HalfRightScore = this.FatherData.HalfRightScore;
+      this.QesData.answer = this.FatherData.answer;
       this.QesData.Must = this.FatherData.Must;
       this.QesData.Amount = this.FatherData.Amount;
     }
@@ -102,12 +104,12 @@ export default {
           choices:["选项1","选项2"],
           radio: 0,
 
+          answer:[true,false],
           //settings
-          max:1,
-          min:1,
+          score:1,
           edit:1,
           Must:true,
-          Amount:true
+          HalfRightScore:0.5,
         }
       }
     },

@@ -57,7 +57,9 @@ export default {
         choices:["选项1","选项2"],
         radio: 0,
 
+
         //settings
+        answer:[true,false],
         score:1,
         edit:1,
         Must:true,
@@ -81,6 +83,8 @@ export default {
       this.QesData.describe = this.FatherData.describe;
       this.QesData.radio = this.FatherData.radio;
       this.QesData.Must = this.FatherData.Must;
+      this.QesData.answer = this.FatherData.answer;
+      this.QesData.score = this.FatherData.score;
       // this.singleChoice = this.FatherData
     }
   },
@@ -99,6 +103,7 @@ export default {
           choices:["选项1","选项2"],
           radio: 0,
 
+          answer:[true,false],
           score:1,
           edit:1,
           Must:true,
