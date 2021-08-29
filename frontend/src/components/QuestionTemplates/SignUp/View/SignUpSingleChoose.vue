@@ -1,25 +1,25 @@
-
-
 <template>
-
   <div  class="InnerDiv" >
     <div >
-
       <label v-if="QesData.Must==true" style="color: red" >*</label>
-      <label  >考试单选- {{ QesData.question }}</label>
-      <label  style="color: red;font-size: 14px" > （{{ QesData.score }}分）</label>
+      <label  >单选题 - {{ QesData.question }}</label>
     </div>
     <div >
       <label  class="describe"> {{ QesData.describe }} </label>
     </div>
+    <el-divider content-position="left" class="el-divider-top"></el-divider>
     <el-radio-group v-model="QesData.radio" class="InnerDiv" style="width: 100%" >
       <el-row :gutter="10" class="Choice" type="flex" align="top" justify="left"  v-for="(choice,i) in QesData.choices" >
-        <el-col :span="24">
+        <el-col :span="12">
           <el-radio class="Choice" :label="QesData.choices[i]" >
           </el-radio>
         </el-col>
-
-
+        <el-col :span="2" v-if="QesData.Amount==true">
+          <label style="font-size: 12px" >0票</label>
+        </el-col>
+<!--        <el-col :span="10" v-if="QesData.Rate==true">-->
+<!--          <el-progress :percentage="0"  ></el-progress>-->
+<!--        </el-col>-->
       </el-row>
     </el-radio-group>
 
@@ -57,12 +57,10 @@ export default {
         choices:["选项1","选项2"],
         radio: 0,
 
-
         //settings
-        answer:[true,false],
-        score:1,
         edit:1,
         Must:true,
+        Amount:true
       }
     };
   },
@@ -100,10 +98,6 @@ export default {
           question:"",
           choices:["选项1","选项2"],
           radio: 0,
-
-          answer:[true,false],
-          score:1,
-          edit:1,
           Must:true,
         }
       }
@@ -167,7 +161,6 @@ export default {
 .InnerDiv{
   text-align: left;
   margin-left:10px;
-  margin-top: 20px;
 }
 
 .el-divider-top{
