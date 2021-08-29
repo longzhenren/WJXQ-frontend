@@ -75,6 +75,12 @@ export default {
       return
     }
   },
+  created() {
+    bus.$on('SaveEdited',this.saveData)
+  },
+  beforeDestroy(){
+    bus.$off('SaveEdited',this.saveData)
+  },
 
   watch: {
     FatherData(newData,oldData){
@@ -95,23 +101,33 @@ export default {
       }
     },
     needSendIdx(newIndex,oldIndex){
-      // console.log('旧',oldIndex)
-      // console.log('新',newIndex)
       this.needSendIdx = newIndex
-      // if (newIndex !== oldIndex) {
-      //   console.log('自动')
-      //   bus.$emit('saveSingleData',this.QesData,oldIndex)
-      // }
-    }
+    },
+    QesData:{
+      handler(newData,oldData){
+
+        console.log("同步ing"+this.needSendIdx)
+        bus.$emit('changeData',this.QesData,this.needSendIdx)
+      },
+      deep: true
+
+    },
   },
   methods: {
-
+    saveData(index){
+      console.log("传入修改器 当前需要修改"+this.needSendIdx)
+      console.log("传入修改器 上一修改"+index)
+      if (index===this.needSendIdx){
+        console.log(index)
+        this.save()
+      }
+    },
 
     save: function() {
 
         this.QesData.edit=0
       console.log('内部前',this.QesData)
-      bus.$emit('saveBlankData',this.QesData,this.needSendIdx)
+      bus.$emit('SaveData',this.QesData,this.needSendIdx)
         // this.$emit('saveBlankData',this.QesData)
 
     },

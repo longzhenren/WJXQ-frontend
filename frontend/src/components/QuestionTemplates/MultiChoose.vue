@@ -83,20 +83,33 @@ export default {
     },
   },
   created() {
-    bus.$on('saveMultiData',this.saveData)
+    bus.$on('SaveData',this.saveData)
+    bus.$on('changeData',this.changeData)
+  },
+  beforeDestroy(){
+    bus.$off('SaveData',this.saveData)
+    bus.$off('changeData',this.changeData)
   },
   methods: {
     // 保存数据
+    // 保存数据
     saveData(QesData,index){
+      console.log("要保存的题号："+index)
+      console.log("本体题号:"+this.QesData.Number)
       if (index===this.ItemIndex){
         console.log(index)
         console.log(this.QesData)
         this.QesData = QesData
         this.save()
       }
-      // this.QesData = QesData
-      // this.save()
-      // this.$emit('saveMultiData',this.QesData)
+    },
+
+    changeData(QesData,index){
+      // console.log(index)
+      // console.log(this.QesData.Number)
+      if (index===this.ItemIndex){
+        this.QesData = QesData
+      }
     },
     del:function (i){
       if(this.QesData.choices>=2)
@@ -116,7 +129,7 @@ export default {
     add: function() {
       this.QesData.choices.push("")
     },
-    save: function() {
+    save() {
       let find = false;
       for (let i = 0; i < this.QesData.choices.length; i++) {
         for (let j = i + 1; j < this.QesData.choices.length; j++) {
@@ -127,11 +140,11 @@ export default {
         if (find) break;
       }
       if(find){
-        this.$message.warning("不可以存在重复项")
-
+        alert("不可以存在重复项")
       }else {
+        console.log("子组件开始保存")
         this.QesData.edit=0
-        this.$emit('saveMultiData',this.QesData)
+        this.$emit('SaveQes',this.QesData)
       }
     },
     edit: function() {

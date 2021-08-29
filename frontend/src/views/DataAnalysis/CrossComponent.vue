@@ -71,10 +71,11 @@ export default {
         y.push(this.yChooseData[i].name)
       }
 
-      for (let i = 0; i < x.length; i++) {
-        let xTotal = 0;
-        for (let j = 0; j < this.xAnswerData.length; j++) {
-
+      for (let i = 0; i < this.xChooseData.length; i++) {
+        for (let j = 0; j < this.yChooseData.length; j++) {
+          let xChooseDatum = this.xChooseData[i];
+          let yChooseDatum = this.yChooseData[i];
+          this.getAnswerNum(this.xDataID,this.yDataID,xChooseDatum.id,yChooseDatum.id)
         }
       }
 
@@ -180,6 +181,31 @@ export default {
       };
 
       option && myChart.setOption(option);
+
+    },
+
+
+    // 发送两个题目的选项获取作答人数
+    getAnswerNum(quesAId,quesBID,choiAID,choiBID){
+      console.log('A题',quesAId);
+      console.log('B题',quesBID);
+      console.log('A选项',choiAID);
+      console.log('B选项',choiBID);
+      let pra = {
+        questionAID: quesAId,
+        questionBID: quesBID,
+        choiceAID: choiAID,
+        choiceBID: choiBID,
+      }
+      request({
+        url: '/submit/abc',
+        method: 'post',
+        data: pra
+      }).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+
+      })
 
     },
 

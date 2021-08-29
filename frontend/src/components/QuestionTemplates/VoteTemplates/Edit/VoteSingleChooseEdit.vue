@@ -68,8 +68,16 @@
 </template>
 
 <script>
+import bus from "../../../../assets/utils/bus";
+
 export default {
   props:{
+    FatherData: {
+      type: Object,
+      default() {
+        return {};
+      }
+    },
     needSendIdx: {
       type: Number,
       default() {
@@ -127,8 +135,34 @@ export default {
         }
       }
     },
+    needSendIdx(newIndex,oldIndex){
+      this.needSendIdx = newIndex
+    },
+    QesData:{
+      handler(newData,oldData){
+
+        console.log("同步ing"+this.needSendIdx)
+        bus.$emit('changeData',this.QesData,this.needSendIdx)
+      },
+      deep: true
+
+    },
+  },
+  created() {
+    bus.$on('SaveEdited',this.saveData)
+  },
+  beforeDestroy(){
+    bus.$off('SaveEdited',this.saveData)
   },
   methods: {
+    saveData(index){
+      console.log("传入修改器 当前需要修改"+this.needSendIdx)
+      console.log("传入修改器 上一修改"+index)
+      if (index===this.needSendIdx){
+        console.log(index)
+        this.save()
+      }
+    },
     del:function (i){
       if(this.QesData.choices>=2)
       {
@@ -155,7 +189,7 @@ export default {
         this.$message.warning("不可以存在重复项")
       }else {
         this.QesData.edit=0
-        this.$emit('saveSingleData',this.QesData)
+        bus.$emit('SaveData',this.QesData,this.needSendIdx)
       }
     },
     edit: function() {

@@ -43,6 +43,14 @@ export default {
       }
     };
   },
+  created() {
+    bus.$on('SaveData',this.saveData)
+    bus.$on('changeData',this.changeData)
+  },
+  beforeDestroy(){
+    bus.$off('SaveData',this.saveData)
+    bus.$off('changeData',this.changeData)
+  },
 
   mounted() {
     // console.log(this.FatherData)
@@ -75,14 +83,11 @@ export default {
       }
     },
   },
-  created() {
-    bus.$on('saveBlankData',this.saveData)
-  },
   methods: {
     // 保存数据
     saveData(QesData,index){
-      // console.log(index)
-      // console.log(this.QesData.Number)
+      console.log("要保存的题号："+index)
+      console.log("本体题号:"+this.QesData.Number)
       if (index===this.ItemIndex){
         console.log(index)
         console.log(this.QesData)
@@ -90,11 +95,18 @@ export default {
         this.save()
       }
     },
+    changeData(QesData,index){
+      // console.log(index)
+      // console.log(this.QesData.Number)
+      if (index===this.ItemIndex){
+        this.QesData = QesData
+      }
+    },
 
     save: function() {
 
         this.QesData.edit=0
-        this.$emit('saveBlankData',this.QesData)
+        this.$emit('SaveQes',this.QesData)
 
     },
     edit: function() {

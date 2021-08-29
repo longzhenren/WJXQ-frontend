@@ -118,6 +118,12 @@ export default {
       return
     }
   },
+  created() {
+    bus.$on('SaveEdited',this.saveData)
+  },
+  beforeDestroy(){
+    bus.$off('SaveEdited',this.saveData)
+  },
   watch: {
     FatherData(newData,oldData){
       if ( newData.edit!==null && newData.edit!=={} && newData.edit!==undefined ){
@@ -210,7 +216,8 @@ export default {
         }
       } else {
         this.QesData.edit=0
-        bus.$emit('saveEvaluateData',this.QesData,this.needSendIdx)
+        console.log("编辑保存"+this.needSendIdx);
+        bus.$emit('SaveData',this.QesData,this.needSendIdx)
         // this.$emit('saveEvaluateData',this.QesData)
       }
     },
