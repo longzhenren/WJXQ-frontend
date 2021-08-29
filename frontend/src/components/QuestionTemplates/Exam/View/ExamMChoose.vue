@@ -4,9 +4,11 @@
   <div class="InnerDiv">
     <div >
 
-      <label v-if="QesData.Must==true" style="color: red" >*</label>
-      <label  >考试多选- {{ QesData.question }}</label>
+      <label v-if="QesData.Must==true" style="color: red;float:left;margin-left: -10px;" >*</label>
+      <label  > {{ QesData.question }}</label>
       <label  style="color: red;font-size: 14px" > （{{ QesData.score }}分）</label>
+      <label class="type">[考试多选] </label>
+
     </div>
     <div >
       <label  class="describe"> {{ QesData.describe }} </label>
@@ -210,6 +212,11 @@ export default {
   margin-left: 0px;margin-bottom:10px;
 
 }
-
+.type{
+  font-size: 5px;
+  color: gray;
+  float: right;
+  margin-right: -50px;
+}
 </style>
 

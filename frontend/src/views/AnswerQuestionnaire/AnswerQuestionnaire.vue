@@ -3,7 +3,7 @@
     <MyMk v-if="myMkShow" :id="id"></MyMk>
     <Time
       :remainTime.default="this.ExamTime"
-      v-if="this.isExam"
+      v-if="this.Type == 4 && state == 0"
       style="position:fixed; top:60px; left:60px"
     ></Time>
     <div class="content" v-if="state == 0">
@@ -33,6 +33,17 @@
           <label v-if="item.Type == 5">定位题 - {{ item.Stem }}</label>
           <label v-if="item.Type == 6">投票单选题 - {{ item.Stem }}</label>
           <label v-if="item.Type == 7">投票多选题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 8">报名单选题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 9">报名多选题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 10">考试单选题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 11">考试多选题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 12">考试填空题 - {{ item.Stem }}</label>
+          <label
+            v-if="item.Type >= 10 && item.Type <= 12"
+            style="color: red;font-size: 14px"
+          >
+            （{{ item.Score }}分）</label
+          >
           <!-- 描述 -->
           <div>
             <label style="font-size: 12px; color: darkgrey">
@@ -129,10 +140,10 @@
                 </el-radio>
               </el-col>
               <el-col :span="2" v-if="item.ShowResultBeforeVote == true">
-                <label style="font-size: 12px">{{ 0 }}</label>
+                <label style="font-size: 12px">{{ choice.value }}</label>
               </el-col>
               <el-col :span="10" v-if="item.ShowResultBeforeVote == true">
-                <el-progress :percentage="0"></el-progress>
+                <el-progress :percentage="choice.percent"></el-progress>
               </el-col>
             </el-row>
           </el-radio-group>
@@ -158,10 +169,10 @@
                 </el-checkbox>
               </el-col>
               <el-col :span="2" v-if="item.ShowResultBeforeVote == true">
-                <label style="font-size: 12px">{{ 0 }}</label>
+                <label style="font-size: 12px">{{ choice.value }}</label>
               </el-col>
               <el-col :span="10" v-if="item.ShowResultBeforeVote == true">
-                <el-progress :percentage="0"></el-progress>
+                <el-progress :percentage="choice.percent"></el-progress>
               </el-col>
             </el-row>
           </el-checkbox-group>
@@ -246,28 +257,30 @@
               v-for="(choice, i) in item.Choice"
             >
               <el-col :span="24">
-                <el-checkbox
-                  :label="choice.id"
-                  :key="choice.Text"
-                >
+                <el-checkbox :label="choice.id" :key="choice.Text">
                 </el-checkbox>
               </el-col>
             </el-row>
           </el-checkbox-group>
         </div>
         <!-- 考试填空 -->
-        <div class="ExamFillBlank" v-if="item.Type == 12"></div>
+        <div class="ExamFillBlank" v-if="item.Type == 12">
+          <el-input
+            placeholder="回答区域"
+            type="textarea"
+            v-model="item.AnswerText"
+          ></el-input>
+        </div>
       </el-card>
 
       <!-- 提交按钮 -->
-      <button @click="getQesInfo">here</button>
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
     <div class="bottom" v-if="state == 0">
       <el-link type="info" href="/">问卷星球&nbsp;</el-link>
     </div>
     <div v-if="state == 1"><p>问卷已关闭</p></div>
-    <div v-if="state == 2"><p>已提交</p></div>
+    <div v-if="state == 2 && Type != 2"><p>已提交</p></div>
   </div>
 </template>
 
@@ -279,7 +292,7 @@ export default {
   name: "AnswerQuestionnaire",
   data() {
     return {
-      isExam: false,
+      Type: 0,
       ExamTime: 0,
       isLogin: window.sessionStorage.getItem("isLogin"),
       myMkShow: false,
@@ -328,20 +341,6 @@ export default {
         query: {
           Mode: "preview",
         },
-      });
-    },
-    getQesInfo() {
-      //type6投票单选，type7投票多选
-      console.log(this.Question[0].id);
-      request({
-        url: "/submit/qesrep",
-        method: "post",
-        data: {
-          questionID: this.Question[0].id,
-        },
-      }).then((res) => {
-        console.log(this.Question[0].id);
-        console.log(res);
       });
     },
     getPosition(i) {
@@ -448,20 +447,27 @@ export default {
       }
     },
     //点击按钮后提交
-    submit() {
+    async submit() {
       this.save();
-      request({
-        url: "/submit/submit",
-        method: "post",
-        headers: { "Content-Type": "application/json" },
-        data: {
-          submissionID: this.submissionID,
-        },
-      }).then((res) => {
-        console.log("总提交", res.data);
-        if (res.data.code === -1) this.$message.warning("有必答题未做");
-        else this.state = 2;
-        this.goVoteShow();//
+      await this.ssubmit();
+    },
+    ssubmit() {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          request({
+            url: "/submit/submit",
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            data: {
+              submissionID: this.submissionID,
+            },
+          }).then((res) => {
+            console.log("总提交", res.data);
+            if (res.data.code === -1) this.$message.warning("有必答题未做");
+            else this.state = 2;
+            this.goVoteShow();//
+          });
+        }, 1000);
       });
     },
     //排序
@@ -506,11 +512,12 @@ export default {
         //存储问卷信息
         if (res.data.Message === "Questionnaire is closed") this.state = 1;
         var Questionnaire = res.data.Questionnaire;
+        this.Type = Questionnaire.Type;
         this.Title = Questionnaire.Title;
         this.ShowNumber = Questionnaire.ShowNumber;
-        this.Settings=Questionnaire.Settings;//
         this.Text = Questionnaire.Text;
         this.questionnaireID = Questionnaire.id;
+        this.ExamTime = Questionnaire.AnswerTime;
         //存储题目数据并排序
         var i;
         for (i in Questionnaire.Question) {
@@ -523,11 +530,12 @@ export default {
                 id: q.Choice[i].id,
                 Text: q.Choice[i].Text,
               });
+            //if(this.Type == 4) diorder(c);
             this.Question.push({
               id: q.id,
               Stem: q.Stem,
               Describe: q.Describe,
-              Type: 1,
+              Type: q.Type,
               Must: q.Must,
               Number: q.Number,
               Choice: c,
@@ -546,7 +554,7 @@ export default {
               id: q.id,
               Stem: q.Stem,
               Describe: q.Describe,
-              Type: 2,
+              Type: q.Type,
               MaxChoice: q.MaxChoice,
               Minchoice: q.Minchoice,
               Must: q.Must,
@@ -560,7 +568,7 @@ export default {
               id: q.id,
               Stem: q.Stem,
               Describe: q.Describe,
-              Type: 3,
+              Type: q.Type,
               Must: q.Must,
               Number: q.Number,
               AnswerText: "",
@@ -574,7 +582,7 @@ export default {
               id: q.id,
               Stem: q.Stem,
               Describe: q.Describe,
-              Type: 4,
+              Type: q.Type,
               Must: q.Must,
               Number: q.Number,
               Text: t,
@@ -586,7 +594,7 @@ export default {
               id: q.id,
               Stem: q.Stem,
               Describe: q.Describe,
-              Type: 5,
+              Type: q.Type,
               Must: q.Must,
               Number: q.Number,
               Position: "",
@@ -604,13 +612,14 @@ export default {
               id: q.id,
               Stem: q.Stem,
               Describe: q.Describe,
-              Type: 6,
+              Type: q.Type,
               Must: q.Must,
               Number: q.Number,
               Choice: c,
               RadioValue: 0,
-              ShowResultBeforeVote: q.ShowResultBeforeVote,
+              ShowResultBeforeVote: false//q.ShowResultBeforeVote,
             });
+            this.getQesInfo();
           }
           if (q.Type == 7) {
             var i;
@@ -624,14 +633,110 @@ export default {
               id: q.id,
               Stem: q.Stem,
               Describe: q.Describe,
-              Type: 7,
+              Type: q.Type,
               MaxChoice: q.MaxChoice,
               Minchoice: q.Minchoice,
               Must: q.Must,
               Number: q.Number,
               Choice: c,
               CheckList: [],
-              ShowResultBeforeVote: q.ShowResultBeforeVote,
+              ShowResultBeforeVote: false//q.ShowResultBeforeVote,
+            });
+          }
+          if (q.Type == 8) {
+            var i;
+            var c = [];
+            for (i in q.Choice)
+              c.push({
+                id: q.Choice[i].id,
+                Text: q.Choice[i].Text,
+                Times: q.Choice[i].Times,
+              });
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: q.Type,
+              Must: q.Must,
+              Number: q.Number,
+              Choice: c,
+              RadioValue: 0,
+            });
+          }
+          if (q.Type == 9) {
+            var i;
+            var c = [];
+            for (i in q.Choice)
+              c.push({
+                id: q.Choice[i].id,
+                Text: q.Choice[i].Text,
+                Times: q.Choice[i].Times,
+              });
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: q.Type,
+              MaxChoice: q.MaxChoice,
+              Minchoice: q.Minchoice,
+              Must: q.Must,
+              Number: q.Number,
+              Choice: c,
+              CheckList: [],
+            });
+          }
+          if (q.Type == 10) {
+            var i;
+            var c = [];
+            for (i in q.Choice)
+              c.push({
+                id: q.Choice[i].id,
+                Text: q.Choice[i].Text,
+              });
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: q.Type,
+              Must: q.Must,
+              Number: q.Number,
+              Choice: c,
+              RadioValue: 0,
+              Score: q.Score,
+            });
+          }
+          if (q.Type == 11) {
+            var i;
+            var c = [];
+            for (i in q.Choice)
+              c.push({
+                id: q.Choice[i].id,
+                Text: q.Choice[i].Text,
+              });
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: q.Type,
+              MaxChoice: q.MaxChoice,
+              Minchoice: q.Minchoice,
+              Must: q.Must,
+              Number: q.Number,
+              Choice: c,
+              CheckList: [],
+              Score: q.Score,
+            });
+          }
+          if (q.Type == 12) {
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: q.Type,
+              Must: q.Must,
+              Number: q.Number,
+              AnswerText: "",
+              Score: q.Score,
             });
           }
         }
@@ -648,9 +753,11 @@ export default {
           },
         }).then((res) => {
           console.log("crtsub", res);
+          if (res.data.code == -1) this.state = 2;
           this.submissionID = res.data.submissionID;
           console.log("submissionID", this.submissionID);
         });
+        //getsub
         request({
           url: "submit/getsub",
           method: "post",

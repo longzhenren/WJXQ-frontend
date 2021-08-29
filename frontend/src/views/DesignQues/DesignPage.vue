@@ -313,94 +313,94 @@
 
 
       </el-dialog>
+      <div class="editQuestion">
+        <div class="editContain">
+          <vue-scroll ref="editScroll"
+                      :ops="editScroll" >
 
-    </div>
-    <!--      编辑问卷侧边栏-->
-    <div class="editQuestion">
-      <div class="editContain">
-        <vue-scroll ref="editScroll"
-                    :ops="editScroll" >
-
-          <el-card class="box-card">
-            <div class="editTitle">
-              题目编辑
-            </div>
-            <el-divider></el-divider>
-            <div v-if="isCanChangeItem">
-              <SingleChooseEdit v-if="editingQuestion.type === 'singleChoice'"
-                                :father-data="editingQuestion.subData"
-                                :need-send-idx="editingQuestion.index"
-                                ref="childEdit"></SingleChooseEdit>
-              <MultiChooseEdit v-else-if="editingQuestion.type === 'multiChoose'"
-                               :father-data="editingQuestion.subData"
-                               :need-send-idx="editingQuestion.index"
-                               ref="childEdit"></MultiChooseEdit>
-              <EvaluateEdit v-else-if="editingQuestion.type === 'evaluate'"
-                            :father-data="editingQuestion.subData"
-                            :need-send-idx="editingQuestion.index"
-                            ref="childEdit"></EvaluateEdit>
-              <FillBlankEdit v-else-if="editingQuestion.type === 'fillBlank'"
-                             :father-data="editingQuestion.subData"
-                             :need-send-idx="editingQuestion.index"
-                             ref="childEdit"></FillBlankEdit>
-
-              <VoteSingleChooseEdit v-else-if="editingQuestion.type === 'VoteSingleChoose'"
-                                    :father-data="editingQuestion.subData"
-                                    :need-send-idx="editingQuestion.index"
-                                    ref="childEdit"></VoteSingleChooseEdit>
-
-              <VoteMultiChooseEdit v-else-if="editingQuestion.type === 'VoteMultiChoose'"
-                                   :father-data="editingQuestion.subData"
-                                   :need-send-idx="editingQuestion.index"
-                                   ref="childEdit"></VoteMultiChooseEdit>
-
-              <PositionEdit  v-else-if="editingQuestion.type === 'Position'"
-                             :father-data="editingQuestion.subData"
-                             :need-send-idx="editingQuestion.index"
-                             ref="childEdit"></PositionEdit>
-
-              <ExamSingleChooseEdit v-else-if="editingQuestion.type === 'ExamSingleChoose'"
-                                    :father-data="editingQuestion.subData"
-                                    :need-send-idx="editingQuestion.index"
-                                    ref="childEdit"></ExamSingleChooseEdit>
-
-              <ExamMultiChooseEdit v-else-if="editingQuestion.type === 'ExamMChoose'"
-                                   :father-data="editingQuestion.subData"
-                                   :need-send-idx="editingQuestion.index"
-                                   ref="childEdit"></ExamMultiChooseEdit>
-
-              <EnrollSingleChooseEdit v-else-if="editingQuestion.type === 'EnrollSingleChoose'"
-                                      :father-data="editingQuestion.subData"
-                                      :need-send-idx="editingQuestion.index"
-                                      ref="childEdit"></EnrollSingleChooseEdit>
-
-              <EnrollMultiChooseEdit v-else-if="editingQuestion.type === 'EnrollMChoose'"
-                                     :father-data="editingQuestion.subData"
-                                     :need-send-idx="editingQuestion.index"
-                                     ref="childEdit" ></EnrollMultiChooseEdit>
-
-              <ExamFillBlankEdit v-else-if="editingQuestion.type === 'ExamFillBlank'"
+            <el-card class="box-card">
+              <div class="editTitle">
+                题目编辑
+              </div>
+              <el-divider></el-divider>
+              <div v-if="isCanChangeItem">
+                <SingleChooseEdit v-if="editingQuestion.type === 'singleChoice'"
+                                  :father-data="editingQuestion.subData"
+                                  :need-send-idx="editingQuestion.index"
+                                  ref="childEdit"></SingleChooseEdit>
+                <MultiChooseEdit v-else-if="editingQuestion.type === 'multiChoose'"
                                  :father-data="editingQuestion.subData"
                                  :need-send-idx="editingQuestion.index"
-                                 ref="childEdit"></ExamFillBlankEdit>
+                                 ref="childEdit"></MultiChooseEdit>
+                <EvaluateEdit v-else-if="editingQuestion.type === 'evaluate'"
+                              :father-data="editingQuestion.subData"
+                              :need-send-idx="editingQuestion.index"
+                              ref="childEdit"></EvaluateEdit>
+                <FillBlankEdit v-else-if="editingQuestion.type === 'fillBlank'"
+                               :father-data="editingQuestion.subData"
+                               :need-send-idx="editingQuestion.index"
+                               ref="childEdit"></FillBlankEdit>
 
-              <!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
+                <VoteSingleChooseEdit v-else-if="editingQuestion.type === 'VoteSingleChoose'"
+                                      :father-data="editingQuestion.subData"
+                                      :need-send-idx="editingQuestion.index"
+                                      ref="childEdit"></VoteSingleChooseEdit>
 
-              <!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
-              <!--                                  :father-data="editingQuestion.subData"-->
-              <!--                                  :need-send-idx="editingQuestion.index"-->
-              <!--                                  ref="childEdit"></VoteSingleChoose>-->
-            </div>
+                <VoteMultiChooseEdit v-else-if="editingQuestion.type === 'VoteMultiChoose'"
+                                     :father-data="editingQuestion.subData"
+                                     :need-send-idx="editingQuestion.index"
+                                     ref="childEdit"></VoteMultiChooseEdit>
+
+                <PositionEdit  v-else-if="editingQuestion.type === 'Position'"
+                               :father-data="editingQuestion.subData"
+                               :need-send-idx="editingQuestion.index"
+                               ref="childEdit"></PositionEdit>
+
+                <ExamSingleChooseEdit v-else-if="editingQuestion.type === 'ExamSingleChoose'"
+                                      :father-data="editingQuestion.subData"
+                                      :need-send-idx="editingQuestion.index"
+                                      ref="childEdit"></ExamSingleChooseEdit>
+
+                <ExamMultiChooseEdit v-else-if="editingQuestion.type === 'ExamMChoose'"
+                                     :father-data="editingQuestion.subData"
+                                     :need-send-idx="editingQuestion.index"
+                                     ref="childEdit"></ExamMultiChooseEdit>
+
+                <EnrollSingleChooseEdit v-else-if="editingQuestion.type === 'EnrollSingleChoose'"
+                                        :father-data="editingQuestion.subData"
+                                        :need-send-idx="editingQuestion.index"
+                                        ref="childEdit"></EnrollSingleChooseEdit>
+
+                <EnrollMultiChooseEdit v-else-if="editingQuestion.type === 'EnrollMChoose'"
+                                       :father-data="editingQuestion.subData"
+                                       :need-send-idx="editingQuestion.index"
+                                       ref="childEdit" ></EnrollMultiChooseEdit>
+
+                <ExamFillBlankEdit v-else-if="editingQuestion.type === 'ExamFillBlank'"
+                                   :father-data="editingQuestion.subData"
+                                   :need-send-idx="editingQuestion.index"
+                                   ref="childEdit"></ExamFillBlankEdit>
+
+                <!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
+
+                <!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
+                <!--                                  :father-data="editingQuestion.subData"-->
+                <!--                                  :need-send-idx="editingQuestion.index"-->
+                <!--                                  ref="childEdit"></VoteSingleChoose>-->
+              </div>
 
 
-            <div v-else>
-              <el-result icon="success" title="编辑完成" >
-              </el-result>
-            </div>
-          </el-card>
-        </vue-scroll>
+              <div v-else>
+                <el-result icon="success" title="编辑完成" >
+                </el-result>
+              </div>
+            </el-card>
+          </vue-scroll>
+        </div>
       </div>
     </div>
+    <!--      编辑问卷侧边栏-->
+
     <Model :show="modelShow"  @hideModal="hideModal" :QesInfoModel="Questionnaire"/>
   </div>
 
@@ -2092,7 +2092,7 @@ export default {
 }
 .designNav {
   background-color: #2E2E2E;
-  height: 4vh;
+  height: 30px;
   font-size: 12px;
   position: relative;
 }
@@ -2103,10 +2103,11 @@ export default {
   padding-top: 8px;
   padding-left: 15px;
   color: #2e88ff;
-  width: 5%;
+  width: 70px;
   font-weight: 600;
   position: absolute;
-  right: 33%;
+  margin-right: -224px;
+  right: 50%;
   top: 0;
 }
 
@@ -2119,13 +2120,14 @@ export default {
   padding-top: 8px;
   padding-left: 15px;
   height: 100%;
-  width: 6%;
+  width: 84px;
   color: white;
   font-weight: 600;
   background-color: #2e88ff;
   position: absolute;
   top: 0;
-  right: 27%;
+  right: 50%;
+  margin-right: -308px;
   transition: .4s all ease-in-out;
 }
 
@@ -2135,7 +2137,7 @@ export default {
 }
 
 .designContent {
-  width: 70vw;
+  width: 1220px;
   box-sizing: border-box;
   height: 96vh;
   /*background-color: white;*/
@@ -2147,10 +2149,8 @@ export default {
 }
 
 .editQuestion {
-  position: fixed;
-  right: 5%;
+  float: left;
   width: 300px;
-  top:50px;
   height: 98%;
   /*background-color: pink;*/
 
@@ -2160,7 +2160,7 @@ export default {
   background-color: white;
   float: left;
   height: 94vh;
-  width: 15vw;
+  width: 200px;
   box-shadow: 0 0 10px rgba(0,0,0,.2);
   /*box-sizing: border-box;*/
   padding: 10px;
@@ -2181,6 +2181,7 @@ export default {
 .designContent .designComponent .ShowCntl div {
   font-size: 12px;
   padding-top: 2px;
+  display: inline-block;
   width: 48%;
   height: 22px;
   vertical-align: middle;
@@ -2319,7 +2320,7 @@ export default {
 .designContent .designPreview {
   height: 94vh;
   float: left;
-  width: 42vw;
+  width: 700px;
   overflow: hidden;
   box-shadow: 0 0 10px rgba(0,0,0,.2);
 }
@@ -2537,7 +2538,7 @@ span[class=prevLogo]::after{
 span[class=finishLogo]::after{
   font-size: 13px;
   line-height: 13px;
-  left: 15px;
+  left: 12px;
   top :10px;
   position: absolute;
   font-family: icomoon;
