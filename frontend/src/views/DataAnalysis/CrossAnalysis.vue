@@ -30,7 +30,7 @@
       <div class="operations">
         <el-button size="mini" round @click="goCrossAnalysis">交叉分析</el-button>
 
-        <el-button size="mini" round @click="closeCross">关闭</el-button>
+<!--        <el-button size="mini" round @click="closeCross">关闭</el-button>-->
       </div>
     </div>
 
@@ -46,6 +46,11 @@
           </CrossComponent>
 
         </vue-scroll>
+      </div>
+
+      <div v-else>
+        <el-result icon="info" subTitle="请根据需要选择对应的分析项">
+        </el-result>
       </div>
 
   </div>
@@ -92,9 +97,7 @@ export default {
       // Questions: [],
 
       // 指定为x自变量的题目
-      xVairableQues: {
-        Stem: '添加自变量'
-      },
+      xVairableQues: null,
 
       xQuesID: 0,
 
@@ -103,9 +106,7 @@ export default {
       yAnswerData: [],
 
       // 指定为y因变量的题目
-      yVairableQues: {
-        Stem: '添加因变量'
-      },
+      yVairableQues: null,
 
       yQuesID: 0,
     }
@@ -128,21 +129,31 @@ export default {
 
     // 进行交叉分析
     goCrossAnalysis(){
-      this.isShowCross = true
+      console.log(this.xVairableQues)
+      if (this.xVairableQues === null || this.yVairableQues === null ){
+        this.$message({
+          showClose: true,
+          message: '请指定分析项',
+          type: 'warning'
+        })
+        return
+      }
+
       // this.xQuesID = this.xVairableQues.id.toString();
       // this.yQuesID = this.yVairableQues.id.toString();
       // this.QuestionnaireId = this.Questionnaire.id.toString();
-      console.log(this.xVairableQues);
-      console.log(this.yVairableQues)
-      console.log(this.Questionnaire)
+      // console.log(this.xVairableQues);
+      // console.log(this.yVairableQues)
+      // console.log(this.Questionnaire)
       this.xQuesID = this.xVairableQues.id
       this.yQuesID = this.yVairableQues.id
       this.QuestionnaireId = this.Questionnaire.id;
+      this.isShowCross = !this.isShowCross
       // setTimeout(this.getXData,100)
       // setTimeout(this.getYData,100)
       // ();
-      console.log(this.xQuesID);
-      console.log(this.QuestionnaireId)
+      // console.log(this.xQuesID);
+      // console.log(this.QuestionnaireId)
     },
 
     // getXData(){

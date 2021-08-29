@@ -204,7 +204,7 @@
           原始答卷数据表
         </div>
         <el-divider></el-divider>
-        <DataDownload></DataDownload>
+        <DataDownload :questionnaire="Questionnaire"></DataDownload>
       </div>
     </div>
 

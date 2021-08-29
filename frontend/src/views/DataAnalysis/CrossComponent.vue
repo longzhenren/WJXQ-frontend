@@ -23,6 +23,9 @@ export default {
       xChooseData: [],
       yChooseData: [],
       ShowData: [],
+      count: [],
+      xLength: 0,
+      yLength: 0,
     }
   },
   created() {
@@ -37,29 +40,9 @@ export default {
     console.log(this.yDataID)
   },
   methods: {
-    // 显示
-    Show(){
-      this.$nextTick(() => {
-        this.load_zhu();
-      });
-    },
-
-    load_zhu(){
-      let echarts = require('echarts');
-      let chartDom = document.getElementById('zhu');
-      let myChart = echarts.init(chartDom);
-      let option;
-      let x=[];
-      let y=[];
-
-      for(let i=0;i<this.xChooseData.length;i++){
-        x.push(this.xChooseData[i].name)
-      }
-
-      for(let i=0;i<this.yChooseData.length;i++){
-        y.push(this.yChooseData[i].name)
-      }
-
+    // 给数组赋值
+    setOpts(){
+      let k=0;
       for (let i = 0; i < this.xChooseData.length; i++) {
         let xChooseDatum = this.xChooseData[i];
         let ops = {
@@ -76,14 +59,70 @@ export default {
         }
         for (let j = 0; j < this.yChooseData.length; j++) {
           let yChooseDatum = this.yChooseData[j];
-          let count = this.getAnswerNum(this.xDataID,this.yDataID,xChooseDatum.id,yChooseDatum.id)
-          ops.data.push(count);
+          // console.log('x:',xChooseDatum.id)
+          // console.log('y:',yChooseDatum.id)
+
+          // this.getAnswerNum(this.xDataID,this.yDataID,xChooseDatum.id,yChooseDatum.id)
+          // console.log('拿到的count',this.count)
+          for (let l = 0; l < this.count.length; l++) {
+            let countElement = this.count[l];
+            if (xChooseDatum.id===countElement.AID && yChooseDatum.id===countElement.BID){
+              ops.data.push(countElement.count);
+            }
+          }
+          // k++;
         }
         this.ShowData.push(ops)
       }
+      setTimeout(this.Show,200);
+      // console.log(this.ShowData)
+    },
+    // 显示
+    Show(){
+      this.$nextTick(() => {
+        this.load_zhu();
+      });
+    },
 
-      console.log(x)
-      console.log(y)
+    // 获取交叉数据并计算
+    computeCross(){
+      for (let i = 0; i < this.xChooseData.length; i++) {
+        let xChooseDatum = this.xChooseData[i];
+        for (let j = 0; j < this.yChooseData.length; j++) {
+          let yChooseDatum = this.yChooseData[j];
+          this.getAnswerNum(this.xDataID,this.yDataID,xChooseDatum.id,yChooseDatum.id)
+          console.log('拿到的count',this.count)
+        }
+      }
+      // setTimeout(this.Show,200);
+    },
+
+    load_zhu(){
+      console.log('设置',this.ShowData)
+      let echarts = require('echarts');
+      let chartDom = document.getElementById('zhu');
+      let myChart = echarts.init(chartDom);
+      let option;
+      let x=[];
+      let y=[];
+
+      for(let i=0;i<this.xChooseData.length;i++){
+        x.push(this.xChooseData[i].name)
+      }
+      // this.xLength = this.xChooseData.length
+
+      for(let i=0;i<this.yChooseData.length;i++){
+        y.push(this.yChooseData[i].name)
+      }
+      // console.log(this.ShowData)
+
+      // console.log('x',x)
+      // console.log('y',y)
+
+      // console.log('x+ch',this.xChooseData)
+      // console.log('y+ch',this.yChooseData)
+
+
       option = {
         tooltip: {
           trigger: 'axis',
@@ -101,6 +140,68 @@ export default {
           containLabel: true
         },
         series: this.ShowData,
+        // series: [
+        //   {
+        //     name: 'Direct',
+        //     type: 'bar',
+        //     stack: 'total',
+        //     label: {
+        //       show: true
+        //     },
+        //     emphasis: {
+        //       focus: 'series'
+        //     },
+        //     data: [320, 302, 301, 334, 390, 330, 320]
+        //   },
+        //   {
+        //     name: 'Mail Ad',
+        //     type: 'bar',
+        //     stack: 'total',
+        //     label: {
+        //       show: true
+        //     },
+        //     emphasis: {
+        //       focus: 'series'
+        //     },
+        //     data: [120, 132, 101, 134, 90, 230, 210]
+        //   },
+        //   {
+        //     name: 'Affiliate Ad',
+        //     type: 'bar',
+        //     stack: 'total',
+        //     label: {
+        //       show: true
+        //     },
+        //     emphasis: {
+        //       focus: 'series'
+        //     },
+        //     data: [220, 182, 191, 234, 290, 330, 310]
+        //   },
+        //   {
+        //     name: 'Video Ad',
+        //     type: 'bar',
+        //     stack: 'total',
+        //     label: {
+        //       show: true
+        //     },
+        //     emphasis: {
+        //       focus: 'series'
+        //     },
+        //     data: [150, 212, 201, 154, 190, 330, 410]
+        //   },
+        //   {
+        //     name: 'Search Engine',
+        //     type: 'bar',
+        //     stack: 'total',
+        //     label: {
+        //       show: true
+        //     },
+        //     emphasis: {
+        //       focus: 'series'
+        //     },
+        //     data: [820, 832, 901, 934, 1290, 1330, 1320]
+        //   }
+        // ],
         xAxis: {
           type: 'category',
           data: x,
@@ -108,32 +209,15 @@ export default {
         yAxis: {
           type: 'value',
         },
-        // series: [{
-        //   data: y,
-        //   type: 'bar',
-        //   showBackground: true,
-        //   label: {
-        //     show: true,
-        //     position: 'inside'
-        //   },
-        //   backgroundStyle: {
-        //     color: 'rgba(180, 180, 180, 0.2)'
-        //   }
-        // }]
       };
 
+      console.log(option)
       option && myChart.setOption(option);
-
     },
 
 
     // 发送两个题目的选项获取作答人数
     getAnswerNum(quesAId,quesBID,choiAID,choiBID){
-      console.log('A题',quesAId);
-      console.log('B题',quesBID);
-      console.log('A选项',choiAID);
-      console.log('B选项',choiBID);
-      let count = 0;
       let pra = {
         questionAID: quesAId,
         questionBID: quesBID,
@@ -146,15 +230,22 @@ export default {
         data: pra
       }).then(res=>{
         console.log(res)
-        if (res.data.Message === 'Success'){
-          count =  res.data.count;
-          return count
+        if (res.data.msg === 'success'){
+          let pra = {
+            AID: choiAID,
+            BID: choiBID,
+            count: res.data.count
+          }
+          this.count.push(pra);
+          // console.log(this.count)
+          if (this.count.length === this.xLength*this.yLength){
+            this.setOpts()
+          }
         }
       }).catch(err=>{
 
       })
-
-      return count
+      // return this.count
 
     },
 
@@ -169,7 +260,7 @@ export default {
           questionID: this.xDataID
         }
       }).then(res=>{
-        console.log(res);
+        // console.log(res);
         if (res.data.Message !== 'No Such Questionnaire'){
           // this.Questionnaire = res.data.Questionnaire
           // this.QesData=res.data.QesData,
@@ -177,7 +268,8 @@ export default {
           //     this.AnswerData=res.data.AnswerData
           this.xChooseData = res.data.ChooseData
           this.xAnswerData = res.data.AnswerData
-          console.log(this.xAnswerData)
+          // console.log(this.xAnswerData)
+          this.xLength = this.xChooseData.length
           this.getYData()
         }
       }).catch(err=>{
@@ -204,8 +296,10 @@ export default {
           //     this.AnswerData=res.data.AnswerData
           this.yChooseData = res.data.ChooseData
           this.yAnswerData = res.data.AnswerData
-          console.log(this.yAnswerData)
-          this.Show();
+          this.yLength = this.yChooseData.length
+          // console.log(this.yAnswerData)
+          this.computeCross();
+          // this.Show();
         }
       }).catch(err=>{
         console.log(err)
