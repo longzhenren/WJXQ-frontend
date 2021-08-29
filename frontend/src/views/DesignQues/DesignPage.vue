@@ -689,7 +689,6 @@ export default {
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
       bus.$emit('SaveEdited',this.editingQuestion.index)
-
       this.Questionnaire.title = this.QuesTitle;
       this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
@@ -725,7 +724,7 @@ export default {
       }
 
 
-
+      console.log('这个问卷',FinalQuestionnaire)
       // console.log(FinalQuestionnaire)
       request({
         url: '/question/modifyQuestionnaire',
@@ -860,14 +859,22 @@ export default {
           type=5;
           break;
         case 'ExamSingleChoose' :
-          type=1;
+          type=10;
           break;
 
         case 'ExamMChoose' :
-          type=2;
+          type=11;
           break;
-
       }
+      let TrueAnswer = null;
+      if(item.subData.answer!==undefined) {
+        for (let i = 0; i < item.subData.answer.length; i++) {
+          if (item.subData.answer[i]){
+            TrueAnswer = item.subData.choices[i];
+          }
+        }
+      }
+
       if (mode==='sendQuestion'){
          Question = {
           id: item.id===undefined?0:item.id,
@@ -880,7 +887,8 @@ export default {
           Must: item.subData.Must===undefined?false:item.subData.Must,
           Number: item.idx,
           Choice: [],
-
+           TrueAnswer: TrueAnswer,
+           Times: item.subData.score===undefined?null:item.subData.score,
           Describe: item.subData.describe,
           username: this.$route.query.username
         }
@@ -896,6 +904,8 @@ export default {
           Must: item.subData.Must===undefined?false:item.subData.Must,
           Number: item.idx,
           Choice: [],
+           TrueAnswer: TrueAnswer,
+           Times: item.subData.score===undefined?null:item.subData.score,
           Describe: item.subData.describe,
         }
       }
@@ -921,7 +931,7 @@ export default {
           Question.Choice.push(CItem);
         }
       }
-      console.log('Quesion',Question);
+      console.log('返回Quetsion',Question);
       return Question;
     },
 
@@ -1519,41 +1529,102 @@ export default {
         let QuesInfo ;
         switch (questionItem.Type) {
           case 1 :
-            type='singleChoice';
-            console.log(questionItem.Describe)
-            QuesInfo ={
-              id:"",
-              Number:questionItem.Number,
-              edit:0,
-              describe: questionItem.Describe,
-              question: questionItem.Stem,
-              choices: [],
-              radio: 0,
-              Must:questionItem.Must,
-            }
+              type='singleChoice';
+              console.log(questionItem.Describe)
+              QuesInfo ={
+                id:"",
+                Number:questionItem.Number,
+                edit:0,
+                describe: questionItem.Describe,
+                question: questionItem.Stem,
+                choices: [],
+                radio: 0,
+                Must:questionItem.Must,
+              }
 
-            for (let j = 0; j < questionItem.Choice.length; j++) {
-              QuesInfo.choices.push(questionItem.Choice[j].Text);
-            }
+              for (let j = 0; j < questionItem.Choice.length; j++) {
+                QuesInfo.choices.push(questionItem.Choice[j].Text);
+              }
+              break;
+
+          case 10:
+              type='ExamSingleChoose';
+              // console.log(questionItem.Describe)
+              QuesInfo ={
+                answer:[],
+                score:questionItem.Times,
+                id:"",
+                Number:questionItem.Number,
+                edit:0,
+                describe: questionItem.Describe,
+                question: questionItem.Stem,
+                choices: [],
+                radio: 0,
+                Must:questionItem.Must,
+              }
+
+              for (let j = 0; j < questionItem.Choice.length; j++) {
+                QuesInfo.choices.push(questionItem.Choice[j].Text);
+              }
+
+              for (let j = 0; j < QuesInfo.choices.length; j++) {
+                if (questionItem.TrueAnswer === QuesInfo.choices[i]){
+                  QuesInfo.answer.push(true)
+                }
+                else {
+                  QuesInfo.answer.push(false)
+                }
+              }
             // console.log(QuesInfo)
             break;
           case 2 :
-            type='multiChoose';
-            QuesInfo = {
-              edit:0,
-              describe:questionItem.Describe,
-              question:questionItem.Stem,
-              choices:[],
-              radio:[],
-              Number:questionItem.Number,
-              max:questionItem.MaxChoice,
-              min:questionItem.MinChoice,
-              Must:questionItem.Must,
-            }
-            for (let j = 0; j < questionItem.Choice.length; j++) {
-              QuesInfo.choices.push(questionItem.Choice[j].Text);
-            }
-            break;
+              type='multiChoose';
+              QuesInfo = {
+                edit:0,
+                describe:questionItem.Describe,
+                question:questionItem.Stem,
+                choices:[],
+                radio:[],
+                Number:questionItem.Number,
+                max:questionItem.MaxChoice,
+                min:questionItem.MinChoice,
+                Must:questionItem.Must,
+              }
+              for (let j = 0; j < questionItem.Choice.length; j++) {
+                QuesInfo.choices.push(questionItem.Choice[j].Text);
+              }
+              break;
+
+            case 11:
+              type='ExamMChoose';
+              // console.log(questionItem.Describe)
+              QuesInfo ={
+                answer:[],
+                score:questionItem.Times,
+                id:"",
+                Number:questionItem.Number,
+                edit:0,
+                describe: questionItem.Describe,
+                question: questionItem.Stem,
+                choices: [],
+                radio: 0,
+                Must:questionItem.Must,
+              }
+
+              for (let j = 0; j < questionItem.Choice.length; j++) {
+                QuesInfo.choices.push(questionItem.Choice[j].Text);
+              }
+
+              for (let j = 0; j < QuesInfo.choices.length; j++) {
+                if (questionItem.TrueAnswer === QuesInfo.choices[i]){
+                  QuesInfo.answer.push(true)
+                }
+                else {
+                  QuesInfo.answer.push(false)
+                }
+              }
+              break;
+
           case 3 :
             type='fillBlank';
             QuesInfo = {
