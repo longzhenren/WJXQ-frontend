@@ -119,6 +119,12 @@ export default {
       }
     };
   },
+  created() {
+    bus.$on('SaveEdited',this.saveData)
+  },
+  beforeDestroy(){
+    bus.$off('SaveEdited',this.saveData)
+  },
 
   mounted() {
     // console.log(this.FatherData)
@@ -156,17 +162,29 @@ export default {
         }
       }
     },
+
     needSendIdx(newIndex,oldIndex){
-      // console.log('旧',oldIndex)
-      // console.log('新',newIndex)
       this.needSendIdx = newIndex
-      // if (newIndex !== oldIndex) {
-      //   console.log('自动')
-      //   bus.$emit('saveSingleData',this.QesData,oldIndex)
-      // }
-    }
+    },
+    QesData:{
+      handler(newData,oldData){
+
+        console.log("同步ing"+this.needSendIdx)
+        bus.$emit('changeData',this.QesData,this.needSendIdx)
+      },
+      deep: true
+
+    },
   },
   methods: {
+    saveData(index){
+      console.log("传入修改器 当前需要修改"+this.needSendIdx)
+      console.log("传入修改器 上一修改"+index)
+      if (index===this.needSendIdx){
+        console.log(index)
+        this.save()
+      }
+    },
     changeMax: function(){
       if(this.QesData.min>this.QesData.max){
         this.QesData.min=this.QesData.max;
@@ -198,22 +216,23 @@ export default {
     },
     save: function() {
       let find = false;
+      let j=0;
       for (let i = 0; i < this.QesData.choices.length; i++) {
-        for (let j = i + 1; j < this.QesData.choices.length; j++) {
-          if (this.QesData.choices[i]=== this.QesData.choices[j] ) {
-            find = true; break;
+        for ( j = i + 1; j < this.QesData.choices.length; j++) {
+          if (this.QesData.choices[i]== this.QesData.choices[j] ) {
+            find=true;
+            console.log(i,j)
+            this.$set(this.QesData.choices,j,this.QesData.choices[j]+"-重复项"+j.toString())
           }
         }
-        if (find) break;
       }
       if(find){
-        this.$message.warning("不可以存在重复项")
-        return
-      }else {
-        this.QesData.edit=0
-        bus.$emit('saveMultiData',this.QesData,this.needSendIdx);
-        // this.$emit('saveMultiData',this.QesData)
+        this.$message.warning("不可以存在重复项,已为您添加标识，请您修改")
       }
+      // this.$emit('saveSingleData',this.QesData)
+      console.log("编辑保存"+this.needSendIdx);
+      bus.$emit('SaveData',this.QesData,this.needSendIdx)
+
     },
     edit: function() {
       this.QesData.edit=1

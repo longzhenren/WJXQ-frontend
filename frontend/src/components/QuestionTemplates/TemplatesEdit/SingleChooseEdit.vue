@@ -95,7 +95,7 @@ export default {
         radio: 0,
         Must:true,
       },
-      SavedData:[]
+      // SavedData:[]
     };
   },
   created() {
@@ -186,7 +186,6 @@ export default {
       }
       if(find){
         this.$message.warning("不可以存在重复项,已为您添加标识，请您修改")
-
       }
         // this.$emit('saveSingleData',this.QesData)
         console.log("编辑保存"+this.needSendIdx);

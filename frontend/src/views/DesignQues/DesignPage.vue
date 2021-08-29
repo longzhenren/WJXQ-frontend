@@ -138,6 +138,14 @@
                   <Evaluate v-else-if="item.type==='evaluate'" ref="child"
                             :father-data="item.subData"
                             @save="SaveQes($event,item)"></Evaluate>
+
+
+                  <VoteSingleChoose v-else-if="item.type==='VoteSingleChoose'" ref="child"
+                                    :father-data="item.subData"
+                                    @save="SaveQes($event,item)"></VoteSingleChoose>
+<!--                  <VoteSingleChoose v-else-if="item.type ==='VoteSingleChoose'" ref="child"-->
+<!--                            :father-data="item.subData"-->
+<!--                            @save="SaveQes($event,item)"></VoteSingleChoose>-->
                 </div>
 
 
@@ -215,6 +223,16 @@
                                :father-data="editingQuestion.subData"
                                :need-send-idx="editingQuestion.index"
                                ref="childEdit"></FillBlankEdit>
+
+                <VoteSingleChooseEdit v-else-if="editingQuestion.type === 'VoteSingleChoose'"
+                                      :father-data="editingQuestion.subData"
+                                      :need-send-idx="editingQuestion.index"
+                                      ref="childEdit"></VoteSingleChooseEdit>
+
+<!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
+<!--                                  :father-data="editingQuestion.subData"-->
+<!--                                  :need-send-idx="editingQuestion.index"-->
+<!--                                  ref="childEdit"></VoteSingleChoose>-->
               </div>
 
 
@@ -263,7 +281,8 @@ import {request} from "../../network/request";
 import MultiChooseEdit from "../../components/QuestionTemplates/TemplatesEdit/MultiChooseEdit";
 import EvaluateEdit from "../../components/QuestionTemplates/TemplatesEdit/EvaluateEdit";
 import FillBlankEdit from "../../components/QuestionTemplates/TemplatesEdit/FillBlankEdit";
-
+import VoteSingleChoose from "../../components/QuestionTemplates/VoteTemplates/View/VoteSingleChoose";
+import VoteSingleChooseEdit from "../../components/QuestionTemplates/VoteTemplates/Edit/VoteSingleChooseEdit";
 
 export default {
   name: "DesignPage",
@@ -275,8 +294,9 @@ export default {
     MultiChoose,
     FillBlank,
     Evaluate,
-
-    SingleChooseEdit
+    VoteSingleChoose,
+    SingleChooseEdit,
+    VoteSingleChooseEdit
   },
   data(){
     return {
@@ -882,6 +902,44 @@ export default {
 
         this.addNewQuestionToBackend(Opt,pra)
         // this.addNewQuesToQuesList(Opt);
+      }
+      else if (type===3){
+        if (QuesNum === 0){
+          Opt = {
+            Stem: '投票单选',
+            idx: this.QuesList.length,
+            isDraggable: true,
+            subData: {},
+            type: 'VoteSingleChoose'
+          }
+
+          pra = {
+            Questionnaire: this.QuesId,
+            Type: 6,
+            Stem: Opt.Stem,
+            Number: Opt.idx,
+            username: this.$route.query.username,
+          }
+          this.addNewQuestionToBackend(Opt,pra)
+        }
+        else if (QuesNum === 1) {
+          Opt = {
+            Stem: '投票多选',
+            idx: this.QuesList.length,
+            isDraggable: true,
+            subData: {},
+            type: 'VoteMultiChoose'
+          }
+
+          pra = {
+            Questionnaire: this.QuesId,
+            Type: 7,
+            Stem: Opt.Stem,
+            Number: Opt.idx,
+            username: this.$route.query.username,
+          }
+          this.addNewQuestionToBackend(Opt,pra)
+        }
       }
     },
 
