@@ -176,20 +176,23 @@ export default {
     },
     save: function() {
       let find = false;
+      let j=0;
       for (let i = 0; i < this.QesData.choices.length; i++) {
-        for (let j = i + 1; j < this.QesData.choices.length; j++) {
+        for ( j = i + 1; j < this.QesData.choices.length; j++) {
           if (this.QesData.choices[i]== this.QesData.choices[j] ) {
-            find = true; break;
+            find=true;
+            console.log(i,j)
+            this.$set(this.QesData.choices,j,this.QesData.choices[j]+"-重复项"+j.toString())
           }
         }
-        if (find) break;
       }
       if(find){
-        this.$message.warning("不可以存在重复项")
-      }else {
-        this.QesData.edit=0
-        bus.$emit('SaveData',this.QesData,this.needSendIdx)
+        this.$message.warning("不可以存在重复项,已为您添加标识，请您修改")
       }
+      // this.$emit('saveSingleData',this.QesData)
+      console.log("编辑保存"+this.needSendIdx);
+      bus.$emit('SaveData',this.QesData,this.needSendIdx)
+
     },
     edit: function() {
       this.QesData.edit=1

@@ -145,7 +145,7 @@ export default {
       }
     },
     del:function (i){
-      if(this.QesData.choices>=2)
+      if(this.QesData.choices.length>2)
       {
         this.QesData.choices.splice(i,1)
         if(this.QesData.max>this.QesData.choices.length){
