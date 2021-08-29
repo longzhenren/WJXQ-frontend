@@ -60,7 +60,7 @@
                   数据分析<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-<!--                  <el-dropdown-item  class="el-dropdown-item">查看分析</el-dropdown-item>-->
+                  <el-dropdown-item  class="el-dropdown-item" @click.native.prevent="ShowQues">查看分析</el-dropdown-item>
                   <el-dropdown-item class="el-dropdown-item" @click.native.prevent="exportDocumentExcel">下载excel</el-dropdown-item>
                   <el-dropdown-item class="el-dropdown-item" @click.native.prevent="exportDocumentWord">下载word</el-dropdown-item>
                 </el-dropdown-menu>
@@ -125,6 +125,16 @@ export default {
     Model
   },
   methods:{
+    //分析问卷
+    ShowQues(){
+      this.$router.push({
+        path: '/dataanalysis',
+        query: {
+          id: this.QesInfo.id,
+          username: this.$route.query.username
+        }
+      });
+    },
     // 关闭弹窗
     hideModal() {
       this.modelShow = false;
@@ -205,7 +215,6 @@ export default {
     },
     linkClicked(){
       if(this.QesInfo.Open){
-        this.$store.commit('leftMenuCurrentOne')
         this.$router.push({
           path:'/release',
           query:{

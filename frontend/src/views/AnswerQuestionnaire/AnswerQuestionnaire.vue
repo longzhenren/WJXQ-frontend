@@ -1,7 +1,7 @@
 <template>
   <div class="AnswerQuestionnaire">
     <MyMk v-if="myMkShow" :id="id"></MyMk>
-    <div class="content">
+    <div class="content" v-if="state == 0">
       <!-- 问卷标题 -->
       <h3>{{ Title }}</h3>
 
@@ -11,7 +11,10 @@
       </div>
 
       <!-- 问题部分 -->
-      <el-card :class="{boxCard:true,filterBlur:!isLogin}" v-for="(item, index) in Question">
+      <el-card
+        :class="{ boxCard: true, filterBlur: !isLogin }"
+        v-for="(item, index) in Question"
+      >
         <div slot="header">
           <!-- 题号题干 -->
           <span v-if="ShowNumber == true">
@@ -22,6 +25,9 @@
           <label v-if="item.Type == 2">多选题 - {{ item.Stem }}</label>
           <label v-if="item.Type == 3">填空题 - {{ item.Stem }}</label>
           <label v-if="item.Type == 4">评分题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 5">定位题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 6">投票单选题 - {{ item.Stem }}</label>
+          <label v-if="item.Type == 7">投票多选题 - {{ item.Stem }}</label>
           <!-- 描述 -->
           <div>
             <label style="font-size: 12px; color: darkgrey">
@@ -79,164 +85,259 @@
           >
           </el-rate>
         </div>
+
+        <!-- 定位 -->
+        <div class="Position" v-if="item.Type == 5">
+          <el-row :gutter="10" type="flex" justify="center">
+            <el-col :span="18">
+              <div class="Choice">
+                <el-input
+                  class="InnerElement"
+                  v-model="item.Position"
+                  placeholder="点击按钮获取地理位置..."
+                  :disabled="true"
+                >
+                </el-input>
+              </div>
+            </el-col>
+            <el-col>
+              <el-button @click="getPosition(item)">
+                <i class="el-icon-discover" />获取定位
+              </el-button>
+            </el-col>
+          </el-row>
+        </div>
+
+        <!-- 投票单选 -->
+        <div class="VoteSingleChoice" v-if="item.Type == 6">
+          <el-radio-group v-model="item.RadioValue">
+            <el-row
+              :gutter="10"
+              type="flex"
+              align="top"
+              justify="left"
+              v-for="(choiceItem, i) in item.Choice"
+            >
+              <el-col :span="12">
+                <el-radio :label="choiceItem.id">
+                  {{ choiceItem.Text }}
+                </el-radio>
+              </el-col>
+              <el-col :span="2" v-if="item.showAmount == true">
+                <label style="font-size: 12px">{{ choiceItem.Amount }}</label>
+              </el-col>
+              <el-col :span="10" v-if="item.showRate == true">
+                <el-progress :percentage="choiceItem.Rate"></el-progress>
+              </el-col>
+            </el-row>
+          </el-radio-group>
+        </div>
+
+        <!-- 投票多选 -->
+        <div class="VoteMultiChoice" v-if="item.Type == 7">
+          <el-checkbox-group
+            v-model="item.CheckList"
+            :min="item.MinChoice"
+            :max="item.MaxChoice"
+          >
+            <el-row
+              :gutter="10"
+              type="flex"
+              align="top"
+              justify="left"
+              v-for="(choice, i) in item.Choice"
+            >
+              <el-col :span="12">
+                <el-checkbox :label="choice.id">
+                  {{ choice.Text }}
+                </el-checkbox>
+              </el-col>
+              <el-col :span="2" v-if="item.showAmount == true">
+                <label style="font-size: 12px">{{ choice.Amount }}</label>
+              </el-col>
+              <el-col :span="10" v-if="item.showRate == true">
+                <el-progress :percentage="choice.Rate"></el-progress>
+              </el-col>
+            </el-row>
+          </el-checkbox-group>
+        </div>
+
+        <!-- 报名单选 -->
+        <div class="RegisterSingleChoice" v-if="item.Type == 8"></div>
+        <!-- 报名多选 -->
+        <div class="RegisterMultiChoice" v-if="item.Type == 9"></div>
       </el-card>
 
       <!-- 提交按钮 -->
-      <button @click="getQesInfo">here</button>
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
-    <div class="bottom">
+    <div class="bottom" v-if="state == 0">
       <el-link type="info" href="/">问卷星球&nbsp;</el-link>
     </div>
+    <div v-if="state == 1"><p>问卷已关闭</p></div>
+    <div v-if="state == 2"><p>已提交</p></div>
   </div>
 </template>
 
 <script>
 import { request } from "../../network/request";
-import MyMk from "../../components/AnswerQuestionnaire/MyMk"
+import MyMk from "../../components/AnswerQuestionnaire/MyMk";
 export default {
   name: "AnswerQuestionnaire",
   data() {
     return {
-      isLogin:window.sessionStorage.getItem('isLogin'),
-      myMkShow:false,
+      isLogin: window.sessionStorage.getItem("isLogin"),
+      myMkShow: false,
       ip: "",
-      id: this.$route.params.id,
+      id: this.$route.params.id, //加密后的问卷id
       questionnaireID: 0,
       submissionID: 0,
       Title: "",
-      Settings:[],
+      Settings: [],
       ShowNumber: true,
       Text: "",
       Question: [],
-      model:'preview'
+      model: "preview",
+      isWatch: false,
+      state: 0, //0：开放 1：关闭 2：提交
+      Position: "",
     };
   },
-  props:{
-    qesId:'',
+  props: {
+    qesId: "",
   },
-  components:{
-    MyMk
+  components: {
+    MyMk,
+  },
+  computed: {
+    newQuestion() {
+      return JSON.parse(JSON.stringify(this.Question));
+    },
+  },
+  watch: {
+    newQuestion: {
+      handler(val, old) {
+        if (this.isWatch) this.autoSave(val, old);
+        else this.isWatch = true;
+      },
+      deep: true,
+    },
   },
   methods: {
     // 结果查看
-    goVoteShow(){
-      let psthH = '/VoteShow/'+this.id
+    goVoteShow() {
+      let psthH = "/VoteShow/" + this.id;
       this.$router.push({
         path: psthH,
         query: {
-          Mode: 'preview',
-        }
-      })
+          Mode: "preview",
+        },
+      });
     },
-    getQesInfo(){//type6投票单选，type7投票多选
-      console.log(this.Question[0].id)
-      request({
-        url: '/submit/qesrep',
-        method: 'post',
-        data: {
-          'questionID': this.Question[0].id,
-        }
-      }).then(res => {
-        console.log(this.Question[0].id)
-        console.log(res)
-      })
+    getPosition(i) {
+      this.$confirm("是否同意获取位置？", "提示", {
+          confirmButtonText: "是",
+          cancelButtonText: "否",
+          type: "warning",
+        })
+        .then(() => {
+          request({
+            url: "https://restapi.amap.com/v5/ip",
+            method: "get",
+            params: {
+              key: "24975cc0d788296567a2d7f807a6d81d",
+              type: 4,
+              ip: this.ip,
+            },
+          }).then((res) => {
+            //console.log(res);
+            i.Position =
+              res.data.country +
+              " " +
+              res.data.province +
+              " " +
+              res.data.city +
+              " " +
+              res.data.district;
+          });
+        })
+        .catch(() => {
+          this.$message.info("已取消");
+        });
     },
-    //提交
-    submit() {
-      //检测是否答完
-      let flag = true;
-      var q;
+    autoSave: _.debounce(function(val, old) {
+      if (!_.eq(val, old) && this.state != 2) {
+        this.$message.success("已自动保存");
+        this.save();
+        console.log("自动保存", val);
+      }
+    }, 3000),
+    save() {
+      let q;
       for (q in this.Question) {
         let i = this.Question[q];
-        if (i.Must == true && i.Type == 1 && i.RadioValue == 0) flag = false;
-        if (i.Must == true && i.Type == 2 && i.CheckList == []) flag = false;
-        if (i.Must == true && i.Type == 3 && i.Answer == "") flag = false;
-        if (i.Must == true && i.Type == 4 && i.Score == 0) flag = false;
-      }
-      if (flag == false) this.$message.error("请回答所有带*题目");
-      //向后端发送答案（按题分类）
-      else {
-        //创建问卷
-        request({
-          url: "/submit/crtsub",
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          data: {
-            ip: this.ip,
-            questionnaireID: this.questionnaireID,
-          },
-        }).then((res) => {
-          console.log(res);
-          this.submissionID = res.data.submissionID;
-          console.log(this.submissionID);
-          for (q in this.Question) {
-            console.log(this.submissionID);
-            let i = this.Question[q];
-            if (i.Type == 1) {
-              request({
-                url: "/submit/savans",
-                method: "post",
-                headers: { "Content-Type": "application/json" },
-                data: {
-                  submissionID: this.submissionID,
-                  questionID: i.id,
-                  answerSelectionIDSet: [i.RadioValue],
-                },
-              }).then((res) => {
-                // console.log(res);
-              });
-            }
-            if (i.Type == 2)
-              request({
-                url: "/submit/savans",
-                method: "post",
-                headers: { "Content-Type": "application/json" },
-                data: {
-                  submissionID: this.submissionID,
-                  questionID: i.id,
-                  answerSelectionIDSet: i.CheckList,
-                },
-              });
-            if (i.Type == 3)
-              request({
-                url: "/submit/savans",
-                method: "post",
-                headers: { "Content-Type": "application/json" },
-                data: {
-                  submissionID: this.submissionID,
-                  questionID: i.id,
-                  answerText: i.Answer,
-                },
-              });
-            if (i.Type == 4)
-              request({
-                url: "/submit/savans",
-                method: "post",
-                headers: { "Content-Type": "application/json" },
-                data: {
-                  submissionID: this.submissionID,
-                  questionID: i.id,
-                  answerScore: i.Score,
-                },
-              });
-            // console.log(i.id);
-          }
+        if (i.Type == 1 || i.Type == 6) {
           request({
-            url: "/submit/submit",
+            url: "/submit/savans",
             method: "post",
             headers: { "Content-Type": "application/json" },
             data: {
               submissionID: this.submissionID,
+              questionID: i.id,
+              answerSelectionIDSet: [i.RadioValue],
             },
-          }).then(res=>{
-            if(res.data.msg==='success')
-              this.$message.success("提交成功");
-          })
-        });
-        //最终提交
-        this.goVoteShow();
+          });
+        }
+        if (i.Type == 2 || i.Type == 7)
+          request({
+            url: "/submit/savans",
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            data: {
+              submissionID: this.submissionID,
+              questionID: i.id,
+              answerSelectionIDSet: i.CheckList,
+            },
+          });
+        if (i.Type == 3)
+          request({
+            url: "/submit/savans",
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            data: {
+              submissionID: this.submissionID,
+              questionID: i.id,
+              answerText: i.AnswerText,
+            },
+          });
+        if (i.Type == 4)
+          request({
+            url: "/submit/savans",
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            data: {
+              submissionID: this.submissionID,
+              questionID: i.id,
+              answerScore: i.Score,
+            },
+          });
+        //console.log(i.id);
       }
+    },
+    submit() {
+      this.save();
+      request({
+        url: "/submit/submit",
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        data: {
+          submissionID: this.submissionID,
+        },
+      }).then((res) => {
+        console.log("总提交", res.data);
+        if (res.data.code === -1) this.$message.warning("有必答题未做");
+        else this.state = 2;
+      });
     },
     //排序
     sortRule(a, b) {
@@ -248,42 +349,43 @@ export default {
     //获取客户ip
     this.ip = localStorage.getItem("Ip");
     // console.log(this.ip);
-    let  pra;
-    if(this.qesId===undefined){
-      if (this.$route.query.Mode===undefined){//填写时
-        console.log(this.id)
+    let pra;
+    if (this.qesId === undefined) {
+      if (this.$route.query.Mode === undefined) {
+        //填写时
+        console.log(this.id);
         pra = {
           EncodeID: this.id,
-          Mode: '',
-        }
-      }
-      else {
+          Mode: "",
+        };
+      } else {
         pra = {
           EncodeID: this.id,
           Mode: this.$route.query.Mode,
-        }
+        };
       }
-    }else {
+    } else {
       pra = {
         EncodeID: this.qesId,
         Mode: this.model,
-      }
+      };
     }
-    //加载问卷
+    //请求问卷数据
     request({
       url: "/question/answerQuestionnaire",
       method: "post",
-      data: pra
-    }).then((res) => {
-      // console.log(pra.EncodeID)
-        console.log(res)
+      data: pra,
+    })
+      .then((res) => {
+        console.log("源数据", res);
+        //存储问卷信息
+        if (res.data.Message === "Questionnaire is closed") this.state = 1;
         var Questionnaire = res.data.Questionnaire;
         this.Title = Questionnaire.Title;
         this.ShowNumber = Questionnaire.ShowNumber;
-        this.Settings=Questionnaire.Settings;
         this.Text = Questionnaire.Text;
         this.questionnaireID = Questionnaire.id;
-        //对this.Question[]赋值
+        //存储题目数据并排序
         var i;
         for (i in Questionnaire.Question) {
           var q = Questionnaire.Question[i];
@@ -335,7 +437,7 @@ export default {
               Type: 3,
               Must: q.Must,
               Number: q.Number,
-              Answer: "",
+              AnswerText: "",
             });
           }
           if (q.Type == 4) {
@@ -353,12 +455,81 @@ export default {
               Score: 0,
             });
           }
+          if (q.Type == 5) {
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: 5,
+              Must: q.Must,
+              Number: q.Number,
+              Position: "",
+            });
+          }
+          if (q.Type == 6) {
+            var i;
+            var c = [];
+            for (i in q.Choice)
+              c.push({
+                id: q.Choice[i].id,
+                Text: q.Choice[i].Text,
+                Amount: 33,
+                Rate: 44,
+              });
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: 6,
+              Must: q.Must,
+              Number: q.Number,
+              Choice: c,
+              RadioValue: 0,
+              showAmount: true,
+              showRate: true,
+            });
+          }
+          if (q.Type == 7) {
+            var i;
+            var c = [];
+            for (i in q.Choice)
+              c.push({
+                id: q.Choice[i].id,
+                Text: q.Choice[i].Text,
+                Amount: 33,
+                Rate: 44,
+              });
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: 7,
+              MaxChoice: q.MaxChoice,
+              Minchoice: q.Minchoice,
+              Must: q.Must,
+              Number: q.Number,
+              Choice: c,
+              CheckList: [],
+              showAmount: true,
+              showRate: true,
+            });
+          }
         }
         this.Question.sort(this.sortRule);
-        // console.log(this.Question);
-        if(this.qesId===undefined&&!this.Settings.Login&&!window.sessionStorage.getItem('isLogin')){//测试用
-          this.myMkShow=true
-        }
+        console.log("获取数据", this.Question);
+        //创建提交
+        request({
+          url: "/submit/crtsub",
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          data: {
+            submitUID: this.ip,
+            questionnaireID: this.questionnaireID,
+          },
+        }).then((res) => {
+          this.submissionID = res.data.submissionID;
+          console.log("submissionID", this.submissionID);
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -371,7 +542,7 @@ export default {
 .AnswerQuestionnaire {
   text-align: center;
   padding: 20px;
-  width: 750px;
+  width: 700px;
   margin:30px auto;
   background-color: white;
 }
@@ -383,7 +554,7 @@ export default {
   line-height: 22px;
   text-align: left;
 }
- .content {
+.content {
   width: 100%;
   max-width: 800px;
   display: inline-block;
@@ -394,7 +565,7 @@ export default {
   width: 100%;
   margin: 10px 0 10px 0;
 }
-.filterBlur{
+.filterBlur {
   filter: blur(4px);
 }
 .bottom {

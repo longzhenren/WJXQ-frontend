@@ -166,7 +166,6 @@ export default {
     },
     linkClicked(){
       if(this.QesInfo.Open){
-        this.$store.commit('leftMenuCurrentOne')
         this.$router.push({
           path:'/release',
           query:{

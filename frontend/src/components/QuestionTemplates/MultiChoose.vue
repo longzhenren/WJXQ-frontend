@@ -3,100 +3,52 @@
 
 <template>
 
-  <div class="InnerDiv" v-if="multiChoice.edit==1" >
-    <el-form  label-width="80px"  >
-      <el-form-item label="多选题">
-        <el-input v-model="multiChoice.question"
-                  placeholder="请输入问题"
-                  type="textarea">
-        </el-input>
-      </el-form-item>
-      <el-form-item >
-        <el-input v-model="multiChoice.describe"
-                  placeholder="请输入描述"
-                  type="textarea" style="font-size:12px">
-        </el-input>
-
-      </el-form-item>
-    </el-form>
-    <div class="LeftDiv">
-    <el-radio-group v-model="multiChoice.radio" style="display: block">
-      <el-form  style="margin-left: 20px" label-width="80px" :inline="true" class="demo-form-inline" v-for="(choice,i) in multiChoice.choices"  >
-      <el-form-item  ><label>{{i+1}}.</label></el-form-item>
-      <el-form-item  >
-        <el-input   v-model="multiChoice.choices[i]"
-                    placeholder="请输入选项"
-                    type="textarea"
-                    >
-        </el-input>
-      </el-form-item>
-      <el-form-item >
-      <el-button type="danger" icon="el-icon-delete" @click=del(i) circle></el-button>
-      </el-form-item>
-
-    </el-form>
-    </el-radio-group>
-    </div>
-    <div class="RightDiv">
-      <el-form :inline="true"  class="demo-form-inline">
-        <el-form-item class="RightElement" >
-          <el-checkbox v-model="multiChoice.Must">必答题</el-checkbox>
-        </el-form-item>
-        <el-form-item label="最少选择" class="RightElement" >
-          <el-select v-model="multiChoice.min" @change="changeMin">
-            <el-option v-for="(choice,i) in multiChoice.choices" :label="i+1" :value="i+1"  v-if="i+1<=multiChoice.max" ></el-option>
-            <el-option v-for="(choice,i) in multiChoice.choices" :label="i+1" :value="i+1"  v-if="i+1>multiChoice.max" :disabled="true" ></el-option>
-          </el-select>
-        </el-form-item >
-        <el-form-item label="最多选择" class="RightElement"  >
-          <el-select v-model="multiChoice.max" @change="changeMax" >
-            <el-option v-for="(choice,i) in multiChoice.choices" :label="i+1" :value="i+1"  v-if="i+1>=multiChoice.min" ></el-option>
-            <el-option v-for="(choice,i) in multiChoice.choices" :label="i+1" :value="i+1"  v-if="i+1<multiChoice.min" :disabled="true" ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="add" class="RightElement" >新建选项</el-button>
-          <el-button type="success" @click="save" class="RightElement"  >保存</el-button>
-        </el-form-item>
-      </el-form>
-      <el-divider content-position="left"></el-divider>
-    </div>
-  </div>
-
-  <div v-else class="InnerDiv" >
+  <div class="InnerDiv">
     <div >
-      <label v-if="multiChoice.Must==true" style="color: red" >*</label>
-      <label>多选题 - {{multiChoice.question }}</label>
+      <label v-if="QesData.Must==true" style="color: red;float:left;margin-left: -10px;" >*</label>
+      <label>{{ QesData.question }}</label>
+      <label class="type">[多选题] </label>
     </div>
     <div >
-      <label  style="font-size: 12px;color: darkgrey"> {{multiChoice.describe}} </label>
+      <label  class="describe"> {{ QesData.describe }} </label>
     </div>
-    <el-divider content-position="left" class="el-divider-top"></el-divider>
-    <el-checkbox-group  v-model="multiChoice.radio" class="InnerDiv"  >
-      <el-checkbox  v-for="(choice,i) in multiChoice.choices" :label="multiChoice.choices[i]" :key="choice"
-                style="margin-left: 60px;margin-bottom:10px;display: block"
+    <el-checkbox-group v-model="QesData.radio" class="InnerDiv"  >
+      <el-checkbox v-for="(choice,i) in QesData.choices" :label="QesData.choices[i]" :key="choice"
+                   class="Choice"
                   >
       </el-checkbox>
     </el-checkbox-group >
-    <div class="RightDiv">
-      <el-divider content-position="right"> <el-button  icon="el-icon-edit" type="primary" @click="edit" class="RightElement" >修改</el-button></el-divider>
-    </div>
+
   </div>
 
 </template>
 
 <script>
+import bus from "../../assets/utils/bus";
+
 export default {
   props:{
-    FatherData: Object
+    FatherData: {
+      type:Object,
+      default(){
+        return {}
+      }
+    },
+    ItemIndex: {
+      type:Number,
+      default() {
+        return 0;
+      }
+    },
   },
   data () {
     return {
-      multiChoice:{
-        edit:1,
-        describe:"",
+      QesData:{
+        id:"",
+        describe:"这是一个描述",
+        Number: 0,
         question:"",
-        choices:["",""],
+        choices:["选项1","选项2"],
         radio:[],
         max:1,
         min:1,
@@ -108,14 +60,15 @@ export default {
   mounted() {
     // console.log(this.FatherData)
     if ( this.FatherData.edit!==null && this.FatherData.edit!=={} && this.FatherData.edit!==undefined ) {
-      this.multiChoice.edit = this.FatherData.edit;
-      this.multiChoice.question = this.FatherData.question;
-      this.multiChoice.choices = this.FatherData.choices;
-      this.multiChoice.radio = this.FatherData.radio;
-      this.multiChoice.describe = this.FatherData.describe;
-      this.multiChoice.max = this.FatherData.max;
-      this.multiChoice.min = this.FatherData.min;
-      this.multiChoice.Must = this.FatherData.Must;
+      this.QesData.edit = this.FatherData.edit;
+      this.QesData.question = this.FatherData.question;
+      this.QesData.choices = this.FatherData.choices;
+      this.QesData.radio = this.FatherData.radio;
+      this.QesData.Number = this.FatherData.Number
+      this.QesData.describe = this.FatherData.describe;
+      this.QesData.max = this.FatherData.max;
+      this.QesData.min = this.FatherData.min;
+      this.QesData.Must = this.FatherData.Must;
     }
     // this.multiChoice.edit = this.FatherData.edit;
     // this.multiChoice.question = this.FatherData.question;
@@ -125,11 +78,11 @@ export default {
   watch: {
     FatherData(newData,oldData){
       if ( newData.edit!==null && newData.edit!=={} && newData.edit!==undefined ){
-        this.multiChoice = newData;
+        this.QesData = newData;
         return
       }
       else  {
-        this.multiChoice = {
+        this.QesData = {
           edit:1,
           question:"",
           describe:"",
@@ -142,34 +95,58 @@ export default {
       }
     },
   },
+  created() {
+    bus.$on('SaveData',this.saveData)
+    bus.$on('changeData',this.changeData)
+  },
+  beforeDestroy(){
+    bus.$off('SaveData',this.saveData)
+    bus.$off('changeData',this.changeData)
+  },
   methods: {
-    changeMax: function(){
-      if(this.multiChoice.min>this.multiChoice.max){
-        this.multiChoice.min=this.multiChoice.max;
+    // 保存数据
+    // 保存数据
+    saveData(QesData,index){
+      console.log("要保存的题号："+index)
+      console.log("本体题号:"+this.QesData.ItemIndex)
+      if (index===this.ItemIndex){
+        console.log(index)
+        console.log(this.QesData)
+        this.QesData = QesData
+        this.save()
       }
     },
-    changeMin: function(){
-      if(this.multiChoice.min>this.multiChoice.max){
-        this.multiChoice.max=this.multiChoice.min;
+
+    changeData(QesData,index){
+      // console.log(index)
+      // console.log(this.QesData.Number)
+      if (index===this.ItemIndex){
+        this.QesData = QesData
       }
     },
     del:function (i){
-      this.multiChoice.choices.splice(i,1)
-      if(this.multiChoice.max>this.multiChoice.choices.length){
-        this.multiChoice.max=this.multiChoice.choices.length
+      if(this.QesData.choices>=2)
+      {
+        this.QesData.choices.splice(i,1)
+        if(this.QesData.max>this.QesData.choices.length){
+          this.QesData.max=this.QesData.choices.length
+        }
+        if(this.QesData.min>this.QesData.choices.length){
+          this.QesData.min=this.QesData.choices.length
+        }
       }
-      if(this.multiChoice.min>this.multiChoice.choices.length){
-        this.multiChoice.min=this.multiChoice.choices.length
+      else {
+        this.$message.warning("选项不可以少于2")
       }
     },
     add: function() {
-      this.multiChoice.choices.push("")
+      this.QesData.choices.push("")
     },
-    save: function() {
+    save() {
       let find = false;
-      for (let i = 0; i < this.multiChoice.choices.length; i++) {
-        for (let j = i + 1; j < this.multiChoice.choices.length; j++) {
-          if (this.multiChoice.choices[i]== this.multiChoice.choices[j] ) {
+      for (let i = 0; i < this.QesData.choices.length; i++) {
+        for (let j = i + 1; j < this.QesData.choices.length; j++) {
+          if (this.QesData.choices[i]== this.QesData.choices[j] ) {
             find = true; break;
           }
         }
@@ -178,12 +155,13 @@ export default {
       if(find){
         alert("不可以存在重复项")
       }else {
-        this.multiChoice.edit=0
-        this.$emit('saveMultiData',this.multiChoice)
+        console.log("子组件开始保存")
+        this.QesData.edit=0
+        this.$emit('SaveQes',this.QesData)
       }
     },
     edit: function() {
-      this.multiChoice.edit=1
+      this.QesData.edit=1
     }
   }
 }
@@ -196,24 +174,27 @@ export default {
   alignment: left;
 }
 .InnerDiv{
+  margin-top:20px;
   text-align: left;
   margin-left:10px;
 }
-.RightDiv{
-  text-align: right;
-  margin-left:70px;
-}
-.RightElement{
-  display: inline;
-  margin-left: 20px
-}
-.LeftDiv{
-  text-align: left;
-  margin-left:70px;
-  margin-bottom:20px ;
-}
+
+
 .el-divider-top{
   margin-top: 5px;
+}
+.describe{
+  font-size: 12px;
+  color: darkgrey
+}
+.Choice{
+  margin-left: 0px;margin-bottom:10px;display: block
+}
+.type{
+  font-size: 5px;
+  color: gray;
+  float: right;
+  margin-right: -50px;
 }
 </style>
 

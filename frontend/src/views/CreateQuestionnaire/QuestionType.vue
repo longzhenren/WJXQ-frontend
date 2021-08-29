@@ -9,11 +9,30 @@
     <div class="TypeList" >
       <ul ref="typelist">
         <li v-for="(item,index) in QuesTypes">
-          <div class="TypeIcon"><span class="searchLogo"></span></div>
+          <div class="TypeIcon" v-if="index===0">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
+          <div class="TypeIcon" v-if="index===1">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
+          <div class="TypeIcon" v-if="index===2">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
+          <div class="TypeIcon" v-if="index===3">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
+          <div class="TypeIcon" v-if="index===4">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
           <div class="type">
             <div class="title">{{ item.title }}</div>
             <div class="intro">{{ item.intro }}</div>
-            <div class="confirm" @click="CreateNewQues">创建</div>
+            <div class="confirm" @click="CreateNewQues(index+1)">创建</div>
           </div>
         </li>
 
@@ -65,6 +84,7 @@ export default {
         id: 0,
         title: '',
         Text: '',
+        Type: 1,
       },
 
       QuesTypes: [
@@ -73,26 +93,25 @@ export default {
           intro: '丰富题型，强大逻辑' +
               '问卷密码，红包抽奖',
         },
-        // {
-        //   title: '考试',
-        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
-        //
-        // },
-        // {
-        //   title: '投票',
-        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
-        //
-        // },
-        // {
-        //   title: '表单',
-        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
-        //
-        // },
-        // {
-        //   title: '测评',
-        //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
-        //
-        // },
+        {
+          title: '投票',
+          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+
+        },
+        {
+          title: '报名',
+          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+
+        },
+        {
+          title: '考试问卷',
+          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+
+        },
+        {
+          title: '疫情打卡问卷',
+          intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
+        },
         // {
         //   title: '评估',
         //   intro: '丰富题型，强大逻辑问卷密码，红包抽奖',
@@ -139,10 +158,10 @@ export default {
       })
     },
 
-    CreateNewQues(){
+    CreateNewQues(index){
 
       this.dialogFormVisible=true
-
+      this.QuesForm.Type = index
       // console.log(this.dialogFormVisible)
     },
 
@@ -159,12 +178,30 @@ export default {
     },
 
     Confirm(){
+      if (this.QuesForm.title==='' ){
+        this.$message({
+          showClose: true,
+          message: '请输入问卷标题',
+          type: 'error'
+        });
+        return
+      }
+      else if (this.QuesForm.Text === ''){
+        this.$message({
+          showClose: true,
+          message: '请输入问卷描述',
+          type: 'error'
+        });
+        return
+      }
+
       let pra = {
         Title: this.QuesForm.title,
         Text: this.QuesForm.Text,
         ShowNumber:false,
         Open:false,
         username: this.$store.state.personalInfo.username,
+        Type: this.QuesForm.Type
       }
       request({
         url: '/question/createQuestionnaire',
@@ -240,6 +277,7 @@ export default {
 .TypeList ul {
   display: grid;
   grid-template-rows: repeat(2,1fr);
+  /*grid-template-rows: 3fr 2fr;*/
   grid-template-columns: repeat(3,1fr);
   column-gap: 10px;
   row-gap: 10px;
@@ -258,14 +296,23 @@ export default {
   /*border: 1px solid #BDBDBD;*/
   display: grid;
   grid-template-rows: 55fr 45fr;
+  /*row-gap: 30px;*/
 }
 
 .TypeList ul li .TypeIcon {
   /*background-color: greenyellow;*/
   display: flex;
+  width: 30%;
+  height: 35%;
+  margin: 20px auto;
   justify-content: center;
   align-items: center;
   font-size: 50px;
+}
+
+.TypeList ul li .TypeIcon img {
+  width: 100%;
+  height: 100%;
 }
 
 .TypeList ul li .type {
@@ -305,13 +352,6 @@ export default {
 
 .TypeList ul li .type .confirm:hover {
   cursor: pointer;
-}
-span[class=searchLogo]::after{
-  font-size: 40px;
-  line-height: 20px;
-  vertical-align: middle;
-  font-family: icomoon;
-  content: '\e900';
 }
 
 
