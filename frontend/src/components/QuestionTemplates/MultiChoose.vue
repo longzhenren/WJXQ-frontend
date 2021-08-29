@@ -191,10 +191,10 @@ export default {
   margin-left: 0px;margin-bottom:10px;display: block
 }
 .type{
-  font-size: 5px;
-  color: gray;
-  float: right;
-  margin-right: -50px;
-}
+   font-size: 5px;
+   color: gray;
+   float: right;
+   margin-right: -50px;
+ }
 </style>
 

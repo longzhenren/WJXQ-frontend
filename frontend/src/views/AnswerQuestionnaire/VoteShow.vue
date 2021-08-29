@@ -4,7 +4,7 @@
       <h5>您的答卷已经提交，感谢您的参与！</h5>
 
       <!-- 问题部分 -->
-      <el-card class="box-card" v-for="(item, index) in Question">
+      <el-card class="box-card" v-if="Type===2" v-for="(item, index) in Question">
         <div  >
           <!-- 题号题干 -->
           <span style="font-weight: 800;font-size: 20px;color: gray">{{ item.Stem }}</span>
@@ -54,6 +54,7 @@ export default {
       id: this.$route.params.id,
       questionnaireID: 0,
       submissionID: 0,
+      Type:0,
       Title: "",
       ShowNumber: true,
       Text: "",
@@ -175,6 +176,7 @@ export default {
         this.ShowNumber = Questionnaire.ShowNumber;
         this.Text = Questionnaire.Text;
         this.questionnaireID = Questionnaire.id;
+        this.Type=Questionnaire.Type;
         //对this.Question[]赋值
         for (var i=0;i<Questionnaire.Question.length;i++) {
           var q = Questionnaire.Question[i];

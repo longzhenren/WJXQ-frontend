@@ -7,11 +7,11 @@
       <label v-if="QesData.Must==true" style="color: red;float:left;margin-left: -10px;" >*</label>
       <label  >{{ QesData.question }}</label>
       <label class="type">[投票多选题]</label>
-
     </div>
     <div style="margin-bottom: 20px">
       <label  class="describe"> {{ QesData.describe }} </label>
     </div>
+
   <el-checkbox-group v-model="QesData.radio" class="InnerDiv">
     <el-row :gutter="10" class="Choice" type="flex" align="top" justify="left"  v-for="(choice,i) in QesData.choices" >
       <el-col :span="12">

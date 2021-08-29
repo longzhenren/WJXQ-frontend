@@ -1,6 +1,11 @@
 <template>
   <div class="AnswerQuestionnaire">
     <MyMk v-if="myMkShow" :id="id"></MyMk>
+    <Time
+      :remainTime.default="this.ExamTime"
+      v-if="this.isExam"
+      style="position:fixed; top:60px; left:60px"
+    ></Time>
     <div class="content" v-if="state == 0">
       <!-- 问卷标题 -->
       <h3>{{ Title }}</h3>
@@ -71,7 +76,7 @@
           <el-input
             placeholder="回答区域"
             type="textarea"
-            v-model="item.Answer"
+            v-model="item.AnswerText"
           ></el-input>
         </div>
 
@@ -116,18 +121,18 @@
               type="flex"
               align="top"
               justify="left"
-              v-for="(choiceItem, i) in item.Choice"
+              v-for="(choice, i) in item.Choice"
             >
               <el-col :span="12">
-                <el-radio :label="choiceItem.id">
-                  {{ choiceItem.Text }}
+                <el-radio :label="choice.id">
+                  {{ choice.Text }}
                 </el-radio>
               </el-col>
-              <el-col :span="2" v-if="item.showAmount == true">
-                <label style="font-size: 12px">{{ choiceItem.Amount }}</label>
+              <el-col :span="2" v-if="item.ShowResultBeforeVote == true">
+                <label style="font-size: 12px">{{ 0 }}</label>
               </el-col>
-              <el-col :span="10" v-if="item.showRate == true">
-                <el-progress :percentage="choiceItem.Rate"></el-progress>
+              <el-col :span="10" v-if="item.ShowResultBeforeVote == true">
+                <el-progress :percentage="0"></el-progress>
               </el-col>
             </el-row>
           </el-radio-group>
@@ -152,23 +157,110 @@
                   {{ choice.Text }}
                 </el-checkbox>
               </el-col>
-              <el-col :span="2" v-if="item.showAmount == true">
-                <label style="font-size: 12px">{{ choice.Amount }}</label>
+              <el-col :span="2" v-if="item.ShowResultBeforeVote == true">
+                <label style="font-size: 12px">{{ 0 }}</label>
               </el-col>
-              <el-col :span="10" v-if="item.showRate == true">
-                <el-progress :percentage="choice.Rate"></el-progress>
+              <el-col :span="10" v-if="item.ShowResultBeforeVote == true">
+                <el-progress :percentage="0"></el-progress>
               </el-col>
             </el-row>
           </el-checkbox-group>
         </div>
 
         <!-- 报名单选 -->
-        <div class="RegisterSingleChoice" v-if="item.Type == 8"></div>
+        <div class="RegisterSingleChoice" v-if="item.Type == 8">
+          <el-radio-group v-model="item.RadioValue" style="width: 100%">
+            <el-row
+              :gutter="10"
+              type="flex"
+              align="top"
+              justify="left"
+              v-for="(choice, i) in item.Choice"
+            >
+              <el-col>
+                <el-radio
+                  v-if="choice.Times === 0"
+                  disabled
+                  class="Choice"
+                  :label="choice.id"
+                >
+                  {{ choice.Text }}
+                </el-radio>
+                <el-radio v-else :label="choice.id"> </el-radio>
+                <label style="font-size: 12px;color: #6E6E6E"
+                >剩余:{{ choice.Times }}
+                </label>
+              </el-col>
+            </el-row>
+          </el-radio-group>
+        </div>
         <!-- 报名多选 -->
-        <div class="RegisterMultiChoice" v-if="item.Type == 9"></div>
+        <div class="RegisterMultiChoice" v-if="item.Type == 9">
+          <el-checkbox-group v-model="item.CheckList">
+            <el-row
+              :gutter="10"
+              type="flex"
+              align="top"
+              justify="left"
+              v-for="(choice, i) in item.Choice"
+            >
+              <el-checkbox
+                v-if="choice.Times === 0"
+                disabled
+                :label="choice.id"
+                :key="choice.Text"
+              >
+              </el-checkbox>
+              <el-checkbox v-else :label="choice.id" :key="choice.Text">
+              </el-checkbox>
+              <label style="font-size: 12px;color: #6E6E6E"
+              >剩余:{{ choice.Times }}</label
+              >
+            </el-row>
+          </el-checkbox-group>
+        </div>
+        <!-- 考试单选 -->
+        <div class="ExamSingleChoice" v-if="item.Type == 10">
+          <el-radio-group v-model="item.RadioValue" style="width: 100%">
+            <el-row
+              :gutter="10"
+              type="flex"
+              align="top"
+              justify="left"
+              v-for="(choice, i) in item.Choice"
+            >
+              <el-col :span="24">
+                <el-radio :label="choice.id">{{ choice.Text }} </el-radio>
+              </el-col>
+            </el-row>
+          </el-radio-group>
+        </div>
+        <!-- 考试多选 -->
+        <div class="ExamMultiChoice" v-if="item.Type == 11">
+          <el-checkbox-group v-model="item.CheckList">
+            <el-row
+              :gutter="10"
+              type="flex"
+              align="top"
+              justify="left"
+              v-for="(choice, i) in item.Choice"
+            >
+              <el-col :span="24">
+                <el-checkbox
+                  :label="choice.id"
+                  :key="choice.Text"
+                >
+                </el-checkbox>
+              </el-col>
+            </el-row>
+          </el-checkbox-group>
+        </div>
+        <!-- 考试填空 -->
+        <div class="ExamFillBlank" v-if="item.Type == 12"></div>
       </el-card>
 
       <!-- 提交按钮 -->
+      <button @click="getQesInfo">here</button>
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
     <div class="bottom" v-if="state == 0">
@@ -182,10 +274,13 @@
 <script>
 import { request } from "../../network/request";
 import MyMk from "../../components/AnswerQuestionnaire/MyMk";
+import Time from "../../components/AnswerQuestionnaire/Time";
 export default {
   name: "AnswerQuestionnaire",
   data() {
     return {
+      isExam: false,
+      ExamTime: 0,
       isLogin: window.sessionStorage.getItem("isLogin"),
       myMkShow: false,
       ip: "",
@@ -208,6 +303,7 @@ export default {
   },
   components: {
     MyMk,
+    Time,
   },
   computed: {
     newQuestion() {
@@ -232,6 +328,20 @@ export default {
         query: {
           Mode: "preview",
         },
+      });
+    },
+    getQesInfo() {
+      //type6投票单选，type7投票多选
+      console.log(this.Question[0].id);
+      request({
+        url: "/submit/qesrep",
+        method: "post",
+        data: {
+          questionID: this.Question[0].id,
+        },
+      }).then((res) => {
+        console.log(this.Question[0].id);
+        console.log(res);
       });
     },
     getPosition(i) {
@@ -272,11 +382,13 @@ export default {
         console.log("自动保存", val);
       }
     }, 3000),
+    //保存答案
     save() {
       let q;
       for (q in this.Question) {
         let i = this.Question[q];
-        if (i.Type == 1 || i.Type == 6) {
+        //单选
+        if (i.Type == 1 || i.Type == 6 || i.Type == 8 || i.Type == 10) {
           request({
             url: "/submit/savans",
             method: "post",
@@ -286,9 +398,12 @@ export default {
               questionID: i.id,
               answerSelectionIDSet: [i.RadioValue],
             },
+          }).then((res) => {
+            console.log("savans-single", res);
           });
         }
-        if (i.Type == 2 || i.Type == 7)
+        //多选
+        if (i.Type == 2 || i.Type == 7 || i.Type == 9 || i.Type == 11)
           request({
             url: "/submit/savans",
             method: "post",
@@ -298,8 +413,11 @@ export default {
               questionID: i.id,
               answerSelectionIDSet: i.CheckList,
             },
+          }).then((res) => {
+            console.log("savans-multi", res);
           });
-        if (i.Type == 3)
+        //填空、定位
+        if (i.Type == 3 || i.Type == 12 || i.Type == 5)
           request({
             url: "/submit/savans",
             method: "post",
@@ -309,7 +427,10 @@ export default {
               questionID: i.id,
               answerText: i.AnswerText,
             },
+          }).then((res) => {
+            console.log("savans-blank", res);
           });
+        //打分
         if (i.Type == 4)
           request({
             url: "/submit/savans",
@@ -320,10 +441,13 @@ export default {
               questionID: i.id,
               answerScore: i.Score,
             },
+          }).then((res) => {
+            console.log("savans-score", res);
           });
         //console.log(i.id);
       }
     },
+    //点击按钮后提交
     submit() {
       this.save();
       request({
@@ -337,6 +461,7 @@ export default {
         console.log("总提交", res.data);
         if (res.data.code === -1) this.$message.warning("有必答题未做");
         else this.state = 2;
+        this.goVoteShow();//
       });
     },
     //排序
@@ -383,6 +508,7 @@ export default {
         var Questionnaire = res.data.Questionnaire;
         this.Title = Questionnaire.Title;
         this.ShowNumber = Questionnaire.ShowNumber;
+        this.Settings=Questionnaire.Settings;//
         this.Text = Questionnaire.Text;
         this.questionnaireID = Questionnaire.id;
         //存储题目数据并排序
@@ -473,8 +599,6 @@ export default {
               c.push({
                 id: q.Choice[i].id,
                 Text: q.Choice[i].Text,
-                Amount: 33,
-                Rate: 44,
               });
             this.Question.push({
               id: q.id,
@@ -485,8 +609,7 @@ export default {
               Number: q.Number,
               Choice: c,
               RadioValue: 0,
-              showAmount: true,
-              showRate: true,
+              ShowResultBeforeVote: q.ShowResultBeforeVote,
             });
           }
           if (q.Type == 7) {
@@ -496,8 +619,6 @@ export default {
               c.push({
                 id: q.Choice[i].id,
                 Text: q.Choice[i].Text,
-                Amount: 33,
-                Rate: 44,
               });
             this.Question.push({
               id: q.id,
@@ -510,8 +631,7 @@ export default {
               Number: q.Number,
               Choice: c,
               CheckList: [],
-              showAmount: true,
-              showRate: true,
+              ShowResultBeforeVote: q.ShowResultBeforeVote,
             });
           }
         }
@@ -523,13 +643,60 @@ export default {
           method: "post",
           headers: { "Content-Type": "application/json" },
           data: {
-            submitUID: this.ip,
+            ip: this.ip,
             questionnaireID: this.questionnaireID,
           },
         }).then((res) => {
+          console.log("crtsub", res);
           this.submissionID = res.data.submissionID;
           console.log("submissionID", this.submissionID);
         });
+        request({
+          url: "submit/getsub",
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          data: {
+            submissionID: this.submissionID,
+          },
+        }).then((res) => {
+          console.log("getsub", res);
+          //获取之前的提交
+          if (res.data.code === 0) {
+            let list = res.data.answerList;
+            for (let i = 0; i < list.length; i++) {
+              let ans = list[i];
+              for (let j = 0; j < this.Question.length; j++) {
+                if (this.Question[j].id === ans.answerid) break;
+              }
+              switch (this.Question[j].Type) {
+                case 1:
+                case 6:
+                case 8:
+                case 10:
+                  this.Question[j].RadioValue = ans.choiceIDList[0];
+                  break;
+                case 2:
+                case 7:
+                case 9:
+                case 11:
+                  this.Question[j].CheckList = ans.choiceIDList;
+                  break;
+                case 3:
+                case 12:
+                  this.Question[j].AnswerText = ans.answerText;
+                  break;
+                case 5:
+                  this.Question[j].Position = ans.answerText;
+                  break;
+                case 4:
+                  this.Question[j].Score = ans.answerScore;
+              }
+            }
+          }
+        });
+        if(this.qesId===undefined&&window.sessionStorage.getItem('isLogin')===null&&this.Settings.Login){
+          this.myMkShow=true;
+        }//
       })
       .catch((err) => {
         console.log(err);
@@ -543,7 +710,7 @@ export default {
   text-align: center;
   padding: 20px;
   width: 700px;
-  margin:30px auto;
+  margin: 30px auto;
   background-color: white;
 }
 .top {

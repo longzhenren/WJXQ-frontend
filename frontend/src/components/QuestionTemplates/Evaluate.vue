@@ -1,3 +1,6 @@
+
+
+
 <template>
 
   <div class="InnerDiv"  >
@@ -8,7 +11,7 @@
       <div >
         <label v-if="QesData.Must==true" style="color: red;float:left;margin-left: -10px;" >*</label>
         <label>{{ QesData.question }}</label>
-        <label class="type">[评分题]</label>
+        <label class="type">[评分题] </label>
         <div >
           <label  class="describe"> {{ QesData.describe }} </label>
         </div>

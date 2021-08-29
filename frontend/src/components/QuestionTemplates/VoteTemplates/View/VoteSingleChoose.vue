@@ -10,7 +10,7 @@
       <label class="type">[投票单选题]</label>
 
     </div>
-    <div >
+    <div style="margin-bottom: 20px">
       <label  class="describe"> {{ QesData.describe }} </label>
     </div>
     <el-radio-group v-model="QesData.radio" class="InnerDiv" style="width: 100%" >
@@ -169,6 +169,9 @@ export default {
   margin-left:10px;
 }
 
+.el-divider-top{
+  margin-top: 5px;
+}
 .describe{
   font-size: 12px;
   color: darkgrey

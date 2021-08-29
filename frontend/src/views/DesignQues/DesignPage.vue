@@ -56,6 +56,21 @@
             </el-collapse>
           </div>
 
+          <div v-else-if="Questionnaire.Type === 4">
+            <el-collapse v-model="activeName" v-for="(item,index) in ExamQuesTypeList">
+              <el-collapse-item :name="index" class="choices">
+                <template slot="title">
+                  <div class="title">
+                    <i class="el-icon-stopwatch"></i>
+                    {{ item.type }}</div>
+                </template>
+                <ul ref="choices">
+                  <li v-for="(i,idx) in item.details" @click="addNewQues(item.type,idx)">{{i}}</li>
+                </ul>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+
 
           <div v-else>
             <el-collapse
@@ -183,6 +198,16 @@
                           :father-data="item.subData"
                           :item-index="index"
                           @SaveQes="SaveQes($event,item)"></Position>
+
+                <ExamSingleChoose v-else-if="item.type==='ExamSingleChoose'" ref="child"
+                                  :father-data="item.subData"
+                                  :item-index="index"
+                                  @SaveQes="SaveQes($event,item)"></ExamSingleChoose>
+
+                <ExamMChoose v-else-if="item.type ==='ExamMChoose'" ref="child"
+                             :father-data="item.subData"
+                             :item-index="index"
+                             @SaveQes="SaveQes($event,item)"></ExamMChoose>
               </div>
 
 
@@ -289,6 +314,16 @@
                              :need-send-idx="editingQuestion.index"
                              ref="childEdit"></PositionEdit>
 
+              <ExamSingleChooseEdit v-else-if="editingQuestion.type === 'ExamSingleChoose'"
+                                    :father-data="editingQuestion.subData"
+                                    :need-send-idx="editingQuestion.index"
+                                    ref="childEdit"></ExamSingleChooseEdit>
+
+              <ExamMultiChooseEdit v-else-if="editingQuestion.type === 'ExamMChoose'"
+                                   :father-data="editingQuestion.subData"
+                                   :need-send-idx="editingQuestion.index"
+                                   ref="childEdit"></ExamMultiChooseEdit>
+
               <!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
 
               <!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
@@ -306,7 +341,7 @@
         </vue-scroll>
       </div>
     </div>
-
+    <Model :show="modelShow"  @hideModal="hideModal" :QesInfoModel="Questionnaire"/>
   </div>
 
 </template>
@@ -328,10 +363,16 @@ import VoteMChoose from "../../components/QuestionTemplates/VoteTemplates/View/V
 import VoteMultiChooseEdit from "../../components/QuestionTemplates/VoteTemplates/Edit/VoteMultiChooseEdit";
 import Position from "../../components/QuestionTemplates/BattleVirus/View/Position";
 import PositionEdit from "../../components/QuestionTemplates/BattleVirus/Edit/PositionEdit";
+import ExamSingleChoose from "../../components/QuestionTemplates/Exam/View/ExamSingleChoose";
+import ExamSingleChooseEdit from "../../components/QuestionTemplates/Exam/Edit/ExamSingleChooseEdit";
+import ExamMChoose from "../../components/QuestionTemplates/Exam/View/ExamMChoose";
+import ExamMultiChooseEdit from "../../components/QuestionTemplates/Exam/Edit/ExamMultiChooseEdit";
+import Model from "../../components/ManagementPagin/common/Model";
 
 export default {
   name: "DesignPage",
   components:{
+    Model,
     FillBlankEdit,
     EvaluateEdit,
     MultiChooseEdit,
@@ -346,11 +387,15 @@ export default {
     VoteMultiChooseEdit,
     Position,
     PositionEdit,
+    ExamSingleChoose,
+    ExamSingleChooseEdit,
+    ExamMChoose,
+    ExamMultiChooseEdit,
 
   },
   data(){
     return {
-
+      modelShow: false,
       // 当前编辑的题目
       editingQuestion: {
         type: '',
@@ -486,7 +531,20 @@ export default {
 
       // 考试问题列表
       ExamQuesTypeList: [
-
+        // 选择
+        {
+          type: '选择题',
+          details: [
+            '单选题',
+            '多选题',
+          ]
+        },
+        {
+          type: '填空',
+          details: [
+            '填空',
+          ]
+        },
       ],
 
       // 疫情打卡问卷
@@ -584,7 +642,10 @@ export default {
     bus.$emit('NewQuesDesigned',this.Questionnaire)
   },
   methods: {
-
+    // 关闭弹窗
+    hideModal() {
+      this.modelShow = false;
+    },
     Confirm(){
       this.Questionnaire.Text = this.QuesText;
       this.Questionnaire.title = this.QuesTitle;
@@ -599,13 +660,7 @@ export default {
 
     // 进行预览
     goPreview(){
-      let psthH = '/answer/'+this.Questionnaire.EncodeID
-      this.$router.push({
-        path: psthH,
-        query: {
-          Mode: 'preview',
-        }
-      })
+      this.modelShow=true
     },
 
     // 转到发布页面
@@ -621,39 +676,7 @@ export default {
 
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
-      // let child = this.$refs.childEdit;
-      // // console.log(chi)
-      // console.log(child)
-      // if (child !== undefined){
-      //   if (this.isCanChangeItem){
-      //     child.save();
-      //   }
-      // }
       bus.$emit('SaveEdited',this.editingQuestion.index)
-
-      // console.log(child.$children)
-      // if (child !== undefined){
-      //   for (let i = 0; i < child.length; i++) {
-      //     // console.log(child[i].singleChoice.edit);
-      //     let edit;
-      //     if (child[i].QesData!==undefined) {
-      //       edit= child[i].QesData.edit;
-      //     }
-      //     // else if ( child[i].multiChoice!==undefined){
-      //     //   edit= child[i].multiChoice.edit;
-      //     // }
-      //     // else if (child[i].fillBlank!==undefined){
-      //     //   edit= child[i].fillBlank.edit;
-      //     // }
-      //     // else if (child[i].evaluate!==undefined){
-      //     //   edit= child[i].evaluate.edit;
-      //     // }
-      //     if (edit === 1) {
-      //       child[i].save();
-      //     }
-      //   }
-      // }
-
       this.Questionnaire.title = this.QuesTitle;
       this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
@@ -823,7 +846,23 @@ export default {
         case 'Position' :
           type=5;
           break;
+        case 'ExamSingleChoose' :
+          type=10;
+          break;
+
+        case 'ExamMChoose' :
+          type=11;
+          break;
       }
+      // let TrueAnswer = null;
+      // if(item.subData.answer!==undefined) {
+      //   for (let i = 0; i < item.subData.answer.length; i++) {
+      //     if (item.subData.answer[i]){
+      //       TrueAnswer = item.subData.choices[i];
+      //     }
+      //   }
+      // }
+
       if (mode==='sendQuestion'){
         Question = {
           id: item.id===undefined?0:item.id,
@@ -836,7 +875,10 @@ export default {
           Must: item.subData.Must===undefined?false:item.subData.Must,
           Number: item.idx,
           Choice: [],
-
+          // TrueAnswer: TrueAnswer,
+          // Times: item.subData.score===undefined?null:item.subData.score,
+          HalfScore: item.subData.HalfRightScore===undefined?0:item.subData.HalfRightScore,
+          Score: item.subData.score===undefined?0:item.subData.score,
           Describe: item.subData.describe,
           username: this.$route.query.username
         }
@@ -852,6 +894,9 @@ export default {
           Must: item.subData.Must===undefined?false:item.subData.Must,
           Number: item.idx,
           Choice: [],
+          // TrueAnswer: TrueAnswer,
+          HalfScore: item.subData.HalfRightScore===undefined?0:item.subData.HalfRightScore,
+          Score: item.subData.score===undefined?0:item.subData.score,
           Describe: item.subData.describe,
         }
       }
@@ -859,13 +904,25 @@ export default {
       let choices = item.subData.choices;
       let describes = item.subData.describes;
       let level = item.subData.level;
+      let answer = item.subData.answer;
       // console.log(choices)
       if (choices!==undefined){
-        for (let i = 0; i <choices.length ; i++) {
-          let CItem = {
-            Text: choices[i],
+        if (answer!==undefined) {
+          for (let i = 0; i <choices.length ; i++) {
+            let CItem = {
+              Text: choices[i],
+              IsTrueAnswer: answer[i]
+            }
+            Question.Choice.push(CItem);
           }
-          Question.Choice.push(CItem);
+        }
+        else {
+          for (let i = 0; i <choices.length ; i++) {
+            let CItem = {
+              Text: choices[i],
+            }
+            Question.Choice.push(CItem);
+          }
         }
       }
       if (describes !== undefined && level !== undefined){
@@ -877,7 +934,7 @@ export default {
           Question.Choice.push(CItem);
         }
       }
-      console.log('Quesion',Question);
+      console.log('返回Quetsion',Question);
       return Question;
     },
 
@@ -893,7 +950,12 @@ export default {
         method: 'post',
         data: Question
       }).then(res=>{
-        this.$message.success("题目 "+ (item.idx+1) +" 保存成功")
+        if (res.data.Message === 'Success'){
+          this.$message.success("题目 "+ (item.idx+1) +" 保存成功")
+        }
+        else {
+          this.$message.warning("题目 "+ (item.idx+1) +" 保存失败")
+        }
       }).catch( err=> {
         console.log(err);
       })
@@ -995,11 +1057,6 @@ export default {
             }
             this.addNewQuestionToBackend(Opt,pra)
             // this.addNewQuesToQuesList(Opt);
-            break;
-
-          // 增加下拉菜单
-          case 2:
-            console.log('增加下拉菜单')
             break;
         }
       }
@@ -1108,6 +1165,60 @@ export default {
           this.addNewQuestionToBackend(Opt,pra)
         }
       }
+
+      else if (type === '选择题'){
+        switch (QuesNum) {
+          // 增加单选
+          case 0:
+            Opt = {
+              Stem: '单选题',
+              idx: this.QuesList.length,
+              isDraggable: true,
+              subData: {},
+              type: 'ExamSingleChoose',
+              id: 0,
+            }
+            pra = {
+              Questionnaire: this.QuesId,
+              Type: 1,
+              MinChoice: 1,
+              MaxChoice: 1,
+              Stem: Opt.Stem,
+              username: this.$route.query.username,
+              Number: Opt.idx,
+            }
+
+            this.addNewQuestionToBackend(Opt,pra)
+
+            // this.addNewQuesToQuesList(Opt);
+            break;
+
+          // 增加多选
+          case 1:
+            console.log('增加多选')
+            Opt = {
+              Stem: '多选题',
+              idx: this.QuesList.length,
+              isDraggable: true,
+              subData: {},
+              type: 'ExamMChoose'
+            }
+
+            pra = {
+              Questionnaire: this.QuesId,
+              Type: 2,
+              MinChoice: 1,
+              MaxChoice: 2,
+              Stem: Opt.Stem,
+              Number: Opt.idx,
+              username: this.$route.query.username,
+            }
+            this.addNewQuestionToBackend(Opt,pra)
+            // this.addNewQuesToQuesList(Opt);
+            break;
+        }
+      }
+
     },
 
     // 增加新题目,向后端请求题目id
@@ -1313,16 +1424,6 @@ export default {
     },
 
 
-    // 判断鼠标是否经过子组件
-    OverDrag(index,item){
-      item.isDraggable=false;
-    },
-
-
-    // 判断鼠标离开组件
-    LeaveDrag(index,item){
-      item.isDraggable=true;
-    },
 
     // 切换工具栏
     changeDesignTools(idx){
@@ -1442,7 +1543,32 @@ export default {
             for (let j = 0; j < questionItem.Choice.length; j++) {
               QuesInfo.choices.push(questionItem.Choice[j].Text);
             }
-            // console.log(QuesInfo)
+            break;
+
+          case 10:
+            type='ExamSingleChoose';
+            // console.log(questionItem.Describe)
+            QuesInfo ={
+              answer:[],
+              score:questionItem.Score,
+              id:"",
+              Number:questionItem.Number,
+              edit:0,
+              describe: questionItem.Describe,
+              question: questionItem.Stem,
+              choices: [],
+              radio: 0,
+              Must:questionItem.Must,
+            }
+
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.choices.push(questionItem.Choice[j].Text);
+            }
+
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.answer.push(questionItem.Choice[j].IsTrueAnswer);
+            }
+
             break;
           case 2 :
             type='multiChoose';
@@ -1460,6 +1586,33 @@ export default {
             for (let j = 0; j < questionItem.Choice.length; j++) {
               QuesInfo.choices.push(questionItem.Choice[j].Text);
             }
+            break;
+
+          case 11:
+            type='ExamMChoose';
+            // console.log(questionItem.Describe)
+            QuesInfo ={
+              answer:[],
+              score:questionItem.Score,
+              id:"",
+              Number:questionItem.Number,
+              edit:0,
+              HalfRightScore: questionItem.HalfScore,
+              describe: questionItem.Describe,
+              question: questionItem.Stem,
+              choices: [],
+              radio: 0,
+              Must:questionItem.Must,
+            }
+
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.choices.push(questionItem.Choice[j].Text);
+            }
+
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.answer.push(questionItem.Choice[j].IsTrueAnswer);
+            }
+            console.log('考试多选',QuesInfo)
             break;
           case 3 :
             type='fillBlank';

@@ -192,9 +192,6 @@
           <button @click="confirmAnswerTImeSetting">保存</button>
         </div>
       </div>
-
-
-
     </div>
 
     <div class="SpecialSetting" ref="SpecialSet">
@@ -264,7 +261,6 @@ export default {
       // 是否开启作答次数设置
       isNeedSetAnswerTimes: true,
 
-
       // 当前所处位置
       nowPos: 0,
 
@@ -327,15 +323,22 @@ export default {
         AnswerTime: 0,
         IPLimit: false,
         Login: false,
-        Reorder: false,
+        Reorder: null,
         Times: 1,
-        ShowResultBeforeVote: false,
       }
     }
 
   },
   mounted() {
-
+    this.Setting.StartTime=this.NowsQuestionnaire.Setting.StartTime;
+    this.Setting.DeadLine=this.NowsQuestionnaire.Setting.DeadLine;
+    this.Setting.AnswerTime=this.NowsQuestionnaire.Setting.AnswerTime;
+    this.Setting.IPLimit=this.NowsQuestionnaire.Setting.IPLimit;
+    this.Setting.Login=this.NowsQuestionnaire.Setting.Login;
+    if(this.NowsQuestionnaire.Type===2)
+      this.Setting.Times=this.NowsQuestionnaire.Setting.Times
+    else if(this.NowsQuestionnaire.Type===4)
+      this.Setting.Reorder=this.NowsQuestionnaire.Setting.Reorder
   },
   methods: {
     // 全部保存
@@ -461,7 +464,7 @@ export default {
       console.log(this.Setting);
       this.saveSettings()
     }
-  }
+  },
 }
 </script>
 

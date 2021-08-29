@@ -1,14 +1,19 @@
+
+
+
 <template>
 
   <div  class="InnerDiv" >
-    <div >
-      <label v-if="QesData.Must==true" style="color: red;float:left;margin-left: -10px;" >*</label>
+      <div >
+
+        <label v-if="QesData.Must==true" style="color: red;float:left;margin-left: -10px;" >*</label>
         <label  >{{ QesData.question }}</label>
         <label class="type">[单选题] </label>
       </div>
       <div >
         <label  class="describe"> {{ QesData.describe }} </label>
       </div>
+
     <el-radio-group v-model="QesData.radio" class="InnerDiv"  >
       <el-radio v-for="(choice,i) in QesData.choices" :label="QesData.choices[i]"
                 class="Choice"

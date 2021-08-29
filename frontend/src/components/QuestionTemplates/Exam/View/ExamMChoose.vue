@@ -60,6 +60,7 @@ export default {
         choices:["选项1","选项2"],
         radio: 0,
 
+        answer:[true,false],
         //settings
         score:1,
         edit:1,
