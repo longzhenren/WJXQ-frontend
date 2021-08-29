@@ -79,7 +79,6 @@ export default {
     }
   },
   methods: {
-
     // 修改问题列表需要展示的图表
     changeChartState(bool,index){
       // console.log(this.NeedShowQuestions)

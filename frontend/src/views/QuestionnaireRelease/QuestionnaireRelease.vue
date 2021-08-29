@@ -3,9 +3,15 @@
 <!--    侧边菜单-->
     <div class="releaseMenu">
       <ul class="menuItems">
+        <li class="menuItem"
+            :class="{horzontalActive: $store.state.leftMenuCurrent===2}"
+            @click="BackToHome">
+          <span class="homeLogo"></span>
+          <div>返回首页</div>
+        </li>
         <li class="menuItem" @click="backToDesign">
           <span class="backLogo"></span>
-          <div>返回设计页面</div>
+          <div>返回设计</div>
         </li>
 
         <li class="menuItem"
@@ -22,12 +28,7 @@
 <!--          <div>问卷发送</div>-->
 <!--        </li>-->
 
-        <li class="menuItem"
-            :class="{horzontalActive: $store.state.leftMenuCurrent===2}"
-            @click="BackToHome">
-          <span class="homeLogo"></span>
-          <div>返回首页</div>
-        </li>
+
 
 <!--        <li class="menuItem">-->
 
@@ -45,7 +46,7 @@
           <span v-if="index===0" class="stateLogo"></span>
           <span v-if="index===1" class="prevLogo"></span>
           <span v-if="index===2" class="setLogo"></span>
-          <div>{{ item.title }}</div>
+          <div style=" margin-top: -10px;font-size:13px">{{ item.title }}</div>
         </li>
       </ul>
 
@@ -59,7 +60,7 @@
 <!--        </li>-->
 <!--      </ul>-->
 
-      <div class="quesTitle" @click="ShowQues">
+      <div class="quesTitle">
         {{DesignedQuestionnaire.Title}}
       </div>
     </div>
@@ -92,7 +93,7 @@
             <div class="generateLink">
               <div class="title">问卷链接</div>
               <div class="quesLink">
-                <input id="links" type="text" v-model="QuesLink">
+                <input id="links" type="text" v-model="QuesLink" style="width: 400px;">
                 <div class="operations">
                   <button @click="copyLink" class="button-3d">复制</button>
                   <button @click="openQuesLink" class="button-3d">打开</button>
@@ -117,11 +118,6 @@
 
 
         <div class="check">
-<!--          查看历史记录-->
-          <div class="checkHistory">
-            <span>发布记录</span>
-            <span>可以查看问卷的发布历史记录</span>
-          </div>
 
 <!--          导出-->
           <div class="export" @click="exportDocument">
@@ -308,17 +304,17 @@ export default {
       })
     },
 
-    ShowQues(){
-      console.log(this.DesignedQuestionnaire)
-      console.log(this.QuesId)
-      this.$router.push({
-        path: '/dataanalysis',
-        query: {
-          id: this.QuesId,
-          username: this.$route.query.username
-        }
-      });
-    },
+    // ShowQues(){
+    //   console.log(this.DesignedQuestionnaire)
+    //   console.log(this.QuesId)
+    //   this.$router.push({
+    //     path: '/dataanalysis',
+    //     query: {
+    //       id: this.QuesId,
+    //       username: this.$route.query.username
+    //     }
+    //   });
+    // },
 
     // 打开问卷链接
     openQuesLink(){
@@ -512,9 +508,9 @@ export default {
     background-color: #F2F2F2;
   }
   .releaseMenu {
-    width: 8%;
+    width: 80px;
     height: 100%;
-    background-color: #08298A;
+    background-color: #2a3a4a;
     position: fixed;
     top: 0;
     left: 0;
@@ -530,17 +526,18 @@ export default {
     height: 13vh;
     /*background-color: pink;*/
     width: 100%;
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 12px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color: #BDBDBD;
-    margin-bottom: 20px;
   }
 
   .releaseMenu .menuItems .menuItem:hover {
     cursor: pointer;
+    background-color: #3f4f5f;
   }
 
   .releaseMenu .menuItems .menuItem span {
@@ -551,10 +548,10 @@ export default {
 
   .topNav {
     width: 100%;
-    height: 10%;
+    height: 8%;
     position: fixed;
     background-color: white;
-    box-shadow: 0 0 10px rgba(0,0,0,.5);
+    box-shadow: 0 0 5px rgba(0,0,0,.2);
     top: 0;
     left: 0;
     z-index: 4;
@@ -576,7 +573,7 @@ export default {
   }
 
   .topNav ul {
-    width: 30%;
+    width: 20%;
     height: 100%;
     /*background-color: pink;*/
     margin-left: 250px;
@@ -586,10 +583,10 @@ export default {
 
   .topNav ul li {
     height: 100%;
-    width: 33%;
+    width: 25%;
     /*background-color: white;*/
     /*color: #848484;*/
-    font-weight: 600;
+    font-weight: 500;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -601,7 +598,7 @@ export default {
   }
 
   .topNav ul li span {
-    font-size: 40px;
+    font-size: 20px;
     margin-bottom: 10px;
   }
 
@@ -614,16 +611,15 @@ export default {
 
 
    .horzontalActive {
-     background-color: #088A08;
-     color: #D8D8D8;
+     background-color: #4f5f6f;
+     color: white;
    }
 
    .release {
-     background-color: white;
-     width: 50%;
+     width: 45%;
      height: 80%;
      position: absolute;
-     left: 314px;
+     left: 27%;
      /*left: calc(50% - 269px);*/
      top: 16%;
      /*margin: 0 auto;*/
@@ -632,15 +628,6 @@ export default {
   .release>div {
     width: 100%;
     height: 100%;
-  }
-
-
-  .release .status {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-
   }
 
   .release .status div:first-child {
@@ -652,7 +639,8 @@ export default {
     justify-content: start;
     padding-left: 10% ;
     align-items: center;
-    box-shadow: 0 0 6px rgba(2,2,2,.5);
+    margin-bottom: 20px;
+    box-shadow: 0 0 6px rgba(2,2,2,.1);
   }
   .release .status div:first-child button {
     border: 0;
@@ -670,16 +658,6 @@ export default {
     background-color: #FFBF00;
   }
 
-  /*.release .status .warning {*/
-  /*  background-color: white;*/
-  /*  width: 100%;*/
-  /*  height: 25%;*/
-  /*  padding: 20px 30px;*/
-  /*  !*padding: 30px 0;*!*/
-  /*  text-align: left;*/
-  /*  color: #A4A4A4;*/
-  /*}*/
-
   .release .status .link div {
     box-shadow: none;
   }
@@ -687,20 +665,12 @@ export default {
     background-color: white;
     width: 100%;
     height: 50%;
-    box-shadow: 0 0 10px rgba(0,0,0,.5);
+    box-shadow: 0 0 10px rgba(0,0,0,.1);
     display: flex;
     flex-direction: column;
+    margin-bottom: 20px;
     justify-content: space-between;
     padding: 30px 20px;
-  }
-
-  .release .status .check .checkHistory {
-    box-shadow: none;
-      display: flex;
-      height: 70px;
-      flex-direction: column;
-      justify-content: space-around;
-      align-items: start;
   }
 
   .release .status .check .export {
@@ -712,16 +682,6 @@ export default {
     justify-content: space-around;
     align-items: start;
   }
-
-  /*.release .status .check div {*/
-  /*  box-shadow: none;*/
-  /*  !*background-color: pink;*!*/
-  /*  display: flex;*/
-  /*  height: 70px;*/
-  /*  flex-direction: column;*/
-  /*  justify-content: space-around;*/
-  /*  align-items: start;*/
-  /*}*/
 
   .release .settings {
     background-color: #F2F2F2;
@@ -749,9 +709,10 @@ export default {
     width: 100%;
     /*background-color: pink;*/
     height: 180px;
-    box-shadow: 0 0 5px rgba(0,0,0,.5);
+    box-shadow: 0 0 5px rgba(0,0,0,.1);
     display: flex;
     flex-direction: row;
+    margin-bottom: 20px;
     justify-content: space-between;
     padding-left: 0;
   }
@@ -760,7 +721,7 @@ export default {
     width: 100%;
     /*background-color: pink;*/
     height: 180px;
-    box-shadow: 0 0 5px rgba(0,0,0,.5);
+    box-shadow: 0 0 5px rgba(0,0,0,.1);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -781,13 +742,9 @@ export default {
   }
 
   .release .status  .link .generateLink {
-    /*background-color: blue;*/
-    width: 70%;
+    background-color: white;
+    width: 80%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    /*padding-left: 20px;*/
     box-sizing: border-box;
   }
 
@@ -834,40 +791,17 @@ export default {
   }
 
   .release .status  .link .generateLink .quesLink .operations button {
-    /*border: 0;*/
-    /*outline: none;*/
-    /*background-color: transparent;*/
-    /*!*background-image: linear-gradient(to left,#A9D0F5,#58FAF4);*!*/
     width: 20%;
     height: 80%;
     background-color: rgba(46,154,254,.5);
     color: white;
-    /*border-radius: 999999999px;*/
-    /*color: #01DF74;*/
     font-weight: 600;
   }
 
 
-  /*.release .status  .link .generateLink .quesLink .operations button:hover {*/
-  /*  !*background-image: linear-gradient(to left,,#58FAF4);*/
-  /*  *!*/
-  /*  cursor: pointer;*/
-  /*  !*background-image: none;*!*/
-  /*  !*background-color: white;*!*/
-  /*  !*box-shadow: 0 0 4px rgba(0,0,0,.2);*!*/
-  /*  !*color: #58ACFA;*!*/
-  /*}*/
-
-
   .release .status  .link .erweima {
-    /*background-color: red;*/
-    width: 60%;
+    width: 38%;
     height: 100%;
-    /*display: flex;*/
-    /*flex-direction: column;*/
-    /*justify-content: space-between;*/
-    /*align-items: center;*/
-    /*margin-left: 5px;*/
     margin-left: 0;
   }
 
@@ -887,9 +821,9 @@ export default {
     display: flex;
     padding: 0;
     justify-content: center;
+    margin-left: -50px;
     align-items: center;
     border: 2px solid #f2f2f2;
-    margin: 0;
   }
 
   .backLogo{

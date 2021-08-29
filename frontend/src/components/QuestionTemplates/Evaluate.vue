@@ -9,8 +9,9 @@
 
 
       <div >
-        <label v-if="QesData.Must==true" style="color: red" >*</label>
-        <label>评分题 - {{ QesData.question }}</label>
+        <label v-if="QesData.Must==true" style="color: red;float:left;margin-left: -10px;" >*</label>
+        <label>{{ QesData.question }}</label>
+        <label class="type">[评分题] </label>
         <div >
           <label  class="describe"> {{ QesData.describe }} </label>
         </div>
@@ -166,6 +167,12 @@ export default {
 }
 .Choice{
   margin-left: 0px;margin-bottom:10px;display: block
+}
+.type{
+  font-size: 5px;
+  color: gray;
+  float: right;
+  margin-right: -50px;
 }
 </style>
 

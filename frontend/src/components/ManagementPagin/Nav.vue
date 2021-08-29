@@ -1,6 +1,6 @@
 <template>
   <div class="dev">
-    <button id="backBtn" @click="backClicked">返回首页</button>
+    <img id="logo" @click="backClicked" src="../../assets/imgs/logoPlanet.png">
     <el-popover
       placement="top-start"
       width="180"
@@ -76,14 +76,17 @@ export default {
   top: 5px;
   right: 15%;
 }
-#backBtn{
+#logo{
   display: block;
   position: absolute;
-  width: 100px;
-  height: 40px;
+  top: 2px;
+  width: 46px;
+  height: 46px;
   border-radius: 20px;
-  top: 5px;
   left: 15%;
+}
+#logo:hover{
+  cursor: pointer;
 }
 span[class=userLogo]::after{
   position: absolute;

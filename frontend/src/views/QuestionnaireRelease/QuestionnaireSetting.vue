@@ -25,9 +25,9 @@
       </ul>
     </div>
 
-    <div class="saveAll" @click="saveAll">
-      <MyButton :title="'全部保存'" ></MyButton>
-    </div>
+<!--    <div class="saveAll" @click="saveAll">-->
+<!--      <MyButton :title="'全部保存'" ></MyButton>-->
+<!--    </div>-->
 
 
     <div class="TimeSet" ref="TimeSet">
@@ -192,9 +192,6 @@
           <button @click="confirmAnswerTImeSetting">保存</button>
         </div>
       </div>
-
-
-
     </div>
 
     <div class="SpecialSetting" ref="SpecialSet">
@@ -264,7 +261,6 @@ export default {
       // 是否开启作答次数设置
       isNeedSetAnswerTimes: true,
 
-
       // 当前所处位置
       nowPos: 0,
 
@@ -327,24 +323,24 @@ export default {
         AnswerTime: 0,
         IPLimit: false,
         Login: false,
-        Reorder: false,
+        Reorder: null,
         Times: 1,
-        ShowResultBeforeVote: false,
       }
     }
 
   },
   mounted() {
-    this.adjust()
+    this.Setting.StartTime=this.NowsQuestionnaire.Setting.StartTime;
+    this.Setting.DeadLine=this.NowsQuestionnaire.Setting.DeadLine;
+    this.Setting.AnswerTime=this.NowsQuestionnaire.Setting.AnswerTime;
+    this.Setting.IPLimit=this.NowsQuestionnaire.Setting.IPLimit;
+    this.Setting.Login=this.NowsQuestionnaire.Setting.Login;
+    if(this.NowsQuestionnaire.Type===2)
+      this.Setting.Times=this.NowsQuestionnaire.Setting.Times
+    else if(this.NowsQuestionnaire.Type===4)
+      this.Setting.Reorder=this.NowsQuestionnaire.Setting.Reorder
   },
   methods: {
-    // 调整数据格式
-    adjust(){
-      console.log(this.NowsQuestionnaire);
-      let settings = this.NowsQuestionnaire.settings;
-    },
-
-
     // 全部保存
     saveAll(){
       this.confirmTimeSetting();
@@ -468,7 +464,7 @@ export default {
       console.log(this.Setting);
       this.saveSettings()
     }
-  }
+  },
 }
 </script>
 
@@ -543,7 +539,7 @@ export default {
     /*height: 30vh ;*/
     padding: 0 10px;
     background-color: white;
-    box-shadow: 0 0 5px rgba(0,0,0,.4);
+    box-shadow: 0 0 5px rgba(0,0,0,.1);
   }
 
   .title {
@@ -584,7 +580,7 @@ export default {
   .saveTime {
     /*background-color: #42b983;*/
     width: 100%;
-    height: 5vh;
+    height: 8vh;
     display: flex;
     align-items: center;
     margin-top: 10px;
@@ -594,7 +590,7 @@ export default {
     /*border: 0;*/
     outline: none;
     width: 50px;
-    height: 3vh;
+    height: 4vh;
     border-radius: 0;
     border: 1px solid #00BFFF;
     background-color: white;
@@ -668,7 +664,7 @@ export default {
     padding: 0 10px;
     margin-top: 30px;
     background-color: white;
-    box-shadow: 0 0 5px rgba(0,0,0,.4);
+    box-shadow: 0 0 5px rgba(0,0,0,.1);
   }
 
   .SpecialSetting {
@@ -677,7 +673,7 @@ export default {
     margin-top: 30px;
     margin-bottom: 30px;
     background-color: white;
-    box-shadow: 0 0 5px rgba(0,0,0,.4);
+    box-shadow: 0 0 5px rgba(0,0,0,.1);
   }
 
   .container {

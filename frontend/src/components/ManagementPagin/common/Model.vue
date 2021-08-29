@@ -1,9 +1,9 @@
 <template>
-  <div class="modal-bg" v-show="show">
+  <div class="modal-bg" v-if="show">//我曹，最开始用成了v-show，不是动态了，人搞傻b了,以后不再用v-show了
     <div class="bg" @click="bgClicked"></div>
     <div class="modal-container">
       <div class="modal-main">
-        <AnswerQuestionnaire :qesId="QesInfo.EncodeID"></AnswerQuestionnaire>
+        <AnswerQuestionnaire :qesId="QesInfoModel.EncodeID"></AnswerQuestionnaire>
       </div>
       <div class="modal-footer">
         <button @click="close">确 定</button>
@@ -20,7 +20,7 @@ export default{
     return {}
   },
   props: {
-    QesInfo:Object,
+    QesInfoModel:Object,
     show: {    // 控制弹窗展示
       type: Boolean,
       default: false,
@@ -39,6 +39,7 @@ export default{
   components:{
     AnswerQuestionnaire,
   },
+
 }
 </script>
 <style>
