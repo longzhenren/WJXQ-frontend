@@ -77,9 +77,10 @@
         <div class="disreleasable" v-else>
           此问卷还未设计完成,如果准备就绪,您可以
           <button @click="releaseMyQues">开启问卷</button>
+          或者现在<button @click="getLink">获取链接</button>
         </div>
 
-          <div class="link" >
+          <div class="link" v-if="isGetLink">
             <div class="erweima">
 <!--              <div class="intro">点击二维码即可下载分享</div>-->
               <div class="code">
@@ -102,16 +103,16 @@
             </div>
           </div>
 
-<!--        <div class="warning" v-else>-->
-<!--          <div class="linksWarning">-->
-<!--            问卷还未发布，发布后才可获取问卷链接-->
-<!--          </div>-->
+        <div class="warning" v-else>
+          <div class="linksWarning">
+            问卷还未发布，发布后才可获取问卷链接
+          </div>
 
-<!--          <div class="tims">-->
-<!--            根据中国相关法规和主管部门要求，不允许发布与政治、军事、宗教，信仰，民族，人权、民主、国家主权、国家统一、外交事件 等相关的 敏感话题调查，请您谅解！-->
-<!--          </div>-->
+          <div class="tims">
+            根据中国相关法规和主管部门要求，不允许发布与政治、军事、宗教，信仰，民族，人权、民主、国家主权、国家统一、外交事件 等相关的 敏感话题调查，请您谅解！
+          </div>
 
-<!--        </div>-->
+        </div>
 
 
 
@@ -175,6 +176,8 @@ export default {
       // 测试用链接
       TestLink: '',
 
+      // 是否获取链接
+      isGetLink:false,
 
       //需要发送得到的问卷id
       QuesId: 0,
@@ -214,6 +217,10 @@ export default {
     }
   },
   methods: {
+    getLink(){
+      this.isGetLink = true;
+    },
+
     // 进行预览
     goPreview(){
       let psthH = '/answer/'+this.DesignedQuestionnaire.EncodeID
