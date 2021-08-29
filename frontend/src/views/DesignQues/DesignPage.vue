@@ -859,6 +859,14 @@ export default {
         case 'Position' :
           type=5;
           break;
+        case 'ExamSingleChoose' :
+          type=1;
+          break;
+
+        case 'ExamMChoose' :
+          type=2;
+          break;
+
       }
       if (mode==='sendQuestion'){
          Question = {
