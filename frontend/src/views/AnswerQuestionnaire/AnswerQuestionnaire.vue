@@ -260,7 +260,6 @@
       </el-card>
 
       <!-- 提交按钮 -->
-      <button @click="getQesInfo">here</button>
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
     <div class="bottom" v-if="state == 0">
@@ -328,20 +327,6 @@ export default {
         query: {
           Mode: "preview",
         },
-      });
-    },
-    getQesInfo() {
-      //type6投票单选，type7投票多选
-      console.log(this.Question[0].id);
-      request({
-        url: "/submit/qesrep",
-        method: "post",
-        data: {
-          questionID: this.Question[0].id,
-        },
-      }).then((res) => {
-        console.log(this.Question[0].id);
-        console.log(res);
       });
     },
     getPosition(i) {
