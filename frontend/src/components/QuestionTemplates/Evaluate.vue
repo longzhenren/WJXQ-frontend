@@ -37,12 +37,7 @@ import bus from "../../assets/utils/bus";
 
 export default {
   props:{
-    FatherData: {
-      type: Object,
-      default(){
-        return {}
-      }
-    },
+    FatherData: Object,
     ItemIndex: Number,
   },
   data () {
@@ -95,29 +90,24 @@ export default {
     },
   },
   created() {
-    bus.$on('saveEvaluateData',this.saveData)
+    bus.$on('SaveData',this.saveData)
+    bus.$on('changeData',this.changeData)
+  },
+  beforeDestroy(){
+    bus.$off('SaveData',this.saveData)
+    bus.$off('changeData',this.changeData)
   },
   methods: {
     // 保存数据
     saveData(QesData,index){
-      // console.log(index)
-      // console.log(this.QesData.Number)
+      console.log("要保存的题号："+index)
+      console.log("本体题号:"+this.QesData.Number)
       if (index===this.ItemIndex){
         console.log(index)
         console.log(this.QesData)
         this.QesData = QesData
         this.save()
       }
-    },
-
-    del:function (i){
-      this.QesData.describes.splice(i,1)
-      this.QesData.level.splice(i,1)
-    },
-    add: function() {
-      this.QesData.describes.push("")
-      this.QesData.level.push((this.QesData.level.length+1).toString())
-      this.QesData.score=null
     },
     save: function() {
       let find = false;

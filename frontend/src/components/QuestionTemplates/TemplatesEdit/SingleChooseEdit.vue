@@ -144,7 +144,7 @@ export default {
       handler(newData,oldData){
 
         console.log("同步ing"+this.needSendIdx)
-        bus.$emit('changeSingleData',this.QesData,this.needSendIdx)
+        bus.$emit('changeData',this.QesData,this.needSendIdx)
       },
       deep: true
 
@@ -190,7 +190,7 @@ export default {
       }
         // this.$emit('saveSingleData',this.QesData)
         console.log("编辑保存"+this.needSendIdx);
-        bus.$emit('SaveSingleData',this.QesData,this.needSendIdx)
+        bus.$emit('SaveData',this.QesData,this.needSendIdx)
 
     },
     edit: function() {
