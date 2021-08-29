@@ -39,13 +39,18 @@ import bus from "../../../../assets/utils/bus";
 
 export default {
   props:{
-    FatherData: Object,
+    FatherData: {
+      type:Object,
+      default(){
+        return {}
+      }
+    },
     ItemIndex: {
-      type: Number,
+      type:Number,
       default() {
         return 0;
       }
-    }
+    },
   },
   data () {
     return {

@@ -38,7 +38,22 @@
                     {{ item.type }}</div>
                 </template>
                 <ul ref="choices">
-                  <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
+                  <li v-for="(i,idx) in item.details" @click="addNewQues(item.type,idx)">{{i}}</li>
+                </ul>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+
+          <div v-else-if="Questionnaire.Type === 5">
+            <el-collapse v-model="activeName" v-for="(item,index) in AntiVirus">
+              <el-collapse-item :name="index" class="choices">
+                <template slot="title">
+                  <div class="title">
+                    <i class="el-icon-stopwatch"></i>
+                    {{ item.type }}</div>
+                </template>
+                <ul ref="choices">
+                  <li v-for="(i,idx) in item.details" @click="addNewQues(item.type,idx)">{{i}}</li>
                 </ul>
               </el-collapse-item>
             </el-collapse>
@@ -57,7 +72,7 @@
                   </div>
                 </template>
                 <ul ref="choices">
-                  <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
+                  <li v-for="(i,idx) in item.details" @click="addNewQues(item.type,idx)">{{i}}</li>
                 </ul>
 
               </el-collapse-item>
@@ -67,7 +82,6 @@
 
           <div class="choicesPreview" ref="choicesPreview">
             <div class="arrow"></div>
-            题目预览
             <div>
               <SingleChoose v-if="ItemPreviewType==='singleChoice'" ref="child"></SingleChoose>
 
@@ -78,6 +92,8 @@
               <Evaluate v-else-if="ItemPreviewType==='evaluate'" ref="child"></Evaluate>
 
               <VoteSingleChoose v-else-if="ItemPreviewType==='VoteSingleChoose'" ref="child"></VoteSingleChoose>
+
+              <Position v-else-if="ItemPreviewType==='Position'" ref="child"></Position>
             </div>
           </div>
 
@@ -165,6 +181,11 @@
                                :father-data="item.subData"
                                :item-index="index"
                                @SaveQes="SaveQes($event,item)"></VoteMChoose>
+
+                  <Position v-else-if="item.type==='Position'" ref="child"
+                      :father-data="item.subData"
+                      :item-index="index"
+                      @SaveQes="SaveQes($event,item)"></Position>
                 </div>
 
 
@@ -253,6 +274,11 @@
                                      :need-send-idx="editingQuestion.index"
                                      ref="childEdit"></VoteMultiChooseEdit>
 
+                <PositionEdit  v-else-if="editingQuestion.type === 'Position'"
+                              :father-data="editingQuestion.subData"
+                              :need-send-idx="editingQuestion.index"
+                              ref="childEdit"></PositionEdit>
+
 <!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
 
 <!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
@@ -310,6 +336,8 @@ import VoteSingleChooseEdit from "../../components/QuestionTemplates/VoteTemplat
 import VoteSingleChoose from "../../components/QuestionTemplates/VoteTemplates/View/VoteSingleChoose";
 import VoteMChoose from "../../components/QuestionTemplates/VoteTemplates/View/VoteMChoose";
 import VoteMultiChooseEdit from "../../components/QuestionTemplates/VoteTemplates/Edit/VoteMultiChooseEdit";
+import Position from "../../components/QuestionTemplates/BattleVirus/View/Position";
+import PositionEdit from "../../components/QuestionTemplates/BattleVirus/Edit/PositionEdit";
 
 export default {
   name: "DesignPage",
@@ -326,6 +354,9 @@ export default {
     VoteSingleChooseEdit,
     VoteMChoose,
     VoteMultiChooseEdit,
+    Position,
+    PositionEdit,
+
   },
   data(){
     return {
@@ -415,7 +446,6 @@ export default {
           details: [
               '单选',
               '多选',
-              '下拉',
           ]
         },
         {
@@ -441,7 +471,6 @@ export default {
           details: [
             '单选',
             '多选',
-            '下拉',
           ]
         },
         {
@@ -470,6 +499,35 @@ export default {
 
       ],
 
+      // 疫情打卡问卷
+      AntiVirus: [
+        // 选择
+        {
+          type: '选择',
+          details: [
+            '单选',
+            '多选',
+          ]
+        },
+        {
+          type: '填空',
+          details: [
+            '填空',
+          ]
+        },
+        {
+          type: '评分',
+          details: [
+            '评价',
+          ]
+        },
+        {
+          type: '获取定位',
+          details: [
+            '获取定位',
+          ],
+        }
+      ],
 
       ShowNum: 0,
 
@@ -573,15 +631,15 @@ export default {
 
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
-      let child = this.$refs.childEdit;
-      // console.log(chi)
-      console.log(child)
-      if (child !== undefined){
-        if (child.QesData.edit === 0 ){
-          child.save();
-        }
-
-      }
+      // let child = this.$refs.childEdit;
+      // // console.log(chi)
+      // console.log(child)
+      // if (child !== undefined){
+      //   if (this.isCanChangeItem){
+      //     child.save();
+      //   }
+      // }
+      bus.$emit('SaveEdited',this.editingQuestion.index)
 
       // console.log(child.$children)
       // if (child !== undefined){
@@ -670,6 +728,7 @@ export default {
       // console.log(choices)
       let timer=null;
       let choicesPreview = this.$refs.choicesPreview;
+      let self = this
       for (let i = 0; i < choices.length; i++) {
         let choice = choices[i];
 
@@ -677,6 +736,7 @@ export default {
         let li = choice.children;
         for (let j = 0; j < li.length; j++) {
           let liElement = li[j];
+          // console.log('i:',i,'j:',j)
 
           // console.log(liElement)
           // console.log(this.ItemPreviewType)
@@ -684,30 +744,44 @@ export default {
             if (i===0 ){
               switch (j) {
                 case 0:
-                  this.ItemPreviewType = 'singleChoice';
+                  self.ItemPreviewType = 'singleChoice';
                   break;
                 case 1:
-                  this.ItemPreviewType = 'multiChoose';
+                  self.ItemPreviewType = 'multiChoose';
                   break;
               }
             }
 
             else if (i===1){
-              this.ItemPreviewType = 'fillBlank';
+              self.ItemPreviewType  = 'fillBlank';
             }
             else if (i===2){
-              this.ItemPreviewType = 'evaluate';
+              self.ItemPreviewType  = 'evaluate';
             }
             else if (i===3){
-              switch (j) {
-                case 0:
-                  this.ItemPreviewType = 'VoteSingleChoose';
-                  break;
-                  // case 1:
-                  //   this.ItemPreviewType = 'multiChoose';
-                  //   break;
+              if (self.Questionnaire.Type === 2){
+                switch (j) {
+                  case 0:
+                    self.ItemPreviewType  = 'VoteSingleChoose';
+                    break;
+                    case 1:
+                      this.ItemPreviewType = 'VoteMultiChoose';
+                      break;
+                }
               }
+              else if (self.Questionnaire.Type === 5){
+                switch (j) {
+                  case 0:
+                    self.ItemPreviewType  = 'Position';
+                    break;
+                    // case 1:
+                    //   this.ItemPreviewType = 'multiChoose';
+                    //   break;
+                }
+              }
+
             }
+            // console.log(self.ItemPreviewType )
             let top = liElement.offsetTop;
             timer = setTimeout(function () {
               choicesPreview.style.top = top+'px';
@@ -754,6 +828,10 @@ export default {
 
         case 'VoteMultiChoose' :
           type=7;
+          break;
+
+        case 'Position' :
+          type=5;
           break;
       }
       if (mode==='sendQuestion'){
@@ -812,6 +890,8 @@ export default {
       console.log('Quesion',Question);
       return Question;
     },
+
+
     modifyQuestionSuccess(item){
       // console.log("aaa")
       // console.log(item)
@@ -872,10 +952,11 @@ export default {
 
     // 增加题目
     addNewQues(type,QuesNum){
+      console.log(type)
       let Opt = {};
       let  pra;
       // 增加选择题
-      if (type===0){
+      if (type==='选择'){
         switch (QuesNum) {
           // 增加单选
           case 0:
@@ -934,7 +1015,7 @@ export default {
       }
 
       // 增加填空题
-      else if (type===1){
+      else if (type==='填空'){
         Opt = {
           Stem: '填空题标题',
           idx: this.QuesList.length,
@@ -955,7 +1036,7 @@ export default {
         // this.addNewQuesToQuesList(Opt);
       }
       // 增加评分题
-      else if (type===2){
+      else if (type==='评分'){
         Opt = {
           Stem: '评分题标题',
           idx: this.QuesList.length,
@@ -975,7 +1056,8 @@ export default {
         this.addNewQuestionToBackend(Opt,pra)
         // this.addNewQuesToQuesList(Opt);
       }
-      else if (type===3){
+
+      else if (type==='投票题型'){
         if (QuesNum === 0){
           Opt = {
             Stem: '投票单选',
@@ -1011,6 +1093,28 @@ export default {
             Number: Opt.idx,
             username: this.$route.query.username,
           }
+          this.addNewQuestionToBackend(Opt,pra)
+        }
+      }
+
+      else if (type==='获取定位'){
+        if (QuesNum === 0){
+          Opt = {
+            Stem: '获取定位',
+            idx: this.QuesList.length,
+            isDraggable: true,
+            subData: {},
+            type: 'Position'
+          }
+
+          pra = {
+            Questionnaire: this.QuesId,
+            Type: 5,
+            Stem: Opt.Stem,
+            Number: Opt.idx,
+            username: this.$route.query.username,
+          }
+          console.log(typeof pra.Type)
           this.addNewQuestionToBackend(Opt,pra)
         }
       }
@@ -1399,6 +1503,27 @@ export default {
             }
             // console.log(QuesInfo)
             break;
+          case 5:
+            type='Position';
+            QuesInfo = {
+              Number: questionItem.Number,
+              Position:"",
+              id:"",
+              choices:[],
+              radio: 0,
+              //settings
+              edit:1,
+              Amount:true,
+
+              question:questionItem.Stem,
+              describe:questionItem.Describe,
+              Must: questionItem.Must,
+            }
+            // for (let j = 0; j < questionItem.Choice.length; j++) {
+            //   let choiceElement = questionItem.Choice[j];
+            //   QuesInfo.choices.push(choiceElement.Text);
+            // }
+            break;
           case 6:
             type='VoteSingleChoose';
             QuesInfo = {
@@ -1669,13 +1794,15 @@ export default {
   }
 
   .designContent .designComponent .components .choicesPreview {
-    height: 150px;
-    width: 500px;
+    /*height: 150px;*/
+    width: 600px;
+    padding: 5px;
     position: absolute;
+    /*overflow: hidden;*/
     left: 15vw;
     display: none;
     background-color: white;
-    box-shadow: 0 0 2px rgba(0,0,0,.4);
+    box-shadow: 0 0 5px rgba(0,0,0,.4);
     z-index: 99;
   }
 

@@ -39,12 +39,22 @@
 </template>
 
 <script>
-import bus from "../../assets/utils/bus";
+import bus from "../../../../assets/utils/bus";
 
 export default {
   props:{
-    FatherData: Object,
-    ItemIndex: Number,
+    FatherData: {
+      type:Object,
+      default(){
+        return {}
+      }
+    },
+    ItemIndex: {
+      type:Number,
+      default() {
+        return 0;
+      }
+    },
   },
   data () {
     return {
@@ -116,7 +126,7 @@ export default {
 
     changeData(QesData,index){
       console.log("要同步更改的题号："+index)
-      console.log("本题题号:"+this.QesData.Number)
+      // console.log("本题题号:"+this.QesData.Number)
       if (index===this.ItemIndex){
         this.QesData = QesData
       }

@@ -22,20 +22,7 @@ export default {
       yAnswerData: [],
       xChooseData: [],
       yChooseData: [],
-      ShowData: [
-        {
-          name: '',
-          type: 'bar',
-          stack: 'total',
-          label: {
-            show: true
-          },
-          emphasis: {
-            focus: 'series'
-          },
-          data: [320, 302, 301, 334, 390, 330, 320]
-        }
-      ],
+      ShowData: [],
     }
   },
   created() {
@@ -46,6 +33,8 @@ export default {
     // this.$nextTick(() => {
     //   this.load_zhu();
     // });
+    console.log(this.xDataID)
+    console.log(this.yDataID)
   },
   methods: {
     // 显示
@@ -72,11 +61,25 @@ export default {
       }
 
       for (let i = 0; i < this.xChooseData.length; i++) {
-        for (let j = 0; j < this.yChooseData.length; j++) {
-          let xChooseDatum = this.xChooseData[i];
-          let yChooseDatum = this.yChooseData[i];
-          this.getAnswerNum(this.xDataID,this.yDataID,xChooseDatum.id,yChooseDatum.id)
+        let xChooseDatum = this.xChooseData[i];
+        let ops = {
+          name: xChooseDatum.name,
+          type: 'bar',
+          stack: 'total',
+          label: {
+            show: true
+          },
+          emphasis: {
+            focus: 'series'
+          },
+          data: []
         }
+        for (let j = 0; j < this.yChooseData.length; j++) {
+          let yChooseDatum = this.yChooseData[j];
+          let count = this.getAnswerNum(this.xDataID,this.yDataID,xChooseDatum.id,yChooseDatum.id)
+          ops.data.push(count);
+        }
+        this.ShowData.push(ops)
       }
 
       console.log(x)
@@ -97,68 +100,7 @@ export default {
           bottom: '3%',
           containLabel: true
         },
-        series: [
-          {
-            name: 'Direct',
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: [320, 302, 301, 334, 390, 330, 320]
-          },
-          {
-            name: 'Mail Ad',
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: [120, 132, 101, 134, 90, 230, 210]
-          },
-          {
-            name: 'Affiliate Ad',
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: [220, 182, 191, 234, 290, 330, 310]
-          },
-          {
-            name: 'Video Ad',
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: [150, 212, 201, 154, 190, 330, 410]
-          },
-          {
-            name: 'Search Engine',
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: [820, 832, 901, 934, 1290, 1330, 1320]
-          }
-        ],
+        series: this.ShowData,
         xAxis: {
           type: 'category',
           data: x,
@@ -191,6 +133,7 @@ export default {
       console.log('B题',quesBID);
       console.log('A选项',choiAID);
       console.log('B选项',choiBID);
+      let count = 0;
       let pra = {
         questionAID: quesAId,
         questionBID: quesBID,
@@ -203,9 +146,15 @@ export default {
         data: pra
       }).then(res=>{
         console.log(res)
+        if (res.data.Message === 'Success'){
+          count =  res.data.count;
+          return count
+        }
       }).catch(err=>{
 
       })
+
+      return count
 
     },
 
@@ -216,8 +165,8 @@ export default {
         url: '/submit/qesrep',
         method: 'post',
         data: {
-          questionnaireID:this.QuestionIO,
-          questionNumber: this.xDataID
+          // questionnaireID:this.QuestionIO,
+          questionID: this.xDataID
         }
       }).then(res=>{
         console.log(res);
@@ -243,8 +192,8 @@ export default {
         url: '/submit/qesrep',
         method: 'post',
         data: {
-          questionnaireID:this.QuestionIO,
-          questionNumber: this.yDataID
+          // questionnaireID:this.QuestionIO,
+          questionID: this.yDataID
         }
       }).then(res=>{
         console.log(res);

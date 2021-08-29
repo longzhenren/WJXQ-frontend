@@ -21,6 +21,7 @@
     <el-rate
         v-model="QesData.score"
         show-text
+
         :texts="QesData.describes"
         :max="QesData.describes.length"
     > </el-rate>
@@ -37,8 +38,18 @@ import bus from "../../assets/utils/bus";
 
 export default {
   props:{
-    FatherData: Object,
-    ItemIndex: Number,
+    FatherData: {
+      type:Object,
+      default(){
+        return {}
+      }
+    },
+    ItemIndex: {
+      type:Number,
+      default() {
+        return 0;
+      }
+    },
   },
   data () {
     return {

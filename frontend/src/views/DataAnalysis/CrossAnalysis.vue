@@ -29,6 +29,8 @@
 
       <div class="operations">
         <el-button size="mini" round @click="goCrossAnalysis">交叉分析</el-button>
+
+        <el-button size="mini" round @click="closeCross">关闭</el-button>
       </div>
     </div>
 
@@ -105,7 +107,7 @@ export default {
         Stem: '添加因变量'
       },
 
-      yQuesID: '',
+      yQuesID: 0,
     }
   },
   mounted() {
@@ -118,6 +120,12 @@ export default {
     }
   },
   methods: {
+    // 关闭交叉分析
+    closeCross(){
+      this.isShowCross = false;
+    },
+
+
     // 进行交叉分析
     goCrossAnalysis(){
       this.isShowCross = true
@@ -127,8 +135,8 @@ export default {
       console.log(this.xVairableQues);
       console.log(this.yVairableQues)
       console.log(this.Questionnaire)
-      this.xQuesID = this.xVairableQues.Number
-      this.yQuesID = this.yVairableQues.Number
+      this.xQuesID = this.xVairableQues.id
+      this.yQuesID = this.yVairableQues.id
       this.QuestionnaireId = this.Questionnaire.id;
       // setTimeout(this.getXData,100)
       // setTimeout(this.getYData,100)

@@ -28,7 +28,7 @@
             <el-col :span="2" class="centerElement" >
               <label>{{i+1}}.</label>
             </el-col>
-            <el-col :span="10">
+            <el-col :span="8">
               <el-input   v-model="QesData.describes[i]"
                           placeholder="描述">
               </el-input>
@@ -37,7 +37,7 @@
               <label class="centerElement">-
               </label>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="6">
                 <el-input type="number" v-model.number="QesData.level[i]" autocomplete="off"> <label>分
                 </label>
                 </el-input>
@@ -192,18 +192,18 @@ export default {
         }
       }
       let find1 = false;
-      let j=0;
-      for (let i = 0; i < this.QesData.choices.length; i++) {
-        for ( j = i + 1; j < this.QesData.choices.length; j++) {
-          if (this.QesData.choices[i]== this.QesData.choices[j] ) {
-            find1=true;
-            break
-          }
-          if(find1==true){
-            break;
-          }
-        }
-      }
+      // let j=0;
+      // for (let i = 0; i < this.QesData.choices.length; i++) {
+      //   for ( j = i + 1; j < this.QesData.choices.length; j++) {
+      //     if (this.QesData.choices[i]== this.QesData.choices[j] ) {
+      //       find1=true;
+      //       break
+      //     }
+      //     if(find1==true){
+      //       break;
+      //     }
+      //   }
+      // }
       if(find){
         this.$message.warning("选项分数设置不可以为空,题"+this.needSendIdx+"未保存成功")
         if(find1){

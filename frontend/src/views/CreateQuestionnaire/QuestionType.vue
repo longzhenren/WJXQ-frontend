@@ -9,7 +9,26 @@
     <div class="TypeList" >
       <ul ref="typelist">
         <li v-for="(item,index) in QuesTypes">
-          <div class="TypeIcon"></div>
+          <div class="TypeIcon" v-if="index===0">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
+          <div class="TypeIcon" v-if="index===1">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
+          <div class="TypeIcon" v-if="index===2">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
+          <div class="TypeIcon" v-if="index===3">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
+          <div class="TypeIcon" v-if="index===4">
+            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+          </div>
+
           <div class="type">
             <div class="title">{{ item.title }}</div>
             <div class="intro">{{ item.intro }}</div>
@@ -277,14 +296,23 @@ export default {
   /*border: 1px solid #BDBDBD;*/
   display: grid;
   grid-template-rows: 55fr 45fr;
+  /*row-gap: 30px;*/
 }
 
 .TypeList ul li .TypeIcon {
   /*background-color: greenyellow;*/
   display: flex;
+  width: 30%;
+  height: 35%;
+  margin: 20px auto;
   justify-content: center;
   align-items: center;
   font-size: 50px;
+}
+
+.TypeList ul li .TypeIcon img {
+  width: 100%;
+  height: 100%;
 }
 
 .TypeList ul li .type {

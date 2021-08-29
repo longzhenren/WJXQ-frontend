@@ -70,7 +70,7 @@
 <!--          用于逐题展示题目答卷数据-->
           <div class="Ques" :class="{activeData: switchMode===0}" @click="changeMode(0)">题目分析</div>
 <!--            用于展示问卷作答整体情况,比如作答人数\作答方式统计,导出整体作答数据-->
-          <div class="Questionnaire" :class="{activeData: switchMode===1}" @click="changeMode(1)">报告分析</div>
+<!--          <div class="Questionnaire" :class="{activeData: switchMode===1}" @click="changeMode(1)">报告分析</div>-->
         </div>
 
         <div class="ModesData">
@@ -662,7 +662,7 @@ body {
     width: 10%;
     height: 50%;
     margin-left: 50px;
-    cursor: pointer;
+    /*cursor: pointer;*/
   }
 
   .dataAnalysis .topNav .analysisTab {
