@@ -28,6 +28,7 @@
 
 
     </div>
+    <el-button  @click="save" >保存</el-button>
     <div class="InnerDiv">
       <el-divider content-position="center">题目设置</el-divider>
       <el-form>
@@ -44,7 +45,7 @@
 </template>
 
 <script>
-import bus from "../../../assets/utils/bus";
+import bus from "../../../../assets/utils/bus";
 
 export default {
   props:{

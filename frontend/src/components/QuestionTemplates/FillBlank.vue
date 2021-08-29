@@ -24,12 +24,17 @@ import bus from "../../assets/utils/bus";
 export default {
   props:{
     FatherData: {
-      type: Object,
+      type:Object,
       default(){
         return {}
       }
     },
-    ItemIndex: Number,
+    ItemIndex: {
+      type:Number,
+      default() {
+        return 0;
+      }
+    },
   },
   data () {
     return {

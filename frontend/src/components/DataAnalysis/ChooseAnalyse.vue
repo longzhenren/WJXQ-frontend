@@ -307,7 +307,6 @@ export default {
           this.QesData=res.data.QesData,
           this.ChooseData=res.data.ChooseData,
           this.AnswerData=res.data.AnswerData
-
         }
       }).catch(err=>{
         console.log(err)
