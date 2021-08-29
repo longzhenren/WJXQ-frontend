@@ -59,6 +59,7 @@
                 <ul ref="choices">
                   <li v-for="(i,idx) in item.details" @click="addNewQues(index,idx)">{{i}}</li>
                 </ul>
+
               </el-collapse-item>
             </el-collapse>
           </div>
@@ -67,6 +68,17 @@
           <div class="choicesPreview" ref="choicesPreview">
             <div class="arrow"></div>
             题目预览
+            <div>
+              <SingleChoose v-if="ItemPreviewType==='singleChoice'" ref="child"></SingleChoose>
+
+              <MultiChoose v-else-if="ItemPreviewType==='multiChoose'" ref="child"></MultiChoose>
+
+              <FillBlank v-else-if="ItemPreviewType==='fillBlank'" ref="child"></FillBlank>
+
+              <Evaluate v-else-if="ItemPreviewType==='evaluate'" ref="child"></Evaluate>
+
+              <VoteSingleChoose v-else-if="ItemPreviewType==='VoteSingleChoose'" ref="child"></VoteSingleChoose>
+            </div>
           </div>
 
         </div>
@@ -128,24 +140,31 @@
                                 :father-data="item.subData"></SingleChoose>
 
                   <MultiChoose v-else-if="item.type==='multiChoose'" ref="child"
+                               @SaveQes="SaveQes($event,item)"
                                :father-data="item.subData"
-                               @save="SaveQes($event,item)"></MultiChoose>
+                               :item-index="index"></MultiChoose>
 
                   <FillBlank v-else-if="item.type==='fillBlank'" ref="child"
                               :father-data="item.subData"
-                              @save="SaveQes($event,item)"></FillBlank>
+                             :item-index="index"
+                              @SaveQes="SaveQes($event,item)"></FillBlank>
 
                   <Evaluate v-else-if="item.type==='evaluate'" ref="child"
                             :father-data="item.subData"
-                            @save="SaveQes($event,item)"></Evaluate>
+                            :item-index="index"
+                            @SaveQes="SaveQes($event,item)"></Evaluate>
 
 
                   <VoteSingleChoose v-else-if="item.type==='VoteSingleChoose'" ref="child"
                                     :father-data="item.subData"
-                                    @save="SaveQes($event,item)"></VoteSingleChoose>
-<!--                  <VoteSingleChoose v-else-if="item.type ==='VoteSingleChoose'" ref="child"-->
-<!--                            :father-data="item.subData"-->
-<!--                            @save="SaveQes($event,item)"></VoteSingleChoose>-->
+                                    :item-index="index"
+                                    @SaveQes="SaveQes($event,item)"></VoteSingleChoose>
+
+
+                  <VoteMChoose v-else-if="item.type==='VoteMultiChoose'" ref="child"
+                               :father-data="item.subData"
+                               :item-index="index"
+                               @SaveQes="SaveQes($event,item)"></VoteMChoose>
                 </div>
 
 
@@ -208,9 +227,9 @@
               <el-divider></el-divider>
               <div v-if="isCanChangeItem">
                 <SingleChooseEdit v-if="editingQuestion.type === 'singleChoice'"
-                                                                          :father-data="editingQuestion.subData"
-                                                                          :need-send-idx="editingQuestion.index"
-                                                                          ref="childEdit"></SingleChooseEdit>
+                                  :father-data="editingQuestion.subData"
+                                  :need-send-idx="editingQuestion.index"
+                                  ref="childEdit"></SingleChooseEdit>
                 <MultiChooseEdit v-else-if="editingQuestion.type === 'multiChoose'"
                                  :father-data="editingQuestion.subData"
                                  :need-send-idx="editingQuestion.index"
@@ -229,6 +248,13 @@
                                       :need-send-idx="editingQuestion.index"
                                       ref="childEdit"></VoteSingleChooseEdit>
 
+                <VoteMultiChooseEdit v-else-if="editingQuestion.type === 'VoteMultiChoose'"
+                                     :father-data="editingQuestion.subData"
+                                     :need-send-idx="editingQuestion.index"
+                                     ref="childEdit"></VoteMultiChooseEdit>
+
+<!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
+
 <!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
 <!--                                  :father-data="editingQuestion.subData"-->
 <!--                                  :need-send-idx="editingQuestion.index"-->
@@ -237,9 +263,8 @@
 
 
               <div v-else>
-                <el-empty
-                    image="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                    description="编辑完成"></el-empty>
+                <el-result icon="success" title="编辑完成" >
+                </el-result>
               </div>
             </el-card>
           </vue-scroll>
@@ -281,8 +306,10 @@ import {request} from "../../network/request";
 import MultiChooseEdit from "../../components/QuestionTemplates/TemplatesEdit/MultiChooseEdit";
 import EvaluateEdit from "../../components/QuestionTemplates/TemplatesEdit/EvaluateEdit";
 import FillBlankEdit from "../../components/QuestionTemplates/TemplatesEdit/FillBlankEdit";
-import VoteSingleChoose from "../../components/QuestionTemplates/VoteTemplates/View/VoteSingleChoose";
 import VoteSingleChooseEdit from "../../components/QuestionTemplates/VoteTemplates/Edit/VoteSingleChooseEdit";
+import VoteSingleChoose from "../../components/QuestionTemplates/VoteTemplates/View/VoteSingleChoose";
+import VoteMChoose from "../../components/QuestionTemplates/VoteTemplates/View/VoteMChoose";
+import VoteMultiChooseEdit from "../../components/QuestionTemplates/VoteTemplates/Edit/VoteMultiChooseEdit";
 
 export default {
   name: "DesignPage",
@@ -294,9 +321,11 @@ export default {
     MultiChoose,
     FillBlank,
     Evaluate,
-    VoteSingleChoose,
     SingleChooseEdit,
-    VoteSingleChooseEdit
+    VoteSingleChoose,
+    VoteSingleChooseEdit,
+    VoteMChoose,
+    VoteMultiChooseEdit,
   },
   data(){
     return {
@@ -465,6 +494,9 @@ export default {
       QuesList: [
 
       ],
+
+      // 题目预览的类型值
+      ItemPreviewType: 0,
 
       // 问卷对象
       Questionnaire: {
@@ -640,11 +672,42 @@ export default {
       let choicesPreview = this.$refs.choicesPreview;
       for (let i = 0; i < choices.length; i++) {
         let choice = choices[i];
+
         // console.log(choice)
         let li = choice.children;
         for (let j = 0; j < li.length; j++) {
           let liElement = li[j];
+
+          // console.log(liElement)
+          // console.log(this.ItemPreviewType)
           liElement.addEventListener('mouseover',function () {
+            if (i===0 ){
+              switch (j) {
+                case 0:
+                  this.ItemPreviewType = 'singleChoice';
+                  break;
+                case 1:
+                  this.ItemPreviewType = 'multiChoose';
+                  break;
+              }
+            }
+
+            else if (i===1){
+              this.ItemPreviewType = 'fillBlank';
+            }
+            else if (i===2){
+              this.ItemPreviewType = 'evaluate';
+            }
+            else if (i===3){
+              switch (j) {
+                case 0:
+                  this.ItemPreviewType = 'VoteSingleChoose';
+                  break;
+                  // case 1:
+                  //   this.ItemPreviewType = 'multiChoose';
+                  //   break;
+              }
+            }
             let top = liElement.offsetTop;
             timer = setTimeout(function () {
               choicesPreview.style.top = top+'px';
@@ -684,6 +747,14 @@ export default {
         case 'evaluate' :
           type=4;
           break;
+
+        case 'VoteSingleChoose' :
+          type=6;
+          break;
+
+        case 'VoteMultiChoose' :
+          type=7;
+          break;
       }
       if (mode==='sendQuestion'){
          Question = {
@@ -697,6 +768,7 @@ export default {
           Must: item.subData.Must===undefined?false:item.subData.Must,
           Number: item.idx,
           Choice: [],
+
           Describe: item.subData.describe,
           username: this.$route.query.username
         }
@@ -737,12 +809,12 @@ export default {
           Question.Choice.push(CItem);
         }
       }
+      console.log('Quesion',Question);
       return Question;
     },
     modifyQuestionSuccess(item){
       // console.log("aaa")
       // console.log(item)
-
       let Question = this.changeDataStructToBackend(item,'sendQuestion');
 
       // console.log(Question)
@@ -920,6 +992,7 @@ export default {
             Number: Opt.idx,
             username: this.$route.query.username,
           }
+          console.log(typeof pra.Type)
           this.addNewQuestionToBackend(Opt,pra)
         }
         else if (QuesNum === 1) {
@@ -979,8 +1052,8 @@ export default {
       bus.$emit('SaveEdited',this.editingQuestion.index)
       let length = this.QuesList.length;
       this.isCanChangeItem = true
+      console.log(SubjectObj)
       this.QuesList.splice(length,0,SubjectObj);
-
       this.editingQuestion = SubjectObj;
       this.editingQuestion.index = length
       this.IndexNav(length);
@@ -1181,6 +1254,8 @@ export default {
         return
       }
 
+      bus.$emit('SaveEdited',this.editingQuestion.index)
+
       const newItems = [...this.QuesList]
 
       const src = newItems.indexOf(this.dragging)
@@ -1324,6 +1399,47 @@ export default {
             }
             // console.log(QuesInfo)
             break;
+          case 6:
+            type='VoteSingleChoose';
+            QuesInfo = {
+              id:"",
+              number:"",
+              choices:[],
+              radio: 0,
+              //settings
+              edit:1,
+              Amount:true,
+
+              question:questionItem.Stem,
+              describe:questionItem.Describe,
+              Must: questionItem.Must,
+            }
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              let choiceElement = questionItem.Choice[j];
+              QuesInfo.choices.push(choiceElement.Text);
+            }
+            break;
+
+          case 7:
+            type='VoteMultiChoose';
+            QuesInfo = {
+              id:"",
+              number:"",
+              choices:[],
+              radio: 0,
+              //settings
+              edit:1,
+              Amount:true,
+              //settings
+              max:questionItem.MaxChoice,
+              min:questionItem.MinChoice,
+              question:questionItem.Stem,
+              describe:questionItem.Describe,
+              Must: questionItem.Must,
+            }
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.choices.push(questionItem.Choice[j].Text);
+            }
         }
         let DesignQuestionItem = {
           Stem: questionItem.Stem,
