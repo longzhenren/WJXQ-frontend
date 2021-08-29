@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-bg" v-if="show">//我曹，最开始用成了v-show，不是动态了，人搞傻b了,以后不再用v-show了
+  <div class="modal-bg" v-if="show">
     <div class="bg" @click="bgClicked"></div>
     <div class="modal-container">
       <div class="modal-main">
