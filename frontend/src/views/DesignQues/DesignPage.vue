@@ -59,6 +59,21 @@
             </el-collapse>
           </div>
 
+          <div v-else-if="Questionnaire.Type === 4">
+            <el-collapse v-model="activeName" v-for="(item,index) in ExamQuesTypeList">
+              <el-collapse-item :name="index" class="choices">
+                <template slot="title">
+                  <div class="title">
+                    <i class="el-icon-stopwatch"></i>
+                    {{ item.type }}</div>
+                </template>
+                <ul ref="choices">
+                  <li v-for="(i,idx) in item.details" @click="addNewQues(item.type,idx)">{{i}}</li>
+                </ul>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+
 
           <div v-else>
             <el-collapse
@@ -186,6 +201,16 @@
                       :father-data="item.subData"
                       :item-index="index"
                       @SaveQes="SaveQes($event,item)"></Position>
+
+                  <ExamSingleChoose v-else-if="item.type==='ExamSingleChoose'" ref="child"
+                                    :father-data="item.subData"
+                                    :item-index="index"
+                                    @SaveQes="SaveQes($event,item)"></ExamSingleChoose>
+
+                  <ExamMChoose v-else-if="item.type ==='ExamMChoose'" ref="child"
+                               :father-data="item.subData"
+                               :item-index="index"
+                               @SaveQes="SaveQes($event,item)"></ExamMChoose>
                 </div>
 
 
@@ -279,6 +304,16 @@
                               :need-send-idx="editingQuestion.index"
                               ref="childEdit"></PositionEdit>
 
+                <ExamSingleChooseEdit v-else-if="editingQuestion.type === 'ExamSingleChoose'"
+                                      :father-data="editingQuestion.subData"
+                                      :need-send-idx="editingQuestion.index"
+                                      ref="childEdit"></ExamSingleChooseEdit>
+
+                <ExamMultiChooseEdit v-else-if="editingQuestion.type === 'ExamMChoose'"
+                                     :father-data="editingQuestion.subData"
+                                     :need-send-idx="editingQuestion.index"
+                                     ref="childEdit"></ExamMultiChooseEdit>
+
 <!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
 
 <!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
@@ -338,6 +373,11 @@ import VoteMChoose from "../../components/QuestionTemplates/VoteTemplates/View/V
 import VoteMultiChooseEdit from "../../components/QuestionTemplates/VoteTemplates/Edit/VoteMultiChooseEdit";
 import Position from "../../components/QuestionTemplates/BattleVirus/View/Position";
 import PositionEdit from "../../components/QuestionTemplates/BattleVirus/Edit/PositionEdit";
+import ExamSingleChoose from "../../components/QuestionTemplates/Exam/View/ExamSingleChoose";
+import ExamSingleChooseEdit from "../../components/QuestionTemplates/Exam/Edit/ExamSingleChooseEdit";
+import ExamMChoose from "../../components/QuestionTemplates/Exam/View/ExamMChoose";
+import ExamMultiChooseEdit from "../../components/QuestionTemplates/Exam/Edit/ExamMultiChooseEdit";
+
 
 export default {
   name: "DesignPage",
@@ -356,6 +396,10 @@ export default {
     VoteMultiChooseEdit,
     Position,
     PositionEdit,
+    ExamSingleChoose,
+    ExamSingleChooseEdit,
+    ExamMChoose,
+    ExamMultiChooseEdit,
 
   },
   data(){
@@ -496,7 +540,20 @@ export default {
 
       // 考试问题列表
       ExamQuesTypeList: [
-
+        // 选择
+        {
+          type: '选择题',
+          details: [
+            '单选题',
+            '多选题',
+          ]
+        },
+        {
+          type: '填空',
+          details: [
+            '填空',
+          ]
+        },
       ],
 
       // 疫情打卡问卷
@@ -631,38 +688,7 @@ export default {
 
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
-      // let child = this.$refs.childEdit;
-      // // console.log(chi)
-      // console.log(child)
-      // if (child !== undefined){
-      //   if (this.isCanChangeItem){
-      //     child.save();
-      //   }
-      // }
       bus.$emit('SaveEdited',this.editingQuestion.index)
-
-      // console.log(child.$children)
-      // if (child !== undefined){
-      //   for (let i = 0; i < child.length; i++) {
-      //     // console.log(child[i].singleChoice.edit);
-      //     let edit;
-      //     if (child[i].QesData!==undefined) {
-      //       edit= child[i].QesData.edit;
-      //     }
-      //     // else if ( child[i].multiChoice!==undefined){
-      //     //   edit= child[i].multiChoice.edit;
-      //     // }
-      //     // else if (child[i].fillBlank!==undefined){
-      //     //   edit= child[i].fillBlank.edit;
-      //     // }
-      //     // else if (child[i].evaluate!==undefined){
-      //     //   edit= child[i].evaluate.edit;
-      //     // }
-      //     if (edit === 1) {
-      //       child[i].save();
-      //     }
-      //   }
-      // }
 
       this.Questionnaire.title = this.QuesTitle;
       this.Questionnaire.Question = this.QuesList;
@@ -1006,11 +1032,6 @@ export default {
             this.addNewQuestionToBackend(Opt,pra)
             // this.addNewQuesToQuesList(Opt);
             break;
-
-            // 增加下拉菜单
-          case 2:
-            console.log('增加下拉菜单')
-            break;
         }
       }
 
@@ -1118,6 +1139,60 @@ export default {
           this.addNewQuestionToBackend(Opt,pra)
         }
       }
+
+      else if (type === '选择题'){
+        switch (QuesNum) {
+            // 增加单选
+          case 0:
+            Opt = {
+              Stem: '单选题',
+              idx: this.QuesList.length,
+              isDraggable: true,
+              subData: {},
+              type: 'ExamSingleChoose',
+              id: 0,
+            }
+            pra = {
+              Questionnaire: this.QuesId,
+              Type: 1,
+              MinChoice: 1,
+              MaxChoice: 1,
+              Stem: Opt.Stem,
+              username: this.$route.query.username,
+              Number: Opt.idx,
+            }
+
+            this.addNewQuestionToBackend(Opt,pra)
+
+            // this.addNewQuesToQuesList(Opt);
+            break;
+
+            // 增加多选
+          case 1:
+            console.log('增加多选')
+            Opt = {
+              Stem: '多选题',
+              idx: this.QuesList.length,
+              isDraggable: true,
+              subData: {},
+              type: 'ExamMChoose'
+            }
+
+            pra = {
+              Questionnaire: this.QuesId,
+              Type: 2,
+              MinChoice: 1,
+              MaxChoice: 2,
+              Stem: Opt.Stem,
+              Number: Opt.idx,
+              username: this.$route.query.username,
+            }
+            this.addNewQuestionToBackend(Opt,pra)
+            // this.addNewQuesToQuesList(Opt);
+            break;
+        }
+      }
+
     },
 
     // 增加新题目,向后端请求题目id
