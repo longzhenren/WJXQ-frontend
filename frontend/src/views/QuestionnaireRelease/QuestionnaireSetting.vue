@@ -73,24 +73,24 @@
             </div>
 
           </el-collapse-item>
-          <el-collapse-item name="3">
-            <template slot="title">
-              作答时间设置
-            </template>
-            <div class="TimeContent">
-              <div class="TimeTitle">选择时间</div>
-              <el-input placeholder="请输入内容" v-model="TimeSetting.AnswerTime" clearable ref="inputAnswer">
-                <template slot="append">
-                  <el-select v-model="AnswerDanwei" placeholder="单位">
-                    <el-option label="小时" value="小时"></el-option>
-                    <el-option label="分钟" value="分钟"></el-option>
-                    <el-option label="天" value="天"></el-option>
-                  </el-select>
-                </template>
-              </el-input>
-            </div>
+<!--          <el-collapse-item name="3">-->
+<!--            <template slot="title">-->
+<!--              作答时间设置-->
+<!--            </template>-->
+<!--            <div class="TimeContent">-->
+<!--              <div class="TimeTitle">选择时间</div>-->
+<!--              <el-input placeholder="请输入内容" v-model="TimeSetting.AnswerTime" clearable ref="inputAnswer">-->
+<!--                <template slot="append">-->
+<!--                  <el-select v-model="AnswerDanwei" placeholder="单位">-->
+<!--                    <el-option label="小时" value="小时"></el-option>-->
+<!--                    <el-option label="分钟" value="分钟"></el-option>-->
+<!--                    <el-option label="天" value="天"></el-option>-->
+<!--                  </el-select>-->
+<!--                </template>-->
+<!--              </el-input>-->
+<!--            </div>-->
 
-          </el-collapse-item>
+<!--          </el-collapse-item>-->
         </el-collapse>
         <div class="saveTime">
           <button @click="confirmTimeSetting">保存</button>
@@ -339,8 +339,14 @@ export default {
       this.Setting.Times=this.NowsQuestionnaire.Setting.Times
     else if(this.NowsQuestionnaire.Type===4)
       this.Setting.Reorder=this.NowsQuestionnaire.Setting.Reorder
+    this.init();
   },
   methods: {
+    init(){
+      this.AnswerTimeSetting.isNeedLogin=this.Setting.Login;
+      this.AnswerTimeSetting.Times=this.Setting.IPLimit;
+      this.AnswerTimeSetting.SelectAnswerTimes=this.Setting.Times;
+    },
     // 全部保存
     saveAll(){
       this.confirmTimeSetting();
