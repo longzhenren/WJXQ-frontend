@@ -143,14 +143,17 @@ export default {
   mounted() {
     // console.log(this.FatherData)
     if ( this.FatherData.edit!==null && this.FatherData.edit!=={} && this.FatherData.edit!==undefined ) {
-      this.QesData.edit = this.FatherData.edit;
+      // this.QesData.edit = this.FatherData.edit;
       this.QesData.question = this.FatherData.question;
       this.QesData.choices = this.FatherData.choices;
       this.QesData.radio = this.FatherData.radio;
+      // this.QesData.Number = this.FatherData.Number
+      this.QesData.score = this.FatherData.score;
       this.QesData.describe = this.FatherData.describe;
-      this.QesData.max = this.FatherData.max;
-      this.QesData.min = this.FatherData.min;
+      this.QesData.HalfRightScore = this.FatherData.HalfRightScore;
+      this.QesData.answer = this.FatherData.answer;
       this.QesData.Must = this.FatherData.Must;
+      // this.QesData.Amount = this.FatherData.Amount;
     }
     // this.multiChoice.edit = this.FatherData.edit;
     // this.multiChoice.question = this.FatherData.question;

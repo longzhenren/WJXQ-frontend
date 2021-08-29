@@ -7,6 +7,7 @@
       <label  style="font-size: 12px;color: darkgrey"> {{QesData.Describe}} </label>
     </div>
     </div>
+
     <el-table v-if="DataTable=='数据表'"
         :data="ChooseData"
         style="width: 100%"
@@ -72,8 +73,9 @@ export default {
         Must: true,
         Total: 37},
       ChooseData: [],
+      BasicData: [],
       AnswerData: [],
-      TableTypes:['原始数据','数据表'],
+      TableTypes:['数据表'],
       DataTable:['数据表'],
       ChartTypes:['饼状图','环形图','柱状图','雷达图'],
       Chart:[],
@@ -307,6 +309,7 @@ export default {
           this.QesData=res.data.QesData,
           this.ChooseData=res.data.ChooseData,
           this.AnswerData=res.data.AnswerData
+          this.BasicData = res.data.ChooseData
         }
       }).catch(err=>{
         console.log(err)
