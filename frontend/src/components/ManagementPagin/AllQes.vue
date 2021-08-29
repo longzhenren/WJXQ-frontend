@@ -72,6 +72,7 @@ export default {
           'CreateUser': this.$store.state.personalInfo.username,
         }
       }).then(res => {
+        console.log(res)
         this.openQes=[];
         this.closeQes=[];
         this.allQesInfo = res.data.Questionnaire;

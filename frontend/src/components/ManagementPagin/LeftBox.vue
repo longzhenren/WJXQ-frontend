@@ -67,13 +67,13 @@ button{
   border-bottom-width: 1px;
   border-radius: 0;
   border-style: solid;
-  background-color: lightcyan;
+  background-color: #F2F2F2;
   color: #444444;
   height: 40px;
   width: 200px;
 }
 button:hover{
-  background-color: #deefef;
+  background-color: #e2e2e2;
   transition: background-color 0.2s ease;
 }
 .inBtn{
@@ -82,7 +82,7 @@ button:hover{
   padding-left: 50px;
 }
 .inChoose{
-  background-color: #deefef;
+  background-color: #e2e2e2;
   color: #000;
   font-weight: bold;
 }

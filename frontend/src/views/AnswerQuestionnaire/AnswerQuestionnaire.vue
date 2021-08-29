@@ -1,5 +1,6 @@
 <template>
   <div class="AnswerQuestionnaire">
+    <MyMk v-if="myMkShow" :id="id"></MyMk>
     <div class="content">
       <!-- 问卷标题 -->
       <h3>{{ Title }}</h3>
@@ -10,7 +11,7 @@
       </div>
 
       <!-- 问题部分 -->
-      <el-card class="box-card" v-for="(item, index) in Question">
+      <el-card :class="{boxCard:true,filterBlur:!isLogin}" v-for="(item, index) in Question">
         <div slot="header">
           <!-- 题号题干 -->
           <span v-if="ShowNumber == true">
@@ -81,6 +82,7 @@
       </el-card>
 
       <!-- 提交按钮 -->
+      <button @click="getQesInfo">here</button>
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
     <div class="bottom">
@@ -91,15 +93,19 @@
 
 <script>
 import { request } from "../../network/request";
+import MyMk from "../../components/AnswerQuestionnaire/MyMk"
 export default {
   name: "AnswerQuestionnaire",
   data() {
     return {
+      isLogin:window.sessionStorage.getItem('isLogin'),
+      myMkShow:false,
       ip: "",
       id: this.$route.params.id,
       questionnaireID: 0,
       submissionID: 0,
       Title: "",
+      Settings:[],
       ShowNumber: true,
       Text: "",
       Question: [],
@@ -109,7 +115,33 @@ export default {
   props:{
     qesId:'',
   },
+  components:{
+    MyMk
+  },
   methods: {
+    // 结果查看
+    goVoteShow(){
+      let psthH = '/VoteShow/'+this.id
+      this.$router.push({
+        path: psthH,
+        query: {
+          Mode: 'preview',
+        }
+      })
+    },
+    getQesInfo(){//type6投票单选，type7投票多选
+      console.log(this.Question[0].id)
+      request({
+        url: '/submit/qesrep',
+        method: 'post',
+        data: {
+          'questionID': this.Question[0].id,
+        }
+      }).then(res => {
+        console.log(this.Question[0].id)
+        console.log(res)
+      })
+    },
     //提交
     submit() {
       //检测是否答完
@@ -131,7 +163,7 @@ export default {
           method: "post",
           headers: { "Content-Type": "application/json" },
           data: {
-            submitUID: this.ip,
+            ip: this.ip,
             questionnaireID: this.questionnaireID,
           },
         }).then((res) => {
@@ -152,7 +184,7 @@ export default {
                   answerSelectionIDSet: [i.RadioValue],
                 },
               }).then((res) => {
-                console.log(res);
+                // console.log(res);
               });
             }
             if (i.Type == 2)
@@ -188,7 +220,7 @@ export default {
                   answerScore: i.Score,
                 },
               });
-            console.log(i.id);
+            // console.log(i.id);
           }
           request({
             url: "/submit/submit",
@@ -197,12 +229,13 @@ export default {
             data: {
               submissionID: this.submissionID,
             },
-          }).then(res=>{console.log(res.data);})
+          }).then(res=>{
+            if(res.data.msg==='success')
+              this.$message.success("提交成功");
+          })
         });
-
         //最终提交
-
-        this.$message.success("提交成功");
+        this.goVoteShow();
       }
     },
     //排序
@@ -217,7 +250,8 @@ export default {
     // console.log(this.ip);
     let  pra;
     if(this.qesId===undefined){
-      if (this.$route.query.Mode===undefined){
+      if (this.$route.query.Mode===undefined){//填写时
+        console.log(this.id)
         pra = {
           EncodeID: this.id,
           Mode: '',
@@ -242,10 +276,11 @@ export default {
       data: pra
     }).then((res) => {
       // console.log(pra.EncodeID)
-      //   console.log(res)
+        console.log(res)
         var Questionnaire = res.data.Questionnaire;
         this.Title = Questionnaire.Title;
         this.ShowNumber = Questionnaire.ShowNumber;
+        this.Settings=Questionnaire.Settings;
         this.Text = Questionnaire.Text;
         this.questionnaireID = Questionnaire.id;
         //对this.Question[]赋值
@@ -321,6 +356,9 @@ export default {
         }
         this.Question.sort(this.sortRule);
         // console.log(this.Question);
+        if(this.qesId===undefined&&!this.Settings.Login&&!window.sessionStorage.getItem('isLogin')){//测试用
+          this.myMkShow=true
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -333,8 +371,11 @@ export default {
 .AnswerQuestionnaire {
   text-align: center;
   padding: 20px;
+  width: 750px;
+  margin:30px auto;
+  background-color: white;
 }
-.AnswerQuestionnaire .top {
+.top {
   color: #606266;
   padding: 0 10px 10px 10px;
   border-bottom: 3px solid #409eff;
@@ -342,18 +383,21 @@ export default {
   line-height: 22px;
   text-align: left;
 }
-.AnswerQuestionnaire .content {
+ .content {
   width: 100%;
   max-width: 800px;
   display: inline-block;
   text-align: center;
 }
-.AnswerQuestionnaire .box-card {
+.boxCard {
   text-align: left;
   width: 100%;
   margin: 10px 0 10px 0;
 }
-.AnswerQuestionnaire .bottom {
+.filterBlur{
+  filter: blur(4px);
+}
+.bottom {
   margin: 20px 10px 20px 10px;
   color: #909399;
 }

@@ -1,6 +1,3 @@
-
-
-
 <template>
 
   <div v-if="singleChoice.edit==1" style="text-align: left">

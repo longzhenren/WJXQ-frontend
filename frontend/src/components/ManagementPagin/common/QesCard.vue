@@ -96,7 +96,7 @@
     </div>
 
     </div>
-    <Model :show="modelShow"  @hideModal="hideModal" :QesInfo="QesInfo"/>
+    <Model :show="modelShow"  @hideModal="hideModal" :QesInfoModel="QesInfo"/>
   </div>
 </template>
 
@@ -108,6 +108,7 @@ export default {
   name: "QesCard",
   data(){
     return{
+      title:'',
       modelShow: false,
       rules: {
       },
@@ -134,7 +135,6 @@ export default {
         username: this.$store.state.personalInfo.username,
         id: this.QesInfo.id
       }
-
       request({
         url:'/question/exportQuestionnaire',
         method:'post',
@@ -145,7 +145,7 @@ export default {
         if ( res.data.Message ){
         }
         else {
-          this.download(res);
+          this.downloadWord(res);
         }
 
       }).catch(err=>{
@@ -168,7 +168,7 @@ export default {
         if ( res.data.Message ){
         }
         else {
-          this.download(res);
+          this.downloadExcel(res);
         }
 
       }).catch(err=>{
@@ -176,7 +176,7 @@ export default {
       })
     },
 
-    download(res) {
+    downloadExcel(res) {
       if (!res.data) {
         return;
       }
@@ -186,6 +186,20 @@ export default {
       link.style.display = 'none'
       link.href = url
       link.setAttribute('download', 'data.xlsx')
+      document.body.appendChild(link)
+      link.click()
+    },
+    downloadWord(res) {
+      if (!res.data) {
+        return;
+      }
+      let fileName = 'aaa.docx';
+      let url = window.URL.createObjectURL(new Blob([res.data]))
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      link.setAttribute('download', 'word.docx')
+
       document.body.appendChild(link)
       link.click()
     },
@@ -345,7 +359,7 @@ export default {
       }
     },
   },
-  created() {
+  updated() {
     this.title=this.QesInfo.Title+'.副本'
   }
 }
