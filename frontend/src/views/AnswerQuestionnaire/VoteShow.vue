@@ -8,8 +8,8 @@
         <div  >
           <!-- 题号题干 -->
           <span style="font-weight: 800;font-size: 20px;color: gray">{{ item.Stem }}</span>
-          <label v-if="item.Type === 1" class="type">[单选题] </label>
-          <label v-if="item.Type === 2" class="type">[多选题]</label>
+          <label v-if="item.Type === 6" class="type">[单选题] </label>
+          <label v-if="item.Type === 7" class="type">[多选题]</label>
           <!-- 描述 -->
           <div>
             <label style="font-size: 12px; color: darkgrey">
@@ -33,7 +33,37 @@
             </div>
           </div>
         </div>
+      </el-card>
 
+      <el-card class="box-card" v-if="Type===4" v-for="(item, index) in Question">
+        <div  >
+          <!-- 题号题干 -->
+          <span style="font-weight: 800;font-size: 20px;color: gray">{{ item.Stem }}</span>
+          <label v-if="item.Type === 6" class="type">[单选题] </label>
+          <label v-if="item.Type === 7" class="type">[多选题]</label>
+          <!-- 描述 -->
+          <div>
+            <label style="font-size: 12px; color: darkgrey">
+              {{ item.Describe }}
+            </label>
+          </div>
+        </div>
+
+        <!-- 投票题 -->
+        <div class="SingleChoice">
+          <div v-for="(choice,i) in item.Choice" class="choice">
+            <div class="orderOut"><span class="order">{{orderCount(item.Choice,i)[i]}}</span></div>
+            <div class="choiceTop">
+              <label style="float:left;">{{ choice.name}}</label>
+              <label style="float: right"><span style="color: #2eaaff;font-weight: 800">{{choice.value}}</span>&nbsp&nbsp票</label>
+              <label></label>
+            </div>
+            <div class="bar">
+              <div class="occupy" :style="{width:percentWith(choice.value,item.Total)+'px'}"></div>
+              <label class="percent">{{percent(choice.value,item.Total)}}%</label>
+            </div>
+          </div>
+        </div>
       </el-card>
 
     </div>
