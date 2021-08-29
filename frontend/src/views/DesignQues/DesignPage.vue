@@ -29,7 +29,28 @@
 <!--&lt;!&ndash;            <div class="title"> {{ item.type }}</div>&ndash;&gt;-->
 
 <!--          </div>-->
-          <div v-if="Questionnaire.Type === 2">
+          <div v-if="Questionnaire.Type === 1">
+            <el-collapse
+                v-model="activeName"
+                v-for="(item,index) in QuesTypeList" >
+              <el-collapse-item :name="index" class="choices">
+                <template slot="title">
+                  <div class="title">
+                    <i class="el-icon-stopwatch"></i>
+                    {{ item.type }}
+                  </div>
+                </template>
+                <ul ref="choices">
+                  <li v-for="(i,idx) in item.details" @click="addNewQues(item.type,idx)">{{i}}</li>
+                </ul>
+
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+
+
+
+          <div v-else-if="Questionnaire.Type === 2">
             <el-collapse v-model="activeName" v-for="(item,index) in VoteQuesTypeList">
               <el-collapse-item :name="index" class="choices">
                 <template slot="title">
@@ -90,24 +111,6 @@
           </div>
 
 
-          <div v-else>
-            <el-collapse
-                v-model="activeName"
-                v-for="(item,index) in QuesTypeList" >
-              <el-collapse-item :name="index" class="choices">
-                <template slot="title">
-                  <div class="title">
-                    <i class="el-icon-stopwatch"></i>
-                    {{ item.type }}
-                  </div>
-                </template>
-                <ul ref="choices">
-                  <li v-for="(i,idx) in item.details" @click="addNewQues(item.type,idx)">{{i}}</li>
-                </ul>
-
-              </el-collapse-item>
-            </el-collapse>
-          </div>
 
 
           <div class="choicesPreview" ref="choicesPreview">
@@ -244,6 +247,11 @@
                                  :father-data="item.subData"
                                  :item-index="index"
                                  @SaveQes="SaveQes($event,item)"> </EnrollMChoose>
+
+                  <ExamFillBlank v-else-if="item.type ==='ExamFillBlank'" ref="child"
+                                 :father-data="item.subData"
+                                 :item-index="index"
+                                 @SaveQes="SaveQes($event,item)"></ExamFillBlank>
                 </div>
 
 
@@ -357,6 +365,11 @@
                                        :need-send-idx="editingQuestion.index"
                                        ref="childEdit" ></EnrollMultiChooseEdit>
 
+                <ExamFillBlankEdit v-else-if="editingQuestion.type === 'ExamFillBlank'"
+                                   :father-data="editingQuestion.subData"
+                                   :need-send-idx="editingQuestion.index"
+                                   ref="childEdit"></ExamFillBlankEdit>
+
 <!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
 
 <!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
@@ -424,6 +437,8 @@ import EnrollSingleChoose from "../../components/QuestionTemplates/Enroll/View/E
 import EnrollSingleChooseEdit from "../../components/QuestionTemplates/Enroll/Edit/EnrollSingleChooseEdit";
 import EnrollMChoose from "../../components/QuestionTemplates/Enroll/View/EnrollMChoose";
 import EnrollMultiChooseEdit from "../../components/QuestionTemplates/Enroll/Edit/EnrollMultiChooseEdit";
+import ExamFillBlank from "../../components/QuestionTemplates/Exam/View/ExamFillBlank";
+import ExamFillBlankEdit from "../../components/QuestionTemplates/Exam/Edit/ExamFillBlankEdit";
 
 export default {
   name: "DesignPage",
@@ -449,7 +464,9 @@ export default {
     EnrollSingleChooseEdit,
     EnrollSingleChoose,
     EnrollMChoose,
-    EnrollMultiChooseEdit
+    EnrollMultiChooseEdit,
+    ExamFillBlank,
+    ExamFillBlankEdit
 
   },
   data(){
@@ -599,9 +616,9 @@ export default {
           ]
         },
         {
-          type: '填空',
+          type: '填空题',
           details: [
-            '填空',
+            '填空题',
           ]
         },
       ],
@@ -966,15 +983,11 @@ export default {
         case 'ExamMChoose' :
           type=11;
           break;
+
+          case 'ExamFillBlank' :
+            type=12;
+            break;
       }
-      // let TrueAnswer = null;
-      // if(item.subData.answer!==undefined) {
-      //   for (let i = 0; i < item.subData.answer.length; i++) {
-      //     if (item.subData.answer[i]){
-      //       TrueAnswer = item.subData.choices[i];
-      //     }
-      //   }
-      // }
 
       if (mode==='sendQuestion'){
          Question = {
@@ -993,7 +1006,8 @@ export default {
            HalfScore: item.subData.HalfRightScore===undefined?0:item.subData.HalfRightScore,
            Score: item.subData.score===undefined?0:item.subData.score,
           Describe: item.subData.describe,
-          username: this.$route.query.username
+          username: this.$route.query.username,
+           ShowResultBeforeVote: item.subData.Amount===undefined?false:item.subData.Amount
         }
       }
       else {
@@ -1012,6 +1026,7 @@ export default {
            HalfScore: item.subData.HalfRightScore===undefined?0:item.subData.HalfRightScore,
            Score: item.subData.score===undefined?0:item.subData.score,
           Describe: item.subData.describe,
+           ShowResultBeforeVote: item.subData.Amount===undefined?false:item.subData.Amount
         }
       }
 
@@ -1346,6 +1361,34 @@ export default {
               username: this.$route.query.username,
             }
             this.addNewQuestionToBackend(Opt,pra)
+            // this.addNewQuesToQuesList(Opt);
+            break;
+        }
+      }
+
+      else if (type === '填空题'){
+        switch (QuesNum) {
+            // 增加单选
+          case 0:
+            Opt = {
+              Stem: '填空题',
+              idx: this.QuesList.length,
+              isDraggable: true,
+              subData: {},
+              type: 'ExamFillBlank',
+              id: 0,
+            }
+            pra = {
+              Questionnaire: this.QuesId,
+              Type: 12,
+              MinChoice: 1,
+              MaxChoice: 1,
+              Stem: Opt.Stem,
+              username: this.$route.query.username,
+              Number: Opt.idx,
+            }
+            this.addNewQuestionToBackend(Opt,pra)
+
             // this.addNewQuesToQuesList(Opt);
             break;
         }
@@ -1860,8 +1903,7 @@ export default {
               radio: 0,
               //settings
               edit:1,
-              Amount:true,
-
+              Amount:questionItem.ShowResultBeforeVote,
               question:questionItem.Stem,
               describe:questionItem.Describe,
               Must: questionItem.Must,
@@ -1881,7 +1923,7 @@ export default {
               radio: 0,
               //settings
               edit:1,
-              Amount:true,
+              Amount:questionItem.ShowResultBeforeVote,
               //settings
               max:questionItem.MaxChoice,
               min:questionItem.MinChoice,
@@ -1940,7 +1982,20 @@ export default {
             break;
 
 
-
+          case 12:
+            type='ExamFillBlank';
+            // console.log(questionItem.Describe)
+            QuesInfo ={
+              id:"",
+              Number:questionItem.Number,
+              edit:0,
+              describe:questionItem.Describe,
+              Questionnaire:questionItem.Stem,
+              Must: questionItem.Must,
+              Answer:"",
+              score:questionItem.Score,
+            }
+            break;
         }
         let DesignQuestionItem = {
           Stem: questionItem.Stem,

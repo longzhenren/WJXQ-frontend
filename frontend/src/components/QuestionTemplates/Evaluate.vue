@@ -120,6 +120,14 @@ export default {
         this.save()
       }
     },
+
+    changeData(QesData,index){
+      // console.log(index)
+      // console.log(this.QesData.Number)
+      if (index===this.ItemIndex){
+        this.QesData = QesData
+      }
+    },
     save: function() {
       let find = false;
       for (let i = 0; i < this.QesData.level.length; i++) {
@@ -132,7 +140,7 @@ export default {
         alert("选项分数设置不可以为空")
       }else {
         this.QesData.edit=0
-        this.$emit('saveEvaluateData',this.QesData)
+        this.$emit('SaveQes',this.QesData)
       }
     },
     edit: function() {

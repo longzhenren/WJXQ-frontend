@@ -85,7 +85,7 @@ export default {
           edit:1,
           describe: "这是一个描述",
           question:"",
-          choices:["选项1","选项2"],
+          choices:[],
           radio: 0,
           Must:true,
         }

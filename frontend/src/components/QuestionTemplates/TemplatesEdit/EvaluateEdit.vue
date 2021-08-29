@@ -168,7 +168,7 @@ export default {
       }
     },
     del:function (i){
-      if(this.QesData.choices.length>2)
+      if(this.QesData.describes.length>2)
       {
         this.QesData.describes.splice(i,1)
         this.QesData.level.splice(i,1)
