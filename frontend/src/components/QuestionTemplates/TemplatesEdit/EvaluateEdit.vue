@@ -138,16 +138,28 @@ export default {
       }
     },
     needSendIdx(newIndex,oldIndex){
-      // console.log('旧',oldIndex)
-      // console.log('新',newIndex)
       this.needSendIdx = newIndex
-      // if (newIndex !== oldIndex) {
-      //   console.log('自动')
-      //   bus.$emit('saveSingleData',this.QesData,oldIndex)
-      // }
-    }
+    },
+    QesData:{
+      handler(newData,oldData){
+
+        console.log("同步ing"+this.needSendIdx)
+        bus.$emit('changeData',this.QesData,this.needSendIdx)
+      },
+      deep: true
+
+    },
+
   },
   methods: {
+    saveData(index){
+      console.log("传入修改器 当前需要修改"+this.needSendIdx)
+      console.log("传入修改器 上一修改"+index)
+      if (index===this.needSendIdx){
+        console.log(index)
+        this.save()
+      }
+    },
     del:function (i){
       if(this.QesData.choices.length>2)
       {
@@ -170,12 +182,33 @@ export default {
       for (let i = 0; i < this.QesData.level.length; i++) {
         if(this.QesData.level[i]===""){
           find=true;
-          break;
+
+        }
+      }
+      let find1 = false;
+      let j=0;
+      for (let i = 0; i < this.QesData.choices.length; i++) {
+        for ( j = i + 1; j < this.QesData.choices.length; j++) {
+          if (this.QesData.choices[i]== this.QesData.choices[j] ) {
+            find1=true;
+            break
+          }
+          if(find1==true){
+            break;
+          }
         }
       }
       if(find){
-        this.$message.warning("选项分数设置不可以为空")
-      }else {
+        this.$message.warning("选项分数设置不可以为空,题"+this.needSendIdx+"未保存成功")
+        if(find1){
+          this.$message.warning("不可以存在重复分数,题"+this.needSendIdx+"未保存成功")
+        }
+      }else  if(find1){
+        this.$message.warning("不可以存在重复分数,题"+this.needSendIdx+"未保存成功")
+        if(find) {
+          this.$message.warning("选项分数设置不可以为空,题" + this.needSendIdx + "未保存成功")
+        }
+      } else {
         this.QesData.edit=0
         bus.$emit('saveEvaluateData',this.QesData,this.needSendIdx)
         // this.$emit('saveEvaluateData',this.QesData)

@@ -83,24 +83,16 @@ export default {
     },
   },
   created() {
-    bus.$on('SaveSingleData',this.saveData)
-    bus.$on('changeSingleData',this.changeData)
+    bus.$on('SaveData',this.saveData)
+    bus.$on('changeData',this.changeData)
   },
   beforeDestroy(){
-    bus.$off('SaveSingleData',this.saveData)
-    bus.$off('changeSingleData',this.changeData)
+    bus.$off('SaveData',this.saveData)
+    bus.$off('changeData',this.changeData)
   },
   methods: {
 
-    del:function (i){
-      if(this.QesData.choices>=2)
-      {
-        this.QesData.choices.splice(i,1)
-      }
-      else {
-        this.$message.warning("选项不可以少于2")
-      }
-    },
+
     // 保存数据
     saveData(QesData,index){
       console.log("要保存的题号："+index)
@@ -112,9 +104,7 @@ export default {
         this.save()
       }
     },
-    add: function() {
-      this.QesData.choices.push("")
-    },
+
     changeData(QesData,index){
       // console.log(index)
       // console.log(this.QesData.Number)
