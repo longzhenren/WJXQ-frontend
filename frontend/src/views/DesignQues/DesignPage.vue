@@ -1,16 +1,15 @@
 <template>
-  <div class="designPage">
+  <div class="designPage" style="width: 100vw;height: 100vh;">
     <nav class="designNav">
       <div class="QuesPreview" @click="goPreview">
-        <i class="el-icon-zoom-in"></i>
+        <span class="prevLogo"></span>
         预览
       </div>
 
       <div class="BackHome">
 
       </div>
-
-      <div class="release" @click="designDone"> 编辑完成</div>
+      <div class="release" @click="designDone"><span class="finishLogo"></span>编辑完成</div>
     </nav>
 
     <div class="designContent">
@@ -106,6 +105,7 @@
                 <ul ref="choices">
                   <li v-for="(i,idx) in item.details" @click="addNewQues(item.type,idx)">{{i}}</li>
                 </ul>
+
               </el-collapse-item>
             </el-collapse>
           </div>
@@ -162,120 +162,121 @@
           <div class="QuesBase" >
             <div class="QuesTitle" @click="editQuestionnaireHead">{{ QuesTitle }}</div>
 
-            <div class="QuesIntro" @click="editQuestionnaireHead">
-              点击可修改问卷信息
-            </div>
-
-            <div class="AutoNumSwitch">
-              <el-switch
-                  style="display: block"
-                  v-model="isShowQuesNum"
-                  active-color="#13ce66"
-                  inactive-color="#ff4949"
-                  active-text="题号显示"
-                  inactive-text="题号隐藏">
-              </el-switch>
-            </div>
+          <div class="QuesIntro" @click="editQuestionnaireHead">
+            点击可修改问卷信息
           </div>
 
+          <div class="AutoNumSwitch">
+            <el-switch
+              style="display: block"
+              v-model="isShowQuesNum"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              active-text="题号显示"
+              inactive-text="题号隐藏">
+            </el-switch>
+          </div>
+        </div>
+
         <vue-scroll ref="vs"
-            :ops="ops" >
+                    :ops="ops" >
           <ul class="QuesList" v-if="QuesList.length!==0" ref="list">
-              <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="true"
-                  @dragstart="handleDragStart($event,item)"
-                  @dragover.prevent="handleDragOver($event)"
-                  @dragenter="handleDragEnter($event,item)"
-                  @dragend="handleDragEnd($event,item)">
+            <li class="QuesItem" v-for="(item,index) in QuesList" :key="item.idx" :draggable="true"
+                @dragstart="handleDragStart($event,item)"
+                @dragover.prevent="handleDragOver($event)"
+                @dragenter="handleDragEnter($event,item)"
+                @dragend="handleDragEnd($event,item)">
 
-<!--                {{ item.Stem }}-->
-                <span v-if="isShowQuesNum">{{ item.idx + 1 }}. </span>
-                <span v-else></span>
-                <div class="componentsItem">
-                  <SingleChoose v-if="item.type==='singleChoice'" ref="child"
-                                @SaveQes="SaveQes($event,item)"
-                                :item-index="index"
-                                :father-data="item.subData"></SingleChoose>
+              <!--                {{ item.Stem }}-->
+              <span v-if="isShowQuesNum">{{ item.idx + 1 }}. </span>
+              <span v-else></span>
+              <div class="componentsItem">
+                <SingleChoose v-if="item.type==='singleChoice'" ref="child"
+                              @SaveQes="SaveQes($event,item)"
+                              :item-index="index"
+                              :father-data="item.subData"></SingleChoose>
 
-                  <MultiChoose v-else-if="item.type==='multiChoose'" ref="child"
-                               @SaveQes="SaveQes($event,item)"
-                               :father-data="item.subData"
-                               :item-index="index"></MultiChoose>
+                <MultiChoose v-else-if="item.type==='multiChoose'" ref="child"
+                             @SaveQes="SaveQes($event,item)"
+                             :father-data="item.subData"
+                             :item-index="index"></MultiChoose>
 
-                  <FillBlank v-else-if="item.type==='fillBlank'" ref="child"
-                              :father-data="item.subData"
+                <FillBlank v-else-if="item.type==='fillBlank'" ref="child"
+                           :father-data="item.subData"
+                           :item-index="index"
+                           @SaveQes="SaveQes($event,item)"></FillBlank>
+
+                <Evaluate v-else-if="item.type==='evaluate'" ref="child"
+                          :father-data="item.subData"
+                          :item-index="index"
+                          @SaveQes="SaveQes($event,item)"></Evaluate>
+
+
+                <VoteSingleChoose v-else-if="item.type==='VoteSingleChoose'" ref="child"
+                                  :father-data="item.subData"
+                                  :item-index="index"
+                                  @SaveQes="SaveQes($event,item)"></VoteSingleChoose>
+
+
+                <VoteMChoose v-else-if="item.type==='VoteMultiChoose'" ref="child"
+                             :father-data="item.subData"
                              :item-index="index"
-                              @SaveQes="SaveQes($event,item)"></FillBlank>
+                             @SaveQes="SaveQes($event,item)"></VoteMChoose>
 
-                  <Evaluate v-else-if="item.type==='evaluate'" ref="child"
-                            :father-data="item.subData"
-                            :item-index="index"
-                            @SaveQes="SaveQes($event,item)"></Evaluate>
+                <Position v-else-if="item.type==='Position'" ref="child"
+                          :father-data="item.subData"
+                          :item-index="index"
+                          @SaveQes="SaveQes($event,item)"></Position>
 
+                <ExamSingleChoose v-else-if="item.type==='ExamSingleChoose'" ref="child"
+                                  :father-data="item.subData"
+                                  :item-index="index"
+                                  @SaveQes="SaveQes($event,item)"></ExamSingleChoose>
 
-                  <VoteSingleChoose v-else-if="item.type==='VoteSingleChoose'" ref="child"
+                <ExamMChoose v-else-if="item.type ==='ExamMChoose'" ref="child"
+                             :father-data="item.subData"
+                             :item-index="index"
+                             @SaveQes="SaveQes($event,item)"></ExamMChoose>
+
+                <EnrollSingleChoose v-else-if="item.type ==='EnrollSingleChoose'" ref="child"
                                     :father-data="item.subData"
                                     :item-index="index"
-                                    @SaveQes="SaveQes($event,item)"></VoteSingleChoose>
+                                    @SaveQes="SaveQes($event,item)"></EnrollSingleChoose>
 
-
-                  <VoteMChoose v-else-if="item.type==='VoteMultiChoose'" ref="child"
+                <EnrollMChoose v-else-if="item.type ==='EnrollMChoose'" ref="child"
                                :father-data="item.subData"
                                :item-index="index"
-                               @SaveQes="SaveQes($event,item)"></VoteMChoose>
+                               @SaveQes="SaveQes($event,item)"> </EnrollMChoose>
 
-                  <Position v-else-if="item.type==='Position'" ref="child"
-                      :father-data="item.subData"
-                      :item-index="index"
-                      @SaveQes="SaveQes($event,item)"></Position>
-
-                  <ExamSingleChoose v-else-if="item.type==='ExamSingleChoose'" ref="child"
-                                    :father-data="item.subData"
-                                    :item-index="index"
-                                    @SaveQes="SaveQes($event,item)"></ExamSingleChoose>
-
-                  <ExamMChoose v-else-if="item.type ==='ExamMChoose'" ref="child"
+                <ExamFillBlank v-else-if="item.type ==='ExamFillBlank'" ref="child"
                                :father-data="item.subData"
                                :item-index="index"
-                               @SaveQes="SaveQes($event,item)"></ExamMChoose>
+                               @SaveQes="SaveQes($event,item)"></ExamFillBlank>
 
-                  <EnrollSingleChoose v-else-if="item.type ==='EnrollSingleChoose'" ref="child"
-                                      :father-data="item.subData"
-                                      :item-index="index"
-                                      @SaveQes="SaveQes($event,item)"></EnrollSingleChoose>
-
-                  <EnrollMChoose v-else-if="item.type ==='EnrollMChoose'" ref="child"
-                                 :father-data="item.subData"
-                                 :item-index="index"
-                                 @SaveQes="SaveQes($event,item)"> </EnrollMChoose>
-
-                  <ExamFillBlank v-else-if="item.type ==='ExamFillBlank'" ref="child"
-                                 :father-data="item.subData"
-                                 :item-index="index"
-                                 @SaveQes="SaveQes($event,item)"></ExamFillBlank>
-                </div>
+              </div>
 
 
-                <div class="options">
-                  <ul>
-                    <li @click="deleteQues(index)">
-                      <i class="el-icon-delete"></i>
-                      删除
-                    </li>
-                    <li @click="moveUp(index)">
-                      <i class="el-icon-caret-top"></i>
-                      上移
-                    </li>
-                    <li @click="moveDown(index)">
-                      <i class="el-icon-caret-bottom"></i>
-                      下移
-                    </li>
+              <div class="options">
+                <ul>
+                  <li @click="deleteQues(index)">
+                    <i class="el-icon-delete"></i>
+                    删除
+                  </li>
+                  <li @click="moveUp(index)">
+                    <i class="el-icon-caret-top"></i>
+                    上移
+                  </li>
+                  <li @click="moveDown(index)">
+                    <i class="el-icon-caret-bottom"></i>
+                    下移
+                  </li>
 
-                    <li @click="changeQuestions(index)">
-                      <i class="el-icon-edit-outline"></i>
-                      修改
-                    </li>
-                  </ul>
-                </div>
+                  <li @click="changeQuestions(index)">
+                    <i class="el-icon-edit-outline"></i>
+                    修改
+                  </li>
+                </ul>
+              </div>
 
               </li>
 
@@ -292,100 +293,7 @@
 
 
 
-        <div class="quickbtn">
 
-        </div>
-
-      </div>
-
-<!--      编辑问卷侧边栏-->
-      <div class="editQuestion">
-<!--        该题目基本信息-->
-        <div class="quesInfo">
-        </div>
-        <div class="editContain">
-          <vue-scroll ref="editScroll"
-                      :ops="editScroll" >
-
-            <el-card class="box-card">
-              <div class="editTitle">
-                题目编辑
-              </div>
-              <el-divider></el-divider>
-              <div v-if="isCanChangeItem">
-                <SingleChooseEdit v-if="editingQuestion.type === 'singleChoice'"
-                                  :father-data="editingQuestion.subData"
-                                  :need-send-idx="editingQuestion.index"
-                                  ref="childEdit"></SingleChooseEdit>
-                <MultiChooseEdit v-else-if="editingQuestion.type === 'multiChoose'"
-                                 :father-data="editingQuestion.subData"
-                                 :need-send-idx="editingQuestion.index"
-                                 ref="childEdit"></MultiChooseEdit>
-                <EvaluateEdit v-else-if="editingQuestion.type === 'evaluate'"
-                              :father-data="editingQuestion.subData"
-                              :need-send-idx="editingQuestion.index"
-                              ref="childEdit"></EvaluateEdit>
-                <FillBlankEdit v-else-if="editingQuestion.type === 'fillBlank'"
-                               :father-data="editingQuestion.subData"
-                               :need-send-idx="editingQuestion.index"
-                               ref="childEdit"></FillBlankEdit>
-
-                <VoteSingleChooseEdit v-else-if="editingQuestion.type === 'VoteSingleChoose'"
-                                      :father-data="editingQuestion.subData"
-                                      :need-send-idx="editingQuestion.index"
-                                      ref="childEdit"></VoteSingleChooseEdit>
-
-                <VoteMultiChooseEdit v-else-if="editingQuestion.type === 'VoteMultiChoose'"
-                                     :father-data="editingQuestion.subData"
-                                     :need-send-idx="editingQuestion.index"
-                                     ref="childEdit"></VoteMultiChooseEdit>
-
-                <PositionEdit  v-else-if="editingQuestion.type === 'Position'"
-                              :father-data="editingQuestion.subData"
-                              :need-send-idx="editingQuestion.index"
-                              ref="childEdit"></PositionEdit>
-
-                <ExamSingleChooseEdit v-else-if="editingQuestion.type === 'ExamSingleChoose'"
-                                      :father-data="editingQuestion.subData"
-                                      :need-send-idx="editingQuestion.index"
-                                      ref="childEdit"></ExamSingleChooseEdit>
-
-                <ExamMultiChooseEdit v-else-if="editingQuestion.type === 'ExamMChoose'"
-                                     :father-data="editingQuestion.subData"
-                                     :need-send-idx="editingQuestion.index"
-                                     ref="childEdit"></ExamMultiChooseEdit>
-
-                <EnrollSingleChooseEdit v-else-if="editingQuestion.type === 'EnrollSingleChoose'"
-                                        :father-data="editingQuestion.subData"
-                                        :need-send-idx="editingQuestion.index"
-                                        ref="childEdit"></EnrollSingleChooseEdit>
-
-                <EnrollMultiChooseEdit v-else-if="editingQuestion.type === 'EnrollMChoose'"
-                                       :father-data="editingQuestion.subData"
-                                       :need-send-idx="editingQuestion.index"
-                                       ref="childEdit" ></EnrollMultiChooseEdit>
-
-                <ExamFillBlankEdit v-else-if="editingQuestion.type === 'ExamFillBlank'"
-                                   :father-data="editingQuestion.subData"
-                                   :need-send-idx="editingQuestion.index"
-                                   ref="childEdit"></ExamFillBlankEdit>
-
-<!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
-
-<!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
-<!--                                  :father-data="editingQuestion.subData"-->
-<!--                                  :need-send-idx="editingQuestion.index"-->
-<!--                                  ref="childEdit"></VoteSingleChoose>-->
-              </div>
-
-
-              <div v-else>
-                <el-result icon="success" title="编辑完成" >
-                </el-result>
-              </div>
-            </el-card>
-          </vue-scroll>
-        </div>
       </div>
 
       <el-dialog title="修改问卷头信息" :visible.sync="dialogFormVisible">
@@ -407,7 +315,93 @@
       </el-dialog>
 
     </div>
+    <!--      编辑问卷侧边栏-->
+    <div class="editQuestion">
+      <div class="editContain">
+        <vue-scroll ref="editScroll"
+                    :ops="editScroll" >
 
+          <el-card class="box-card">
+            <div class="editTitle">
+              题目编辑
+            </div>
+            <el-divider></el-divider>
+            <div v-if="isCanChangeItem">
+              <SingleChooseEdit v-if="editingQuestion.type === 'singleChoice'"
+                                :father-data="editingQuestion.subData"
+                                :need-send-idx="editingQuestion.index"
+                                ref="childEdit"></SingleChooseEdit>
+              <MultiChooseEdit v-else-if="editingQuestion.type === 'multiChoose'"
+                               :father-data="editingQuestion.subData"
+                               :need-send-idx="editingQuestion.index"
+                               ref="childEdit"></MultiChooseEdit>
+              <EvaluateEdit v-else-if="editingQuestion.type === 'evaluate'"
+                            :father-data="editingQuestion.subData"
+                            :need-send-idx="editingQuestion.index"
+                            ref="childEdit"></EvaluateEdit>
+              <FillBlankEdit v-else-if="editingQuestion.type === 'fillBlank'"
+                             :father-data="editingQuestion.subData"
+                             :need-send-idx="editingQuestion.index"
+                             ref="childEdit"></FillBlankEdit>
+
+              <VoteSingleChooseEdit v-else-if="editingQuestion.type === 'VoteSingleChoose'"
+                                    :father-data="editingQuestion.subData"
+                                    :need-send-idx="editingQuestion.index"
+                                    ref="childEdit"></VoteSingleChooseEdit>
+
+              <VoteMultiChooseEdit v-else-if="editingQuestion.type === 'VoteMultiChoose'"
+                                   :father-data="editingQuestion.subData"
+                                   :need-send-idx="editingQuestion.index"
+                                   ref="childEdit"></VoteMultiChooseEdit>
+
+              <PositionEdit  v-else-if="editingQuestion.type === 'Position'"
+                             :father-data="editingQuestion.subData"
+                             :need-send-idx="editingQuestion.index"
+                             ref="childEdit"></PositionEdit>
+
+              <ExamSingleChooseEdit v-else-if="editingQuestion.type === 'ExamSingleChoose'"
+                                    :father-data="editingQuestion.subData"
+                                    :need-send-idx="editingQuestion.index"
+                                    ref="childEdit"></ExamSingleChooseEdit>
+
+              <ExamMultiChooseEdit v-else-if="editingQuestion.type === 'ExamMChoose'"
+                                   :father-data="editingQuestion.subData"
+                                   :need-send-idx="editingQuestion.index"
+                                   ref="childEdit"></ExamMultiChooseEdit>
+
+              <EnrollSingleChooseEdit v-else-if="editingQuestion.type === 'EnrollSingleChoose'"
+                                      :father-data="editingQuestion.subData"
+                                      :need-send-idx="editingQuestion.index"
+                                      ref="childEdit"></EnrollSingleChooseEdit>
+
+              <EnrollMultiChooseEdit v-else-if="editingQuestion.type === 'EnrollMChoose'"
+                                     :father-data="editingQuestion.subData"
+                                     :need-send-idx="editingQuestion.index"
+                                     ref="childEdit" ></EnrollMultiChooseEdit>
+
+              <ExamFillBlankEdit v-else-if="editingQuestion.type === 'ExamFillBlank'"
+                                 :father-data="editingQuestion.subData"
+                                 :need-send-idx="editingQuestion.index"
+                                 ref="childEdit"></ExamFillBlankEdit>
+
+              <!--                <VoteMChoose v-else-if=""></VoteMChoose>-->
+
+              <!--                <VoteSingleChoose v-else-if="editingQuestion.type === 'VoteSingleChoose'"-->
+              <!--                                  :father-data="editingQuestion.subData"-->
+              <!--                                  :need-send-idx="editingQuestion.index"-->
+              <!--                                  ref="childEdit"></VoteSingleChoose>-->
+            </div>
+
+
+            <div v-else>
+              <el-result icon="success" title="编辑完成" >
+              </el-result>
+            </div>
+          </el-card>
+        </vue-scroll>
+      </div>
+    </div>
+    <Model :show="modelShow"  @hideModal="hideModal" :QesInfoModel="Questionnaire"/>
   </div>
 
 </template>
@@ -439,10 +433,12 @@ import EnrollMChoose from "../../components/QuestionTemplates/Enroll/View/Enroll
 import EnrollMultiChooseEdit from "../../components/QuestionTemplates/Enroll/Edit/EnrollMultiChooseEdit";
 import ExamFillBlank from "../../components/QuestionTemplates/Exam/View/ExamFillBlank";
 import ExamFillBlankEdit from "../../components/QuestionTemplates/Exam/Edit/ExamFillBlankEdit";
+import Model from "../../components/ManagementPagin/common/Model";
 
 export default {
   name: "DesignPage",
   components:{
+    Model,
     FillBlankEdit,
     EvaluateEdit,
     MultiChooseEdit,
@@ -471,7 +467,7 @@ export default {
   },
   data(){
     return {
-
+      modelShow: false,
       // 当前编辑的题目
       editingQuestion: {
         type: '',
@@ -748,7 +744,10 @@ export default {
     bus.$emit('NewQuesDesigned',this.Questionnaire)
   },
   methods: {
-
+    // 关闭弹窗
+    hideModal() {
+      this.modelShow = false;
+    },
     Confirm(){
       this.Questionnaire.Text = this.QuesText;
       this.Questionnaire.title = this.QuesTitle;
@@ -763,13 +762,7 @@ export default {
 
     // 进行预览
     goPreview(){
-      let psthH = '/answer/'+this.Questionnaire.EncodeID
-      this.$router.push({
-        path: psthH,
-        query: {
-          Mode: 'preview',
-        }
-      })
+      this.modelShow=true
     },
 
     // 转到发布页面
@@ -821,7 +814,7 @@ export default {
       }
 
 
-      console.log('这个问卷',FinalQuestionnaire)
+
       // console.log(FinalQuestionnaire)
       request({
         url: '/question/modifyQuestionnaire',
@@ -1116,12 +1109,6 @@ export default {
         method: 'post',
         data: Question
       }).then(res=>{
-        // if (res.data.Message === 'Success'){
-        //   this.$message.success("题目 "+ (item.idx+1) +" 保存成功")
-        // }
-        // else {
-        //   this.$message.warning("题目 "+ (item.idx+1) +" 失败")
-        // }
       }).catch( err=> {
         console.log(err);
       })
@@ -1482,6 +1469,7 @@ export default {
 
     // 增加新题目到列表中
     addNewQuesToQuesList(SubjectObj){
+
       bus.$emit('SaveEdited',this.editingQuestion.index)
       let length = this.QuesList.length;
       this.isCanChangeItem = true
@@ -1767,26 +1755,26 @@ export default {
                 Must:questionItem.Must,
               }
 
-              for (let j = 0; j < questionItem.Choice.length; j++) {
-                QuesInfo.choices.push(questionItem.Choice[j].Text);
-              }
-              break;
+            for (let j = 0; j < questionItem.Choice.length; j++) {
+              QuesInfo.choices.push(questionItem.Choice[j].Text);
+            }
+            break;
 
           case 10:
-              type='ExamSingleChoose';
-              // console.log(questionItem.Describe)
-              QuesInfo ={
-                answer:[],
-                score:questionItem.Score,
-                id:"",
-                Number:questionItem.Number,
-                edit:0,
-                describe: questionItem.Describe,
-                question: questionItem.Stem,
-                choices: [],
-                radio: 0,
-                Must:questionItem.Must,
-              }
+            type='ExamSingleChoose';
+            // console.log(questionItem.Describe)
+            QuesInfo ={
+              answer:[],
+              score:questionItem.Score,
+              id:"",
+              Number:questionItem.Number,
+              edit:0,
+              describe: questionItem.Describe,
+              question: questionItem.Stem,
+              choices: [],
+              radio: 0,
+              Must:questionItem.Must,
+            }
 
               for (let j = 0; j < questionItem.Choice.length; j++) {
                 QuesInfo.choices.push(questionItem.Choice[j].Text);
@@ -2097,456 +2085,463 @@ export default {
 </script>
 
 <style scoped>
-  .designPage {
-    width: 100vw;
-    height: 100vh;
-    background-color: #E6E6E6;
-  }
-  .designNav {
-    background-color: #2E2E2E;
-    height: 6vh;
-    position: relative;
-  }
+.designPage {
+  width: 100vw;
+  height: 100vh;
+  background-color: #E6E6E6;
+}
+.designNav {
+  background-color: #2E2E2E;
+  height: 4vh;
+  font-size: 12px;
+  position: relative;
+}
 
-  .designNav .QuesPreview {
-    height: 100%;
-    background-color: white;
-    color: #58ACFA;
-    width: 7%;
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    left: 10%;
-    top: 0;
-    transition: .4s all ease-in-out;
-  }
+.designNav .QuesPreview {
+  height: 100%;
+  background-color: white;
+  padding-top: 8px;
+  padding-left: 15px;
+  color: #2e88ff;
+  width: 5%;
+  font-weight: 600;
+  position: absolute;
+  right: 33%;
+  top: 0;
+}
 
-  .designNav .QuesPreview:hover {
-    background-color: #58ACFA;
-    color: white;
-    cursor: pointer;
-  }
+.designNav .QuesPreview:hover {
+  background-color: #eefaff;
+  cursor: pointer;
+}
 
-  .designNav .release {
-    height: 100%;
-    width: 10%;
-    color: white;
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: skyblue;
-    position: absolute;
-    top: 0;
-    right: 5%;
-    transition: .4s all ease-in-out;
-  }
+.designNav .release {
+  padding-top: 8px;
+  padding-left: 15px;
+  height: 100%;
+  width: 6%;
+  color: white;
+  font-weight: 600;
+  background-color: #2e88ff;
+  position: absolute;
+  top: 0;
+  right: 27%;
+  transition: .4s all ease-in-out;
+}
 
-  .designNav .release:hover {
-    background-color: white;
-    color: #58ACFA;
-    cursor: pointer;
-  }
+.designNav .release:hover {
+  background-color: #1e78ef;
+  cursor: pointer;
+}
 
-  .designContent {
-    width: 95vw;
+.designContent {
+  width: 70vw;
+  box-sizing: border-box;
+  height: 96vh;
+  /*background-color: white;*/
+  padding-top: 10px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 15fr 50fr 30fr;
+  column-gap: 15px;
+}
 
-    box-sizing: border-box;
-    height: 94vh;
-    /*background-color: white;*/
-    padding-top: 10px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 15fr 50fr 30fr;
-    column-gap: 15px;
-  }
+.editQuestion {
+  position: fixed;
+  right: 5%;
+  width: 300px;
+  top:50px;
+  height: 98%;
+  /*background-color: pink;*/
 
-  .designContent .editQuestion {
-    height: 98%;
-    /*background-color: pink;*/
+}
 
-  }
+.designContent .designComponent {
+  background-color: white;
+  float: left;
+  height: 94vh;
+  width: 15vw;
+  box-shadow: 0 0 10px rgba(0,0,0,.2);
+  /*box-sizing: border-box;*/
+  padding: 10px;
+  /*width: 15vw;*/
 
-  .designContent .editQuestion .quesInfo {
-    /*background-color: #58ACFA;*/
-    height: 5%;
-    width: 95%;
-    margin: 0 auto;
-    margin-top: 5px;
-  }
+}
 
+.designContent .designComponent .ShowCntl {
+  background-color: #dddddd;
+  border-radius: 3px;
+  color: #aaaaaa;
+  height: 30px;
+  width: 96%;
+  margin-left: 2px;
+  font-weight: 400;
+}
 
-  .designContent .designComponent {
-    background-color: white;
-    box-sizing: border-box;
-    height: 92vh;
-    box-shadow: 0 0 10px rgba(0,0,0,.2);
-    /*box-sizing: border-box;*/
-    padding: 10px;
-    /*width: 15vw;*/
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
+.designContent .designComponent .ShowCntl div {
+  font-size: 12px;
+  padding-top: 2px;
+  width: 48%;
+  height: 22px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  transition: .4s;
+  margin-top: 4px;
+  border-radius: 3px;
+}
+.designContent .designComponent .ShowCntl .itemChoose{
+  display: inline-block;
+}
+.designContent .designComponent .ShowCntl .qesOutline{
+  display: inline-block;
+}
 
-  .designContent .designComponent .ShowCntl {
-    /*background-color: pink;*/
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 7%;
-    font-weight: 600;
-  }
+.designContent .designComponent .ShowCntl div:hover {
+  cursor: pointer;
+}
 
-  .designContent .designComponent .ShowCntl div {
-    width: 50%;
-    height: 70%;
-    box-sizing: border-box;
-    transition: .4s;
-  }
+.designContent .designComponent .ShowCntl .active {
+  color: black;
+  font-weight: 600;
+  background-color: white;
+  box-sizing: border-box;
+  transition: .4s;
+}
 
-  .designContent .designComponent .ShowCntl div:hover {
-    cursor: pointer;
-  }
+.designContent .designComponent .components {
+  /*background-color: greenyellow;*/
+  position: relative;
+  height: 90%;
+}
 
-  .designContent .designComponent .ShowCntl .active {
-    border-bottom: 2px solid #A4A4A4;
-    color: #CC2EFA;
-    box-sizing: border-box;
-    transition: .4s;
-  }
+.designContent .designComponent .components .choicesPreview {
+  /*height: 150px;*/
+  width: 600px;
+  padding: 5px;
+  position: absolute;
+  /*overflow: hidden;*/
+  left: 5vw;
+  display: none;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,.4);
+  z-index: 99;
+}
 
-  .designContent .designComponent .components {
-    /*background-color: greenyellow;*/
-    position: relative;
-    height: 90%;
-  }
+.designContent .designComponent .components .choicesPreview .arrow {
+  background-color: white;
+  width: 20px;
+  height: 20px;
+  /*top: 50px;*/
+  transform: translate(-30%,50%) rotate(45deg) ;
+  /*transform: ;*/
+}
 
-  .designContent .designComponent .components .choicesPreview {
-    /*height: 150px;*/
-    width: 600px;
-    padding: 5px;
-    position: absolute;
-    /*overflow: hidden;*/
-    left: 15vw;
-    display: none;
-    background-color: white;
-    box-shadow: 0 0 5px rgba(0,0,0,.4);
-    z-index: 99;
-  }
+.designContent .designComponent .components .choices {
+  /*background-color: pink;*/
+  /*height: 20%;*/
+}
 
-  .designContent .designComponent .components .choicesPreview .arrow {
-    background-color: white;
-    width: 20px;
-    height: 20px;
-    /*top: 50px;*/
-    transform: translate(-30%,50%) rotate(45deg) ;
-    /*transform: ;*/
-  }
+.designContent .designComponent .components .choices .title {
+  width: 100%;
+  /*background-color: blue;*/
+  height: 50px;
+  text-align: left;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
 
-  .designContent .designComponent .components .choices {
-    /*background-color: pink;*/
-    /*height: 20%;*/
-  }
+.designContent .designComponent .components .choices ul {
+  display: flex;
+  justify-content: start;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.designContent .designComponent .components .choices ul li {
+  width: 55%;
+  /*flex: 40%;*/
+  height: 30px;
+  margin: 5px;
+  background-color: #58ACFA;
+  text-align: center;
+  line-height: 30px;
+  box-sizing: border-box;
+  padding-left: 10px;
+  transition: .4s;
+  color:white;
+  border-radius: 10px;
+  font-weight: 600;
+  word-spacing: 5px;
+  letter-spacing: 5px;
+}
 
-  .designContent .designComponent .components .choices .title {
-    width: 100%;
-    /*background-color: blue;*/
-    height: 50px;
-    text-align: left;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-  }
-
-  .designContent .designComponent .components .choices ul {
-    display: flex;
-    justify-content: start;
-    /**/
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .designContent .designComponent .components .choices ul li {
-    width: 45%;
-    /*flex: 40%;*/
-    height: 30px;
-    margin: 5px;
-    /*background-color: red;*/
-    text-align: left;
-    line-height: 30px;
-    box-sizing: border-box;
-    padding-left: 10px;
-    transition: .4s;
-    color: #58ACFA;
-    font-weight: 600;
-    word-spacing: 5px;
-    letter-spacing: 5px;
-  }
-
-  .designContent .designComponent .components .choices ul li:hover {
-    background-color: #58ACFA;
-    cursor: pointer;
-    color: white;
-    border-radius: 99999px;
-  }
-
-
-  .designContent .designComponent .outline {
-    /*background-color: skyblue;*/
-    height: 90%;
-  }
-
-  .designContent .designComponent .outline .outlineFirstItem {
-    height: 50px;
-    border-bottom: 1px solid rgba(0,0,0,.2);
-    line-height: 30px;
-    box-sizing: border-box;
-    padding: 10px 5px;
-    text-align: start;
-    font-size: 18px;
-    color: #A4A4A4;
-    transition: .4s;
-  }
-  .designContent .designComponent .outline .outlineItem {
-    height: 50px;
-    border-bottom: 1px solid rgba(0,0,0,.2);
-    line-height: 30px;
-    box-sizing: border-box;
-    padding: 10px 5px;
-    text-align: start;
-    transition: .4s all ease-in-out;
-
-  }
-
-  .designContent .designComponent .outline .outlineItem:hover {
-    cursor: pointer;
-    color: #58ACFA;
-    font-weight: 500;
-    background-color: #F2F2F2;
-  }
-
-  .designContent .designPreview {
-    /*background-color: blue;*/
-    box-sizing: border-box;
-    height: 92vh;
-    /*width: 60vw;*/
-    /*position: relative;*/
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0,0,0,.2);
-  }
+.designContent .designComponent .components .choices ul li:hover {
+  cursor: pointer;
+  color: white;
+  background-color: #ff8888;
+}
 
 
-  .designContent .designPreview .quickbtn {
-    background-color: pink;
-    width: 5%;
-    height: 10%;
-    position: absolute;
-    top: 20%;
-    right: -10% ;
-    z-index: 2;
-  }
+.designContent .designComponent .outline {
+  /*background-color: skyblue;*/
+  height: 90%;
+}
+
+.designContent .designComponent .outline .outlineFirstItem {
+  height: 50px;
+  border-bottom: 1px solid rgba(0,0,0,.2);
+  line-height: 30px;
+  box-sizing: border-box;
+  padding: 10px 5px;
+  text-align: start;
+  font-size: 18px;
+  color: #A4A4A4;
+  transition: .4s;
+}
+.designContent .designComponent .outline .outlineItem {
+  height: 50px;
+  border-bottom: 1px solid rgba(0,0,0,.2);
+  line-height: 30px;
+  box-sizing: border-box;
+  padding: 10px 5px;
+  text-align: start;
+  transition: .4s all ease-in-out;
+
+}
+
+.designContent .designComponent .outline .outlineItem:hover {
+  cursor: pointer;
+  color: #58ACFA;
+  font-weight: 500;
+  background-color: #F2F2F2;
+}
+
+.designContent .designPreview {
+  height: 94vh;
+  float: left;
+  width: 42vw;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,.2);
+}
 
 
-  .designContent .designPreview  .QuesBase {
-    width: 100%;
-    height: 20%;
-    background-color: white;
-    border-bottom: 1px solid #BDBDBD;
-    /*box-shadow: 10px 10px 10px rgba(0,0,0,.7);*/
-    padding-top: 20px ;
-    position: relative;
-    box-sizing: border-box;
-    z-index: 1;
-  }
-
-  .designContent .designPreview  .QuesBase .QuesTitle {
-    font-size: 22px;
-    color: #A4A4A4;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .designContent .designPreview  .QuesBase .QuesIntro {
-    /*background-color: #58ACFA;*/
-    /*width: 40%;*/
-    height: 30%;
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    text-align: left;
-    font-size: 14px;
-    /*font-weight: 600;*/
-    display: flex;
-    align-items: center;
-    /*color: #A4A4A4;*/
-    cursor: pointer;
-    transition: .4s all ease-in-out;
-  }
-
-  .designContent .designPreview  .QuesBase .QuesIntro:hover {
-    text-decoration: underline;
-    color: #58ACFA;
-    font-style: oblique;
-  }
-
-  .designContent .designPreview  .QuesBase .AutoNumSwitch {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-  }
-
-  .designContent .designPreview .None {
-    background-color: #F2F2F2;
-    width: 100%;
-    height: 90vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-
-  }
-
-  .designContent .designPreview .None .empty_pic {
-    width: 50%;
-    height: 50%;
-
-  }
-
-  .designContent .designPreview .None .empty_pic img {
-    width: 100%;
-    height: 100%;
-
-  }
-
-  .designContent .designPreview .None .empty_font {
-    width: 100%;
-    font-size: 30px;
-    font-weight: 600;
-    color: #6E6E6E;
-    height: 40%;
-  }
-
-  .designContent .designPreview .QuesList {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /*justify-content: center;*/
-    /*background-color: #A9E2F3;*/
-    /*opacity: .75;*/
-    padding-bottom: 138px;
-    margin-top: 9px;
-    z-index: 1;
-  }
-
-  .designContent .designPreview .QuesList .QuesItem {
-    width: 100%;
-    min-height: 50px;
-    padding-top: 20px;
-    padding-bottom: 5%;
-    padding-left: 25px;
-    padding-right: 25px;
-    /*box-sizing: ;*/
-    overflow: hidden;
-    display: flex;
-    flex-direction: row;
-    /*justify-content: space-around;*/
-    /*margin-bottom: 15px ;*/
-    /*margin: 8px 0;*/
-    /*z-index: 2;*/
-    /*margin-bottom: -10px;*/
-    /*position: relative;*/
-    /*top: -10px;*/
-    /*border-bottom-right-radius: 20px;*/
-    /*border-bottom-left-radius: 20px;*/
-    /*border-top-right-radius: 20px;*/
-    /*border-top-left-radius: 20px;*/
-    /*opacity: .7;*/
-    transform: translateY(-15px);
-    box-shadow: 0 0 2px rgba(0,0,0,.5);
-    background-color: white;
-    /*border-bottom: 1px solid #BDBDBD;*/
-    position: relative;
-    transition: .4s all ease-in-out;
-
-    /*z-index: 2;*/
-  }
-
-  .designContent .designPreview .QuesList .QuesItem span {
-    width: 10px;
-    height: 10px;
-  }
-
-  .designContent .designPreview .QuesList .QuesItem .componentsItem {
-    width: 80%;
-    /*height: 100%;*/
-  }
-
-  .designContent .designPreview .QuesList .QuesItem .options {
-    /*background-color: #58ACFA;*/
-    width: 100%;
-    height: 10%;
-    position: absolute;
-    padding-right: 50px;
-    /*bottom: 31px;*/
-    /*display: none;*/
-    bottom: -15%;
-    transition: .4s all ease-in-out;
-    display: flex;
-    justify-content: space-around;
-  }
-
-  .designContent .designPreview .QuesList .QuesItem .OptActive {
-    /*display: flex;*/
-    bottom: 20px;
-    /*justify-content: end;*/
-  }
-
-  .designContent .designPreview .QuesList .QuesItem .options ul {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-left: 350px;
-  }
-
-  .designContent .designPreview .QuesList .QuesItem .options ul li {
-    height: 25px;
-    width: 35%;
-    display: inline-block;
-    line-height: 25px;
-    background-color: white;
-    opacity: .7;
-    /*border-radius: 10px;*/
-    box-shadow: 0 0 3px rgba(0,0,0,.5);
-    color: #A4A4A4;
-    transition: .4s;
-    font-size: 14px;
-  }
-
-  .designContent .designPreview .QuesList .QuesItem .options ul li:hover {
-    cursor: pointer;
-    /*border: 1px solid #2E9AFE;*/
-    /*background-color: #FAAC58;*/
-    transform: scale(1.05);
-    /*font-weight: 600;*/
-    /*background-image: linear-gradient(to left,#00FFFF,#01A9DB);*/
-    /*color: #FAFAFA;*/
-  }
-
-  .designContent .designPreview .QuesList .QuesItemHover {
-    cursor: move;
-    /*transform: scale(1.01);*/
-    background-color: rgba(250,250,250,.6);
-  }
 
 
-  .editContain {
-    width: 100%;
-    height: 80vh;
-  }
+.designContent .designPreview  .QuesBase {
+  width: 100%;
+  height: 20%;
+  background-color: white;
+  border-bottom: 1px solid #BDBDBD;
+  /*box-shadow: 10px 10px 10px rgba(0,0,0,.7);*/
+  padding-top: 20px ;
+  position: relative;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.designContent .designPreview  .QuesBase .QuesTitle {
+  font-size: 22px;
+  color: #A4A4A4;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.designContent .designPreview  .QuesBase .QuesIntro {
+  /*background-color: #58ACFA;*/
+  /*width: 40%;*/
+  height: 30%;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  text-align: left;
+  font-size: 14px;
+  /*font-weight: 600;*/
+  display: flex;
+  align-items: center;
+  /*color: #A4A4A4;*/
+  cursor: pointer;
+  transition: .4s all ease-in-out;
+}
+
+.designContent .designPreview  .QuesBase .QuesIntro:hover {
+  text-decoration: underline;
+  color: #58ACFA;
+  font-style: oblique;
+}
+
+.designContent .designPreview  .QuesBase .AutoNumSwitch {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.designContent .designPreview .None {
+  background-color: #F2F2F2;
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+
+}
+
+.designContent .designPreview .None .empty_pic {
+  width: 50%;
+  height: 50%;
+
+}
+
+.designContent .designPreview .None .empty_pic img {
+  width: 100%;
+  height: 100%;
+
+}
+
+.designContent .designPreview .None .empty_font {
+  width: 100%;
+  font-size: 30px;
+  font-weight: 600;
+  color: #6E6E6E;
+  height: 40%;
+}
+
+.designContent .designPreview .QuesList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /*justify-content: center;*/
+  /*background-color: #A9E2F3;*/
+  /*opacity: .75;*/
+  padding-bottom: 138px;
+  margin-top: 9px;
+  z-index: 1;
+}
+
+.designContent .designPreview .QuesList .QuesItem {
+  width: 100%;
+  min-height: 50px;
+  padding-top: 20px;
+  padding-bottom: 5%;
+  padding-left: 25px;
+  padding-right: 25px;
+  /*box-sizing: ;*/
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  /*justify-content: space-around;*/
+  /*margin-bottom: 15px ;*/
+  /*margin: 8px 0;*/
+  /*z-index: 2;*/
+  /*margin-bottom: -10px;*/
+  /*position: relative;*/
+  /*top: -10px;*/
+  /*border-bottom-right-radius: 20px;*/
+  /*border-bottom-left-radius: 20px;*/
+  /*border-top-right-radius: 20px;*/
+  /*border-top-left-radius: 20px;*/
+  /*opacity: .7;*/
+  transform: translateY(-15px);
+  box-shadow: 0 0 2px rgba(0,0,0,.5);
+  background-color: white;
+  /*border-bottom: 1px solid #BDBDBD;*/
+  position: relative;
+  transition: .4s all ease-in-out;
+
+  /*z-index: 2;*/
+}
+
+.designContent .designPreview .QuesList .QuesItem span {
+  width: 10px;
+  height: 10px;
+}
+
+.designContent .designPreview .QuesList .QuesItem .componentsItem {
+  width: 80%;
+  /*height: 100%;*/
+}
+
+.designContent .designPreview .QuesList .QuesItem .options {
+  /*background-color: #58ACFA;*/
+  width: 100%;
+  height: 10%;
+  position: absolute;
+  padding-right: 50px;
+  /*bottom: 31px;*/
+  /*display: none;*/
+  bottom: -15%;
+  transition: .4s all ease-in-out;
+  display: flex;
+  justify-content: space-around;
+}
+
+.designContent .designPreview .QuesList .QuesItem .OptActive {
+  /*display: flex;*/
+  bottom: 20px;
+  /*justify-content: end;*/
+}
+
+.designContent .designPreview .QuesList .QuesItem .options ul {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-left: 350px;
+}
+
+.designContent .designPreview .QuesList .QuesItem .options ul li {
+  height: 25px;
+  width: 35%;
+  display: inline-block;
+  line-height: 25px;
+  background-color: white;
+  opacity: .7;
+  /*border-radius: 10px;*/
+  box-shadow: 0 0 3px rgba(0,0,0,.5);
+  color: #A4A4A4;
+  transition: .4s;
+  font-size: 14px;
+}
+
+.designContent .designPreview .QuesList .QuesItem .options ul li:hover {
+  cursor: pointer;
+  /*border: 1px solid #2E9AFE;*/
+  /*background-color: #FAAC58;*/
+  transform: scale(1.05);
+  /*font-weight: 600;*/
+  /*background-image: linear-gradient(to left,#00FFFF,#01A9DB);*/
+  /*color: #FAFAFA;*/
+}
+
+.designContent .designPreview .QuesList .QuesItemHover {
+  cursor: move;
+  /*transform: scale(1.01);*/
+  background-color: rgba(250,250,250,.6);
+}
+
+.editContain {
+  width: 300px;
+  height: 80vh;
+}
+
+span[class=prevLogo]::after{
+  font-size: 13px;
+  line-height: 13px;
+  left: 15px;
+  top :10px;
+  position: absolute;
+  font-family: icomoon;
+  content: '\e9ce';
+}
+span[class=finishLogo]::after{
+  font-size: 13px;
+  line-height: 13px;
+  left: 15px;
+  top :10px;
+  position: absolute;
+  font-family: icomoon;
+  content: '\e926';
+}
 
 </style>

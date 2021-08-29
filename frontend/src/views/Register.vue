@@ -1,5 +1,5 @@
 <template>
-  <div class="Register">
+  <div class="Register" style="width: 100vw;height: 100vh;">
     <div id="top">
       <img src="" alt="">
       <button id="login1" @click="login1Clicked">登陆</button>
@@ -45,6 +45,7 @@
       </div>
       <div id="login2"><router-link to="/Login" class="style_orange">我有账号,立即登陆</router-link></div>
     </div>
+    <img src="../assets/imgs/bg1.jpg" class="bg" alt="">
   </div>
 </template>
 
@@ -74,10 +75,10 @@ export default {
       },
       rules: {
         Username: [
-          { required: true, message: '请输入您的用户名', trigger: 'blur' }
+          { required: true, message: '请输入您的用户名,长度为3~11之间', trigger: 'blur',pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]{3,11}$/ }
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
+          { pattern: /^[a-zA-Z0-9]{3,10}$/,required: true, message: '请确保密码在3到10个字符间，且只有数字或字母', trigger: 'blur' }
         ],
         confirmPwd: [
           { required: true, validator: validatePass,  trigger: 'blur',}
@@ -148,10 +149,10 @@ export default {
   top: 0px;
   left: 0px;
   position: absolute;
-  background-color: skyblue;
+  /*background-color: skyblue;*/
   height: 100px;
   width: 100%;
-  box-shadow: 5px 5px 2px rgba(192,196,204,0.3);
+  /*box-shadow: 5px 5px 2px rgba(192,196,204,0.3);*/
 }
 #mainBody{
   display: block;
@@ -170,10 +171,10 @@ export default {
 }
 #login1{
   position: absolute;
-  background-color: #8e9aaf;
+  background-color: #9eaabf;
   top: 20px;
-  height: 40px;
-  width: 80px;
+  height: 35px;
+  width: 70px;
   right: 12%;
   border-radius: 22px;
   font-size: 18px;
@@ -184,11 +185,11 @@ export default {
 }
 #Home{
   position: absolute;
-  background-color: #8e9aaf;
+  background-color: #9eaabf;
   top: 20px;
-  height: 40px;
-  width: 120px;
-  right: 2%;
+  height: 35px;
+  width: 100px;
+  right: 4%;
   border-radius: 22px;
   font-size: 18px;
   border-style: solid;
@@ -196,7 +197,7 @@ export default {
   border-color: white;
   color: white;
 }
-#Home:hover,#Register1:hover{
+#Home:hover,#login1:hover{
   border-width: 2px ;
   font-size: 17px;
   transition: all 0.2s ease-out ;
@@ -269,5 +270,11 @@ span[class=emailLogo]::after{
   content: '\f1d8';
   top: 265px;
   left:50px;
+}
+.bg{
+  z-index: -1;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
 }
 </style>

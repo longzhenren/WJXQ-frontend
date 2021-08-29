@@ -1,5 +1,5 @@
 <template>
-  <div id="Login" >
+  <div id="Login"  style="width: 100vw;height: 100vh;">
     <div id="top">
       <img src="" alt="">
       <button id="Register1" @click="Register1Clicked">注册</button>
@@ -7,7 +7,7 @@
     </div>
     <div id="mainBody">
       <div class="re_head">
-        <h3>问卷星登录
+        <h3>问卷星球
         </h3>
       </div>
       <div class="reg_form">
@@ -55,6 +55,7 @@
       </div>
       <div id="Register2"><router-link to="/Register" class="style_orange">立即注册</router-link></div>
     </div>
+    <img src="../assets/imgs/bg1.jpg" class="bg" alt="">
   </div>
 </template>
 
@@ -98,7 +99,6 @@ export default {
   methods:{
 
 Login(){
-      console.log(this.loginForm)
       // let par=new URLSearchParams();
       // par.append('username',this.loginForm.username);
       // par.append('password',this.loginForm.passwd);
@@ -131,7 +131,15 @@ Login(){
             this.$store.commit('getEmail',res2.data.userinfo.email);
             window.sessionStorage.setItem('email', res2.data.userinfo.email);
           })
-          this.$router.push('/Management')
+          if(window.sessionStorage.getItem('answerQesId')===undefined||window.sessionStorage.getItem('answerQesId')===null)
+            this.$router.push('/Management')
+          else{
+            let psthH = '/answer/'+window.sessionStorage.getItem('answerQesId')
+            this.$router.push({
+              path: psthH,
+            })
+          }
+
         }
         else if (res.data.msg==='认证失败,请检查账号密码是否正确'){
           this.$message({
@@ -181,16 +189,6 @@ Login(){
       })
     }
   },
-  // beforeRouteEnter(to, from, next) {
-  //   // 添加背景色
-  //   document.querySelector('body').setAttribute('style', 'background-color:#F2F2F2')
-  //   next()
-  // },
-  // beforeRouteLeave(to, from, next) {
-  //   // 去除背景色
-  //   document.querySelector('body').setAttribute('style', '')
-  //   next()
-  // }
 
 }
 </script>
@@ -201,10 +199,10 @@ Login(){
   top: 0px;
   left: 0px;
   position: absolute;
-  background-color: skyblue;
-  height: 100px;
+  /*background-color: skyblue;*/
+  height: 80px;
   width: 100%;
-  box-shadow: 5px 5px 2px rgba(192,196,204,0.3);
+  /*box-shadow: 5px 5px 2px rgba(192,196,204,0.3);*/
 }
 #mainBody{
   display: block;
@@ -223,10 +221,10 @@ Login(){
 }
 #Register1{
   position: absolute;
-  background-color: #8e9aaf;
+  background-color: #9eaabf;
   top: 20px;
-  height: 40px;
-  width: 80px;
+  height: 35px;
+  width: 70px;
   right: 12%;
   border-radius: 22px;
   font-size: 18px;
@@ -237,11 +235,11 @@ Login(){
 }
 #Home{
   position: absolute;
-  background-color: #8e9aaf;
+  background-color: #9eaabf;
   top: 20px;
-  height: 40px;
-  width: 120px;
-  right: 2%;
+  height: 35px;
+  width: 100px;
+  right: 4%;
   border-radius: 22px;
   font-size: 18px;
   border-style: solid;
@@ -309,5 +307,11 @@ span[class=passwdLogo]::after{
   content: '\e97c';
   top: 140px;
   left:50px;
+}
+.bg{
+  z-index: -1;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
 }
 </style>

@@ -10,8 +10,8 @@ import vuescroll from 'vuescroll/dist/vuescroll-native';
 import "./assets/css/base.css"
 import "./assets/css/buttons.css"
 
-
 Vue.use(VueCookies)
+
 
 Vue.config.productionTip = false;
 Vue.use(vuescroll)

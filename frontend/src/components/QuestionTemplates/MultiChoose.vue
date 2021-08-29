@@ -5,8 +5,9 @@
 
   <div class="InnerDiv">
     <div >
-      <label v-if="QesData.Must==true" style="color: red" >*</label>
-      <label>多选题 - {{ QesData.question }}</label>
+      <label v-if="QesData.Must==true" style="color: red;float:left;margin-left: -10px;" >*</label>
+      <label>{{ QesData.question }}</label>
+      <label class="type">[多选题] </label>
     </div>
     <div >
       <label  class="describe"> {{ QesData.describe }} </label>
@@ -189,5 +190,11 @@ export default {
 .Choice{
   margin-left: 0px;margin-bottom:10px;display: block
 }
+.type{
+   font-size: 5px;
+   color: gray;
+   float: right;
+   margin-right: -50px;
+ }
 </style>
 

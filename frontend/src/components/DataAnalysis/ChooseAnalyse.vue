@@ -7,7 +7,6 @@
       <label  style="font-size: 12px;color: darkgrey"> {{QesData.Describe}} </label>
     </div>
     </div>
-
     <el-table v-if="DataTable=='数据表'"
         :data="ChooseData"
         style="width: 100%"

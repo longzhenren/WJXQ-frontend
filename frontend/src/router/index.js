@@ -22,42 +22,47 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Register.vue')
+    component: resolve=>require(['../views/Register.vue'],resolve)
   },
   {
     path: '/Login',
     name: 'Login',
-    component: ()=>import('../views/Login.vue')
+    component: resolve=>require(['../views/Login.vue'],resolve)
   },
   {
     path: '/Management',
     name: 'Management',
-    component: ()=>import('../views/Management.vue')
+    component: resolve=>require(['../views/Management.vue'],resolve)
   },
   {
     path: '/questype',
     name: 'QuestionType',
-    component: QuestionType
+    component:resolve=>require(['../views/CreateQuestionnaire/QuestionType'],resolve)
   },
   {
     path: '/dataanalysis',
     name: 'DataAnalysis',
-    component: DataAnalysis
+    component: resolve=>require(['../views/DataAnalysis/DataAnalysis'],resolve)
   },
   {
     path: '/design',
     name: 'DesignPage',
-    component: DesignPage
+    component: resolve=>require(['../views/DesignQues/DesignPage'],resolve)
   },
   {
     path: '/release',
     name: 'QuestionnaireRelease',
-    component: QuestionnaireRelease
+    component: resolve=>require(['../views/QuestionnaireRelease/QuestionnaireRelease'],resolve)
   },
   {
     path: '/answer/:id',
     name: 'AnswerQuestionnaire',
-    component: AnswerQuestionnaire
+    component: resolve=>require(['../views/AnswerQuestionnaire/AnswerQuestionnaire'],resolve)
+  },
+  {
+    path: '/VoteShow/:id',
+    name: 'VoteShow',
+    component: resolve=>require(['../views/AnswerQuestionnaire/VoteShow'],resolve)
   },
 ]
 

@@ -2,7 +2,7 @@
   <div class="home">
     <div style="width: 100vw;height:100vh">
       <Nav class="nav"></Nav>
-      <img class="img" src="../assets/imgs/background.jpg" alt="" style="width: 100%; height:100%">
+      <img class="img" src="../assets/imgs/bg2.jpg" alt="" style="width: 100%; height:100%;">
     </div>
   </div>
 </template>
@@ -14,8 +14,7 @@ import Nav from '@/components/HomePagin/Nav.vue'
 export default {
   name: 'Home',
   data(){
-    return{
-
+    return {
     }
   },
   methods:{
@@ -24,7 +23,7 @@ export default {
     }
   },
   components: {
-    Nav
+    Nav,
   }
 }
 </script>
@@ -34,6 +33,6 @@ export default {
   /*display: inline-block;*/
 }
 .img{
-  z-index: -1;
+  z-index: 0;
 }
 </style>

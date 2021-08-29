@@ -60,7 +60,7 @@
                   数据分析<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-<!--                  <el-dropdown-item  class="el-dropdown-item">查看分析</el-dropdown-item>-->
+                  <el-dropdown-item  class="el-dropdown-item" @click.native.prevent="ShowQues">查看分析</el-dropdown-item>
                   <el-dropdown-item class="el-dropdown-item" @click.native.prevent="exportDocumentExcel">下载excel</el-dropdown-item>
                   <el-dropdown-item class="el-dropdown-item" @click.native.prevent="exportDocumentWord">下载word</el-dropdown-item>
                 </el-dropdown-menu>
@@ -96,7 +96,7 @@
     </div>
 
     </div>
-    <Model :show="modelShow"  @hideModal="hideModal" :QesInfo="QesInfo"/>
+    <Model :show="modelShow"  @hideModal="hideModal" :QesInfoModel="QesInfo"/>
   </div>
 </template>
 
@@ -108,6 +108,7 @@ export default {
   name: "QesCard",
   data(){
     return{
+      title:'',
       modelShow: false,
       rules: {
       },
@@ -124,6 +125,16 @@ export default {
     Model
   },
   methods:{
+    //分析问卷
+    ShowQues(){
+      this.$router.push({
+        path: '/dataanalysis',
+        query: {
+          id: this.QesInfo.id,
+          username: this.$route.query.username
+        }
+      });
+    },
     // 关闭弹窗
     hideModal() {
       this.modelShow = false;
@@ -134,7 +145,6 @@ export default {
         username: this.$store.state.personalInfo.username,
         id: this.QesInfo.id
       }
-
       request({
         url:'/question/exportQuestionnaire',
         method:'post',
@@ -145,7 +155,7 @@ export default {
         if ( res.data.Message ){
         }
         else {
-          this.download(res);
+          this.downloadWord(res);
         }
 
       }).catch(err=>{
@@ -168,7 +178,7 @@ export default {
         if ( res.data.Message ){
         }
         else {
-          this.download(res);
+          this.downloadExcel(res);
         }
 
       }).catch(err=>{
@@ -176,7 +186,7 @@ export default {
       })
     },
 
-    download(res) {
+    downloadExcel(res) {
       if (!res.data) {
         return;
       }
@@ -189,9 +199,22 @@ export default {
       document.body.appendChild(link)
       link.click()
     },
+    downloadWord(res) {
+      if (!res.data) {
+        return;
+      }
+      let fileName = 'aaa.docx';
+      let url = window.URL.createObjectURL(new Blob([res.data]))
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      link.setAttribute('download', 'word.docx')
+
+      document.body.appendChild(link)
+      link.click()
+    },
     linkClicked(){
       if(this.QesInfo.Open){
-        this.$store.commit('leftMenuCurrentOne')
         this.$router.push({
           path:'/release',
           query:{
@@ -345,7 +368,7 @@ export default {
       }
     },
   },
-  created() {
+  updated() {
     this.title=this.QesInfo.Title+'.副本'
   }
 }

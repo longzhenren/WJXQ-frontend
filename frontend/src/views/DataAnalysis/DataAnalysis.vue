@@ -644,7 +644,7 @@ body {
     width: 100%;
     height: 7%;
     position: fixed;
-    background-color: white;
+    background-color: skyblue;
     top: 0;
     right: 0;
     display: flex;
