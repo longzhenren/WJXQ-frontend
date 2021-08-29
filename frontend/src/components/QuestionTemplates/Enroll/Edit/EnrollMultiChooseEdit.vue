@@ -161,6 +161,7 @@ export default {
       this.QesData.max = this.FatherData.max;
       this.QesData.min = this.FatherData.min;
       this.QesData.Must = this.FatherData.Must;
+      this.QesData.Times = this.FatherData.Times;
     }
     // this.multiChoice.edit = this.FatherData.edit;
     // this.multiChoice.question = this.FatherData.question;
@@ -175,14 +176,18 @@ export default {
       }
       else  {
         this.QesData = {
-          edit:1,
-          question:"",
           describe:"",
+          question:"",
           choices:["",""],
           radio:[],
+
+
+
           max:1,
           min:1,
           Must:true,
+          edit:1,
+          Times:[10,10]
         }
       }
     },

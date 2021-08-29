@@ -335,9 +335,16 @@ export default {
 
   },
   mounted() {
-
+    this.adjust()
   },
   methods: {
+    // 调整数据格式
+    adjust(){
+      console.log(this.NowsQuestionnaire);
+      let settings = this.NowsQuestionnaire.settings;
+    },
+
+
     // 全部保存
     saveAll(){
       this.confirmTimeSetting();

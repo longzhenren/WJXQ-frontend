@@ -83,6 +83,7 @@ export default {
       this.QesData.describe = this.FatherData.describe;
       this.QesData.radio = this.FatherData.radio;
       this.QesData.Must = this.FatherData.Must;
+      this.QesData.Times = this.FatherData.Times;
       // this.singleChoice = this.FatherData
     }
   },
@@ -96,11 +97,15 @@ export default {
         this.QesData = {
           id:"",
           number:"",
-          describe: "",
+          describe: "这是一个描述",
           question:"",
           choices:["选项1","选项2"],
           radio: 0,
+
+          //settings
+          edit:1,
           Must:true,
+          Times:[10,10]
         }
       }
     },
