@@ -66,7 +66,8 @@ export default{
   width: 800px;
   top: 20%;
   overflow:auto;
-  left: 25%;
+  left: 50%;
+  margin-left: -400px;
   border-radius: 8px;
   background: #fff;
   z-index: 999;
