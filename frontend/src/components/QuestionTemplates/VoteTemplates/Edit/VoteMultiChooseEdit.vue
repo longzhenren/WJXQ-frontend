@@ -54,6 +54,7 @@
 <el-form>
   <el-form-item class="left">
     <el-checkbox v-model="QesData.Must">必答题</el-checkbox>
+<!--              <el-checkbox v-model="QesData.Amount">显示数量</el-checkbox>-->
   </el-form-item>
   <el-form-item label="数量限制" v-if="QesData.Must===true">
     <el-row :gutter="10" class="InnerElement" type="flex"  justify="left" >
