@@ -158,10 +158,10 @@
               <i class="el-icon-caret-top"></i>
               <div>回顶</div>
             </div>
-            <div class="download">
-              <i class="el-icon-download"></i>
-              <div>报告</div>
-            </div>
+<!--            <div class="download">-->
+<!--              <i class="el-icon-download"></i>-->
+<!--              <div>报告</div>-->
+<!--            </div>-->
             <div class="toBottom" @click="ToBottom">
               <i class="el-icon-caret-bottom"></i>
               <div>到底</div>

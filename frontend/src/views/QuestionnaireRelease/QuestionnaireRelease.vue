@@ -374,6 +374,7 @@ export default {
             message: '问卷已发布',
             type: 'success'
           });
+          this.isGetLink = true
         }
       }).catch(err=>{
         console.log(err)
