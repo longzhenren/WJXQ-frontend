@@ -63,7 +63,7 @@ export default{
 .modal-container{
   display: block;
   position: absolute;
-  width: 50%;
+  width: 800px;
   top: 20%;
   overflow:auto;
   left: 25%;

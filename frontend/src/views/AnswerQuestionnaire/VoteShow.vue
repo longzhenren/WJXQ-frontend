@@ -1,5 +1,5 @@
 <template>
-  <div class="VoteShow  ">
+  <div class="VoteShow ">
     <div class="content">
       <h5>您的答卷已经提交，感谢您的参与！</h5>
 

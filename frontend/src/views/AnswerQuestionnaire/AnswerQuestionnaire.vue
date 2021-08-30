@@ -17,7 +17,7 @@
 
       <!-- 问题部分 -->
       <el-card
-        :class="{ boxCard: true, filterBlur: !isLogin }"
+        :class="{ boxCard: true, filterBlur: !isLogin&&Settings.Login }"
         v-for="(item, index) in Question"
       >
         <div slot="header">
@@ -832,6 +832,7 @@ export default {
       });
       if(this.qesId===undefined&&window.sessionStorage.getItem('isLogin')===null&&this.Settings.Login){
         this.myMkShow=true;
+        console.log(1111)
       }//
     });
   },
