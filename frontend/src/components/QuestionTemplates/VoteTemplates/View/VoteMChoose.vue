@@ -67,7 +67,7 @@ export default {
         min:1,
         edit:1,
         Must:true,
-        Amount:true
+        Amount:false
       }
     };
   },
