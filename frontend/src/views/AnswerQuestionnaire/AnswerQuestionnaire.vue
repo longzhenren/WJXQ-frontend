@@ -1,5 +1,5 @@
 <template>
-  <div class="AnswerQuestionnaire">
+  <div :class="{AnswerQuestionnaire:true,btnDis:this.model==='preview'}">
     <MyMk v-if="myMkShow" :id="id"></MyMk>
     <Time
       :remainTime.default="this.ExamTime"
@@ -476,6 +476,7 @@ export default {
       if (this.qesId === undefined) {
         if (this.$route.query.Mode === undefined) {
           //填写时
+          this.model='';
           console.log(this.id);
           pra = {
             EncodeID: this.id,
@@ -825,7 +826,7 @@ export default {
 .AnswerQuestionnaire {
   text-align: center;
   padding: 20px;
-  width: 750px;
+  width: 700px;
   margin: 30px auto;
   background-color: white;
 }
@@ -854,5 +855,8 @@ export default {
 .bottom {
   margin: 20px 10px 20px 10px;
   color: #909399;
+}
+.btnDis{
+  pointer-events: none;
 }
 </style>
