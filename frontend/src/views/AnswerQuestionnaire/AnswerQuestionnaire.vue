@@ -292,6 +292,7 @@ export default {
   name: "AnswerQuestionnaire",
   data() {
     return {
+      DisOrderNumber: [],
       Type: 0,
       ExamTime: 0,
       isLogin: window.sessionStorage.getItem("isLogin"),
@@ -333,6 +334,20 @@ export default {
     },
   },
   methods: {
+    // 乱序排列
+    Disorder(){
+      for (let i = 0; i < this.Question.length; i++) {
+        let questionElement = this.Question[i];
+        questionElement.Number = this.DisOrderNumber[i];
+        console.log('答卷',this.Question);
+      }
+      let Question =this.Question.sort(function(a,b){
+        return a.Number - b.Number;
+      });
+      this.Question = Question
+      console.log('排序后',Question);
+      console.log('这个排序后',this.Question)
+    },
     // 结果查看
     goVoteShow() {
       let psthH = "/VoteShow/" + this.id;
@@ -496,11 +511,13 @@ export default {
           this.model='';
           console.log(this.id);
           pra = {
+            ip:this.ip,
             EncodeID: this.id,
             Mode: "",
           };
         } else {
           pra = {
+            ip:this.ip,
             EncodeID: this.id,
             Mode: this.$route.query.Mode,
           };
@@ -517,6 +534,10 @@ export default {
         data: pra,
       }).then((res) => {
         console.log("源数据", res.data);
+        if (res.data.NumberList){
+          this.DisOrderNumber = res.data.NumberList
+          console.log(this.DisOrderNumber)
+        }
         //存储问卷信息
         if (res.data.Message === "Questionnaire is closed") this.state = 1;
         var Questionnaire = res.data.Questionnaire;
@@ -827,6 +848,9 @@ export default {
     // console.log(this.ip);
     //初始化答卷
     this.getQuestionnaire().then(() => {
+      if (this.Type === 4){
+        this.Disorder();
+      }
       this.creatSubmit().then(() => {
         this.getSubmit();
       });

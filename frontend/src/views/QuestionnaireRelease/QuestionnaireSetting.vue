@@ -25,18 +25,18 @@
       </ul>
     </div>
 
-<!--    <div class="saveAll" @click="saveAll">-->
-<!--      <MyButton :title="'全部保存'" ></MyButton>-->
-<!--    </div>-->
+    <!--    <div class="saveAll" @click="saveAll">-->
+    <!--      <MyButton :title="'全部保存'" ></MyButton>-->
+    <!--    </div>-->
 
 
     <div class="TimeSet" ref="TimeSet">
       <div class="title">
         时间设置
         <el-switch
-            v-model="isNeedSetTime"
-            active-text="开启"
-            inactive-text="关闭">
+          v-model="isNeedSetTime"
+          active-text="开启"
+          inactive-text="关闭">
         </el-switch>
       </div>
 
@@ -50,11 +50,15 @@
             <div class="TimeContent">
               <div class="TimeTitle">选择时间</div>
               <el-date-picker
-                  v-model="StartTime"
-                  type="datetime"
-                  placeholder="选择日期时间"
-                  default-time="12:00:00">
+                v-model="StartTime"
+                type="datetime"
+                @change="isStartTimeValid"
+                placeholder="选择日期时间"
+                default-time="12:00:00">
               </el-date-picker>
+
+
+
             </div>
           </el-collapse-item>
 
@@ -65,32 +69,34 @@
             <div class="TimeContent">
               <div class="TimeTitle">选择时间</div>
               <el-date-picker
-                  v-model="DeadLine"
-                  type="datetime"
-                  placeholder="选择日期时间"
-                  default-time="12:00:00">
+                v-model="DeadLine"
+                type="datetime"
+                placeholder="选择日期时间"
+                @change="isDeadlineValid"
+                align="right"
+                :picker-options="pickerOptions">
               </el-date-picker>
             </div>
 
           </el-collapse-item>
-<!--          <el-collapse-item name="3">-->
-<!--            <template slot="title">-->
-<!--              作答时间设置-->
-<!--            </template>-->
-<!--            <div class="TimeContent">-->
-<!--              <div class="TimeTitle">选择时间</div>-->
-<!--              <el-input placeholder="请输入内容" v-model="TimeSetting.AnswerTime" clearable ref="inputAnswer">-->
-<!--                <template slot="append">-->
-<!--                  <el-select v-model="AnswerDanwei" placeholder="单位">-->
-<!--                    <el-option label="小时" value="小时"></el-option>-->
-<!--                    <el-option label="分钟" value="分钟"></el-option>-->
-<!--                    <el-option label="天" value="天"></el-option>-->
-<!--                  </el-select>-->
-<!--                </template>-->
-<!--              </el-input>-->
-<!--            </div>-->
+          <!--          <el-collapse-item name="3">-->
+          <!--            <template slot="title">-->
+          <!--              作答时间设置-->
+          <!--            </template>-->
+          <!--            <div class="TimeContent">-->
+          <!--              <div class="TimeTitle">选择时间</div>-->
+          <!--              <el-input placeholder="请输入内容" v-model="TimeSetting.AnswerTime" clearable ref="inputAnswer">-->
+          <!--                <template slot="append">-->
+          <!--                  <el-select v-model="AnswerDanwei" placeholder="单位">-->
+          <!--                    <el-option label="小时" value="小时"></el-option>-->
+          <!--                    <el-option label="分钟" value="分钟"></el-option>-->
+          <!--                    <el-option label="天" value="天"></el-option>-->
+          <!--                  </el-select>-->
+          <!--                </template>-->
+          <!--              </el-input>-->
+          <!--            </div>-->
 
-<!--          </el-collapse-item>-->
+          <!--          </el-collapse-item>-->
         </el-collapse>
         <div class="saveTime">
           <button @click="confirmTimeSetting">保存</button>
@@ -100,40 +106,40 @@
 
     </div>
 
-<!--    <div class="AfterSubmit">-->
-<!--      <div class="title">提交后显示</div>-->
-<!--      <el-divider></el-divider>-->
-<!--      <div class="SubmitSetContain">-->
-<!--        <el-radio-group v-model="AfterSubmit.isJump" class="group">-->
-<!--          <el-radio :label="false" class="item">显示默认界面</el-radio>-->
-<!--          <el-radio :label="true" class="item">跳转到指定页面</el-radio>-->
-<!--        </el-radio-group>-->
+    <!--    <div class="AfterSubmit">-->
+    <!--      <div class="title">提交后显示</div>-->
+    <!--      <el-divider></el-divider>-->
+    <!--      <div class="SubmitSetContain">-->
+    <!--        <el-radio-group v-model="AfterSubmit.isJump" class="group">-->
+    <!--          <el-radio :label="false" class="item">显示默认界面</el-radio>-->
+    <!--          <el-radio :label="true" class="item">跳转到指定页面</el-radio>-->
+    <!--        </el-radio-group>-->
 
 
-<!--        <div class="setDestination" v-if="AfterSubmit.isJump">-->
-<!--          <div class="Destination">页面目标地址：</div>-->
-<!--          <el-input placeholder="请输入内容" class="inputH" size="small" v-model="AfterSubmit.Destination">-->
-<!--            <template slot="prepend">http://</template>-->
-<!--          </el-input>-->
-<!--        </div>-->
+    <!--        <div class="setDestination" v-if="AfterSubmit.isJump">-->
+    <!--          <div class="Destination">页面目标地址：</div>-->
+    <!--          <el-input placeholder="请输入内容" class="inputH" size="small" v-model="AfterSubmit.Destination">-->
+    <!--            <template slot="prepend">http://</template>-->
+    <!--          </el-input>-->
+    <!--        </div>-->
 
-<!--        <div class="setDestination" v-else>-->
-<!--          <div class="default" @click="editMessage">您的答卷已经提交，感谢参与！</div>-->
-<!--        </div>-->
+    <!--        <div class="setDestination" v-else>-->
+    <!--          <div class="default" @click="editMessage">您的答卷已经提交，感谢参与！</div>-->
+    <!--        </div>-->
 
-<!--        <div class="saveTime">-->
-<!--          <button>保存</button>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
+    <!--        <div class="saveTime">-->
+    <!--          <button>保存</button>-->
+    <!--        </div>-->
+    <!--      </div>-->
+    <!--    </div>-->
 
     <div class="AnswerTimeControl" ref="AnswerSet">
       <div class="title">
         作答次数设置
         <el-switch
-            v-model="isNeedSetAnswerTimes"
-            active-text="开启"
-            inactive-text="关闭">
+          v-model="isNeedSetAnswerTimes"
+          active-text="开启"
+          inactive-text="关闭">
         </el-switch>
       </div>
       <el-divider></el-divider>
@@ -146,13 +152,13 @@
             <div class="container">
               <div class="Times">是否限制作答次数</div>
               <el-switch
-                  v-model="AnswerTimeSetting.Times"
-                  active-text="限制为1次"
-                  inactive-text="不限制次数">
+                v-model="AnswerTimeSetting.Times"
+                active-text="限制为1次"
+                inactive-text="不限制次数">
               </el-switch>
-<!--              <el-input v-model="AnswerTimeSetting.Times" type="number" :min="1" class="inputH"></el-input>-->
+              <!--              <el-input v-model="AnswerTimeSetting.Times" type="number" :min="1" class="inputH"></el-input>-->
             </div>
-         </el-collapse-item>
+          </el-collapse-item>
 
           <el-collapse-item name="2">
             <template slot="title">
@@ -160,12 +166,12 @@
             </template>
             <div class="container">
               <div class="Times">是否需要登录才能答题</div>
-<!--              <el-input v-model="AnswerTimeSetting.isNeedLogin" type="number" :min="1" class="inputH"></el-input>-->
-<!--              <div>次</div>-->
+              <!--              <el-input v-model="AnswerTimeSetting.isNeedLogin" type="number" :min="1" class="inputH"></el-input>-->
+              <!--              <div>次</div>-->
               <el-switch
-                  v-model="AnswerTimeSetting.isNeedLogin"
-                  active-text="登录后答题"
-                  inactive-text="无需登录">
+                v-model="AnswerTimeSetting.isNeedLogin"
+                active-text="登录后答题"
+                inactive-text="无需登录">
               </el-switch>
             </div>
           </el-collapse-item>
@@ -176,12 +182,12 @@
             </template>
             <div class="container">
               <div class="Times">问卷收集限额</div>
-<!--              <el-switch-->
-<!--                  v-model="AnswerTimeSetting.SelectAnswerTimes"-->
-<!--                  active-text="限制为1次"-->
-<!--                  inactive-text="不限制次数">-->
-<!--              </el-switch>-->
-                            <el-input v-model="AnswerTimeSetting.SelectAnswerTimes" type="number" :min="1" class="inputH"></el-input>
+              <!--              <el-switch-->
+              <!--                  v-model="AnswerTimeSetting.SelectAnswerTimes"-->
+              <!--                  active-text="限制为1次"-->
+              <!--                  inactive-text="不限制次数">-->
+              <!--              </el-switch>-->
+              <el-input v-model="AnswerTimeSetting.SelectAnswerTimes" type="number" :min="1" class="inputH"></el-input>
               <!--              <el-input v-model="AnswerTimeSetting.Times" type="number" :min="1" class="inputH"></el-input>-->
             </div>
           </el-collapse-item>
@@ -204,9 +210,9 @@
               是否开启答题乱序
             </template>
             <el-switch
-                v-model="SpecialSetting.isReorder"
-                active-text="开启"
-                inactive-text="关闭">
+              v-model="SpecialSetting.isReorder"
+              active-text="开启"
+              inactive-text="关闭">
             </el-switch>
           </el-collapse-item>
         </div>
@@ -218,9 +224,9 @@
               是否在投票前显示结果
             </template>
             <el-switch
-                v-model="SpecialSetting.isShowResultBeforeVote"
-                active-text="开启"
-                inactive-text="关闭">
+              v-model="SpecialSetting.isShowResultBeforeVote"
+              active-text="开启"
+              inactive-text="关闭">
             </el-switch>
           </el-collapse-item>
         </div>
@@ -256,6 +262,29 @@ export default {
 
   data(){
     return {
+      pickerOptions: {
+        shortcuts: [{
+          text: '今天',
+          onClick(picker) {
+            picker.$emit('pick', new Date());
+          }
+        }, {
+          text: '昨天',
+          onClick(picker) {
+            const date = new Date();
+            date.setTime(date.getTime() - 3600 * 1000 * 24);
+            picker.$emit('pick', date);
+          }
+        }, {
+          text: '一周前',
+          onClick(picker) {
+            const date = new Date();
+            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', date);
+          }
+        }]
+      },
+
       // 是否开启时间设置
       isNeedSetTime: true,
 
@@ -345,6 +374,36 @@ export default {
     this.init();
   },
   methods: {
+    // 判断时间是否合法
+    isStartTimeValid(){
+      if (new Date()>this.StartTime){
+        this.$message({
+          showClose: true,
+          message: '请选择当前后的时间',
+          type: 'error'
+        });
+        this.StartTime = new Date();
+        return
+      }
+
+
+      // console.log('现在',nowData.getTimezoneOffset())
+      // console.log('以前',this.StartTime.getTimezoneOffset())
+    },
+
+    // 判断结束日期是否合法
+    isDeadlineValid(){
+      if (this.DeadLine<this.StartTime){
+        this.$message({
+          showClose: true,
+          message: '请重新设置结束时间',
+          type: 'error'
+        });
+        this.DeadLine = this.StartTime
+        return
+      }
+    },
+
     // 将字符串转为日期
     changeToData(String){
       return new Date(Date.parse(String.replace(/-/g,"/")));
@@ -352,11 +411,16 @@ export default {
 
     init(){
       console.log(this.NowsQuestionnaire)
+      this.TimeSetting.StartTime = this.Setting.StartTime
+      this.TimeSetting.DeadLine = this.Setting.DeadLine;
+      this.TimeSetting.AnswerTime = this.Setting.AnswerTime
       this.AnswerTimeSetting.isNeedLogin=this.Setting.Login;
       this.AnswerTimeSetting.Times=this.Setting.IPLimit;
       this.AnswerTimeSetting.SelectAnswerTimes=this.Setting.Times;
       // console.log(this.NowsQuestionnaire.Settings.StartTime)
       console.log(this.AnswerTimeSetting)
+      this.SpecialSetting.isReorder = this.Setting.Reorder;
+      // this.SpecialSetting.isShowResultBeforeVote = this.Setting.
       // this.changeToData(this.NowsQuestionnaire.Settings.StartTime);
       let date = this.changeToData(this.NowsQuestionnaire.Settings.DeadLine);
       this.DeadLine = date
@@ -422,7 +486,6 @@ export default {
       let m = date.getMinutes() + ':';
       let s = date.getSeconds();
       return Y+M+D+h+m+s;
-
       // return Data.format("yyyy-MM-dd hh:mm:ss")
     },
 
@@ -464,6 +527,24 @@ export default {
 
     // 确定时间设置
     confirmTimeSetting(){
+      if (new Date()>this.StartTime){
+        this.$message({
+          showClose: true,
+          message: '请选择当前后的时间',
+          type: 'error'
+        });
+        this.StartTime = new Date()
+        return
+      }
+      if (this.DeadLine<this.StartTime){
+        this.$message({
+          showClose: true,
+          message: '请重新设置结束时间',
+          type: 'error'
+        });
+        this.DeadLine = this.StartTime
+        return
+      }
       console.log(this.NowsQuestionnaire)
       // console.log(this.TimeSetting.StartTime)
       this.TimeSetting.StartTime=this.changeTimeFormat(this.StartTime)
@@ -495,242 +576,242 @@ export default {
 </script>
 
 <style scoped>
-  .setting {
-    width: 100%;
-    /*height: 300vh;*/
-    /*background-color: white;*/
-    /*position: relative;*/
-    /*padding-top: 30px;*/
-    margin-bottom: 50px;
-  }
+.setting {
+  width: 100%;
+  /*height: 300vh;*/
+  /*background-color: white;*/
+  /*position: relative;*/
+  /*padding-top: 30px;*/
+  margin-bottom: 50px;
+}
 
 
 
-  .settingNav {
-    width: 9vw;
-    height: 30vh;
-    /*background-color: pink;*/
-    position: fixed;
-    top: 16vh;
-    right: 16vw;
-  }
+.settingNav {
+  width: 9vw;
+  height: 30vh;
+  /*background-color: pink;*/
+  position: fixed;
+  top: 16vh;
+  right: 16vw;
+}
 
 
-  .saveAll {
-    /*width: 50vw;*/
-    /*height: 30px;*/
-    /*height: 50vh;*/
-    /*background-color: #58ACFA;*/
-    position: fixed;
-    right: 15vw;
-    top: 46vh;
-  }
+.saveAll {
+  /*width: 50vw;*/
+  /*height: 30px;*/
+  /*height: 50vh;*/
+  /*background-color: #58ACFA;*/
+  position: fixed;
+  right: 15vw;
+  top: 46vh;
+}
 
-  .settingNav ul {
-    width: 100%;
-    height: 80%;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    padding: 10px;
-  }
+.settingNav ul {
+  width: 100%;
+  height: 80%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+}
 
-  .settingNav ul li {
-    /*margin-left: 10px;*/
-    width: 100%;
-    height: 35px;
-    display: flex;
-    line-height: 35px;
-    font-size: 12px;
-    justify-content: start;
-    padding: 2px;
-    cursor: pointer;
-    transition: .4s;
-  }
+.settingNav ul li {
+  /*margin-left: 10px;*/
+  width: 100%;
+  height: 35px;
+  display: flex;
+  line-height: 35px;
+  font-size: 12px;
+  justify-content: start;
+  padding: 2px;
+  cursor: pointer;
+  transition: .4s;
+}
 
-  .settingNav ul li:hover {
-    background-color: rgba(0,191,255,.2);
-  }
+.settingNav ul li:hover {
+  background-color: rgba(0,191,255,.2);
+}
 
-  .settingNav ul .activeNav {
-    background-color: rgba(0,191,255,.2);
-    color: #58ACFA;
-  }
+.settingNav ul .activeNav {
+  background-color: rgba(0,191,255,.2);
+  color: #58ACFA;
+}
 
-  .TimeSet {
-    /*background-color: pink;*/
-    width: 100%;
-    /*height: 30vh ;*/
-    padding: 0 10px;
-    background-color: white;
-    box-shadow: 0 0 5px rgba(0,0,0,.1);
-  }
+.TimeSet {
+  /*background-color: pink;*/
+  width: 100%;
+  /*height: 30vh ;*/
+  padding: 0 10px;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,.1);
+}
 
-  .title {
-    width: 100%;
-    height: 7vh;
-    line-height: 7vh;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    /*background-color: #42b983;*/
-  }
+.title {
+  width: 100%;
+  height: 7vh;
+  line-height: 7vh;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /*background-color: #42b983;*/
+}
 
-  .TimeContent {
-    /*background-color: pink;*/
-    display: flex;
-    width: 100%;
-    position: relative;
-    align-items: center;
-    /*justify-content: space-around;*/
-  }
+.TimeContent {
+  /*background-color: pink;*/
+  display: flex;
+  width: 100%;
+  position: relative;
+  align-items: center;
+  /*justify-content: space-around;*/
+}
 
-  .TimeTitle {
-    /*background-color: #42b983;*/
-    width: 5vw;
-    height: 3vh;
-    display: inline-block;
-    /*position: absolute;*/
-    /*left: 5vw;*/
-    margin-left: 2vw ;
-    font-size: 16px;
-    line-height: 3vh;
-    margin-right: 2vw ;
-  }
+.TimeTitle {
+  /*background-color: #42b983;*/
+  width: 5vw;
+  height: 3vh;
+  display: inline-block;
+  /*position: absolute;*/
+  /*left: 5vw;*/
+  margin-left: 2vw ;
+  font-size: 16px;
+  line-height: 3vh;
+  margin-right: 2vw ;
+}
 
-  .saveTime {
-    /*background-color: #42b983;*/
-    width: 100%;
-    height: 8vh;
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-    /*padding-left: 3vw;*/
-  }
-  .saveTime button {
-    /*border: 0;*/
-    outline: none;
-    width: 50px;
-    height: 4vh;
-    border-radius: 0;
-    border: 1px solid #00BFFF;
-    background-color: white;
-    color: #00BFFF;
-    margin: 0;
-  }
+.saveTime {
+  /*background-color: #42b983;*/
+  width: 100%;
+  height: 8vh;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  /*padding-left: 3vw;*/
+}
+.saveTime button {
+  /*border: 0;*/
+  outline: none;
+  width: 50px;
+  height: 4vh;
+  border-radius: 0;
+  border: 1px solid #00BFFF;
+  background-color: white;
+  color: #00BFFF;
+  margin: 0;
+}
 
-  .saveTime button:hover {
-    background-color: rgba(0,191,255,.2);
-  }
+.saveTime button:hover {
+  background-color: rgba(0,191,255,.2);
+}
 
-  .AfterSubmit {
-    width: 100%;
-    padding: 0 10px;
-    margin-top: 30px;
-    /*background-color: #42b983;*/
-  }
+.AfterSubmit {
+  width: 100%;
+  padding: 0 10px;
+  margin-top: 30px;
+  /*background-color: #42b983;*/
+}
 
-  .group {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: start;
-  }
+.group {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: start;
+}
 
-  .item {
-    margin: 10px 0;
-  }
+.item {
+  margin: 10px 0;
+}
 
-  .setDestination {
-    background-color: #F2F2F2;
-    width: 100%;
-    /*height: 50vh;*/
-    display: flex;
-    justify-content: start;
-    align-items: start;
-    padding: 10px 0;
-    margin-top: 15px;
-  }
+.setDestination {
+  background-color: #F2F2F2;
+  width: 100%;
+  /*height: 50vh;*/
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  padding: 10px 0;
+  margin-top: 15px;
+}
 
-  .Destination {
-    /*margin-top: 30px;*/
-    /*background-color: #58ACFA;*/
-    width: 15vw;
-    line-height: 4vh;
-    height: 4vh;
-    display: inline-block;
-  }
+.Destination {
+  /*margin-top: 30px;*/
+  /*background-color: #58ACFA;*/
+  width: 15vw;
+  line-height: 4vh;
+  height: 4vh;
+  display: inline-block;
+}
 
-  .default {
-    width: 15vw;
-    line-height: 4vh;
-    height: 4vh;
-    display: inline-block;
-    margin-left: 3vw;
-  }
+.default {
+  width: 15vw;
+  line-height: 4vh;
+  height: 4vh;
+  display: inline-block;
+  margin-left: 3vw;
+}
 
-  .default:hover {
-    font-style:oblique;
-    text-decoration: underline;
-    color: #58ACFA;
-    cursor: pointer;
-  }
+.default:hover {
+  font-style:oblique;
+  text-decoration: underline;
+  color: #58ACFA;
+  cursor: pointer;
+}
 
-  .inputH {
-    width: 300px;
-  }
+.inputH {
+  width: 300px;
+}
 
-  .AnswerTimeControl {
-    width: 100%;
-    padding: 0 10px;
-    margin-top: 30px;
-    background-color: white;
-    box-shadow: 0 0 5px rgba(0,0,0,.1);
-  }
+.AnswerTimeControl {
+  width: 100%;
+  padding: 0 10px;
+  margin-top: 30px;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,.1);
+}
 
-  .SpecialSetting {
-    width: 100%;
-    padding: 0 10px;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    background-color: white;
-    box-shadow: 0 0 5px rgba(0,0,0,.1);
-  }
+.SpecialSetting {
+  width: 100%;
+  padding: 0 10px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,.1);
+}
 
-  .container {
-    display: flex;
-    width: 100%;
-    position: relative;
-    align-items: center;
-  }
+.container {
+  display: flex;
+  width: 100%;
+  position: relative;
+  align-items: center;
+}
 
-  .container .Times {
-    width: 200px;
+.container .Times {
+  width: 200px;
 
-  }
+}
 
-  .Bottom {
-    width: 100%;
-    height: 5vh;
+.Bottom {
+  width: 100%;
+  height: 5vh;
 
-    /*padding: 0 10px;*/
-    /*margin-top: 30px;*/
-    /*margin-bottom: 30px;*/
-    background-color: transparent;
-    /*box-shadow: 0 0 5px rgba(0,0,0,.4);*/
-  }
+  /*padding: 0 10px;*/
+  /*margin-top: 30px;*/
+  /*margin-bottom: 30px;*/
+  background-color: transparent;
+  /*box-shadow: 0 0 5px rgba(0,0,0,.4);*/
+}
 
-  /*.saveAll {*/
-  /*  width: 10vw;*/
-  /*  height: 50vh;*/
-  /*  !*background-color: #58ACFA;*!*/
-  /*  position: fixed;*/
-  /*  right: 15vw;*/
-  /*  top: 15vh;*/
-  /*}*/
+/*.saveAll {*/
+/*  width: 10vw;*/
+/*  height: 50vh;*/
+/*  !*background-color: #58ACFA;*!*/
+/*  position: fixed;*/
+/*  right: 15vw;*/
+/*  top: 15vh;*/
+/*}*/
 </style>

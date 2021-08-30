@@ -51,20 +51,16 @@
 
         <!-- 投票题 -->
         <div class="SingleChoice">
-          <div>{{item.answerScore}}</div>
-          <div>{{item.gradeStatusChoices}}</div>
-          <!--          <div v-for="(choice,i) in item.Choice" class="choice">-->
-<!--            <div class="orderOut"><span class="order">{{orderCount(item.Choice,i)[i]}}</span></div>-->
-<!--            <div class="choiceTop">-->
-<!--              <label style="float:left;">{{ choice.name}}</label>-->
-<!--              <label style="float: right"><span style="color: #2eaaff;font-weight: 800">{{choice.value}}</span>&nbsp&nbsp分</label>-->
-<!--              <label></label>-->
-<!--            </div>-->
-<!--            <div class="bar">-->
-<!--              <div class="occupy" :style="{width:percentWith(choice.value,item.Total)+'px'}"></div>-->
-<!--              <label class="percent">{{percent(choice.value,item.Total)}}%</label>-->
-<!--            </div>-->
-<!--          </div>-->
+          <div v-for="(choice,i) in item.Choice" class="choice">
+            <div class="choiceTop">
+              <label style="float:left;">{{ choice.name}}</label>
+              <label></label>
+            </div>
+          </div>
+          <div>
+            <div>成绩{{item.answerScore}}</div>
+            <div>状态{{item.gradeStatusChoices}}</div>
+          </div>
         </div>
       </el-card>
 
@@ -133,17 +129,19 @@ export default {
           }
         }).then(res=>{
           request({
-            url: '/submit/qetsorce',
+            url: '/submit/getscore',
             method: 'post',
             data: {
               'submissionID':this.$route.query.submissionID,
               'questionID': q.id,
             }
           }).then(res2=>{
+            console.log(res2)
             this.Question.push({
               id: q.id,
               Stem: q.Stem,
               Describe: q.Describe,
+              Choice:q.Choice,
               Type: 1,
               Must: q.Must,
               Number: q.Number,
@@ -166,17 +164,19 @@ export default {
           }
         }).then(res=>{
           request({
-            url: '/submit/qetsorce',
+            url: '/submit/getscore',
             method: 'post',
             data: {
               'submissionID':this.$route.query.submissionID,
               'questionID': q.id,
             }
           }).then(res2=>{
+            console.log(res2)
             this.Question.push({
               id: q.id,
               Stem: q.Stem,
               Describe: q.Describe,
+              Choice:q.Choice,
               Type: 1,
               Must: q.Must,
               Number: q.Number,
@@ -188,6 +188,7 @@ export default {
           })
         })
       }
+      console.log(this.Question)
     },
     async getRep(q){
       if (q.Type === 6) {
@@ -214,6 +215,7 @@ export default {
             Total:res.data.QesData.Total,
             RadioValue: 0,
           });
+          console.log(this.Question)
         })
       }
       else if (q.Type === 7) {
