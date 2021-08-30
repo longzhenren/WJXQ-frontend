@@ -6,20 +6,22 @@
         :default-sort = "{prop: 'date', order: 'descending'}"
     >
       <el-table-column
-          prop="date"
-          label="日期"
+          prop="answerText"
+          label="答案内容"
           sortable
           width="180">
       </el-table-column>
       <el-table-column
-          prop="name"
-          label="姓名"
+          prop="submitTime"
+          label="提交时间"
           sortable
           width="180">
       </el-table-column>
       <el-table-column
-          prop="address"
-          label="地址">
+          prop="submitUID"
+          label="提交者ID"
+          sortable
+          width="180">
       </el-table-column>
     </el-table>
   </div>

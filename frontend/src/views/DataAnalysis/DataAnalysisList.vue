@@ -13,7 +13,7 @@
 
           <div class="TableContainer">
             <div v-if="Ques.Type !== 3 && Ques.Type !== 4">
-              <ChooseAnalyse :id="Qesid" :number="index"></ChooseAnalyse>
+              <ChooseAnalyse :id="Qesid" :number="index" :questionnaire-type="Questionnaire.Type"></ChooseAnalyse>
             </div>
 
             <div v-else>
@@ -43,6 +43,7 @@ export default {
     BlankData
   },
   props:{
+    Questionnaire: Object,
     Questions: {
       type: Array,
       default(){
@@ -54,6 +55,8 @@ export default {
   },
   mounted() {
     // console.log(this.FatherNeedShowQuestions)
+
+    console.log('这边',this.Questionnaire)
 
     this.NeedShowQuestions = this.Questions
     this.Qesid=this.id;
