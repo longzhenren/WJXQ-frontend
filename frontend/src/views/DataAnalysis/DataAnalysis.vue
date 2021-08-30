@@ -122,6 +122,7 @@
 
                   <DataAnalysisList v-else
                       :questions="Questionnaire.Question"
+                                    :questionnaire="Questionnaire"
                       :id="this.id"
                     :father-need-show-questions="NeedShowQuestions"></DataAnalysisList>
                 </vue-scroll>
@@ -396,6 +397,7 @@ import DataDownload from "./DataDownload";
           ShowNumber: Questionnaire.ShowNumber,
           Open: Questionnaire.Open,
           Text: Questionnaire.Text,
+          Type: Questionnaire.Type,
           Question: [],
           EncodeID: Questionnaire.EncodeID
         }
@@ -894,6 +896,9 @@ body {
     text-align: left;
     line-height: 30px;
     padding-left: 5px ;
+    overflow: hidden;
+  　　text-overflow:ellipsis;
+  　　white-space: nowrap;
     cursor: pointer;
     transition: .4s all ease-in-out;
   }

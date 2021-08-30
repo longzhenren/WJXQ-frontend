@@ -470,6 +470,7 @@ export default {
           this.DesignedQuestionnaire = res.data.Questionnaire
           console.log(this.DesignedQuestionnaire)
           this.EncodeID = res.data.Questionnaire.EncodeID
+          this.isGetLink = res.data.Questionnaire.Open
           this.getQuestionnaireLink();
         }
       }).catch(err=>{
