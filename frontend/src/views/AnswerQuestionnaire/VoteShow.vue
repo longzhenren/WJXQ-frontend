@@ -119,8 +119,66 @@ export default {
       }
       return j;
     },
-    async getRep(q){
+    async getRepExam(q){
       if (q.Type === 1) {
+        console.log(q)
+        var c = [];
+        request({
+          url: '/submit/getscore',
+          method: 'post',
+          data: {
+            'submissionID':this.$route.query.submissionID,
+            'questionID': q.id,
+          }
+        }).then(res=>{
+          c=res.data.ChooseData.sort((a,b)=>{
+            return b.value-a.value
+          });
+          this.Question.push({
+            id: q.id,
+            Stem: q.Stem,
+            Describe: q.Describe,
+            Type: 1,
+            Must: q.Must,
+            Number: q.Number,
+            Choice: c,
+            Total:res.data.QesData.Total,
+            RadioValue: 0,
+          });
+        })
+      }
+      else if (q.Type === 2) {
+        var c = [];
+        console.log(q)
+        request({
+          url: '/submit/qesrep',
+          method: 'post',
+          data: {
+            'questionID': q.id,
+          }
+        }).then(res=>{
+          c=res.data.ChooseData.sort((a,b)=>{
+            return b.value-a.value
+          });
+          this.Question.push({
+            id: q.id,
+            Stem: q.Stem,
+            Describe: q.Describe,
+            Type: 2,
+            MaxChoice: q.MaxChoice,
+            Minchoice: q.Minchoice,
+            Must: q.Must,
+            Number: q.Number,
+            Choice: c,
+            Total:res.data.QesData.Total,
+            CheckList: [],
+          });
+          console.log(this.Question)
+        })
+      }
+    },
+    async getRep(q){
+      if (q.Type === 6) {
         console.log(q)
         var c = [];
         request({
@@ -146,7 +204,7 @@ export default {
           });
         })
       }
-      else if (q.Type === 2) {
+      else if (q.Type === 7) {
         var c = [];
         console.log(q)
         request({

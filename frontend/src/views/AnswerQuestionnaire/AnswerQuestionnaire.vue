@@ -340,7 +340,24 @@ export default {
         path: psthH,
         query: {
           Mode: "preview",
+          submissionID:this.submissionID
         },
+      });
+    },
+    //未使用
+    getQesInfo() {
+      //type6投票单选，type7投票多选
+      //console.log(this.Question[0].id);
+      request({
+        url: "/submit/qesrep",
+        method: "post",
+        data: {
+          questionID: this.Question[0].id,
+        },
+      }).then((res) => {
+        //console.log(this.Question[0].id);
+        console.log("qesrep", res);
+        return res.data.ChooseData;
       });
     },
     getPosition(i) {
@@ -457,7 +474,7 @@ export default {
         },
       }).then((res) => {
         console.log("总提交", res.data);
-        if (res.data.code === -1) this.$message.warning("有必答题未做");
+        if (res.data.code != 0) this.$message.info(res.data.msg);
         else this.state = 2;
         this.goVoteShow();//
       });
@@ -505,8 +522,8 @@ export default {
         var Questionnaire = res.data.Questionnaire;
         this.Type = Questionnaire.Type;
         this.Title = Questionnaire.Title;
-        this.ShowNumber = Questionnaire.ShowNumber;
         this.Settings=Questionnaire.Settings;//
+        this.ShowNumber = Questionnaire.ShowNumber;
         this.Text = Questionnaire.Text;
         this.questionnaireID = Questionnaire.id;
         var now = new Date();
@@ -804,7 +821,6 @@ export default {
       });
     },
   },
-
   mounted() {
     //获取客户ip
     this.ip = localStorage.getItem("Ip");

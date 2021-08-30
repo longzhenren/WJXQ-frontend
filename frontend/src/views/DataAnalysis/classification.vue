@@ -42,6 +42,7 @@
         ref="vss">
           <DataAnalysisList v-if="this.QuestionnaireQues.length!==0"
                             :questions="QuestionnaireQues"
+                            :questionnaire="Questionnaire"
                             :id="this.id">
           </DataAnalysisList>
 

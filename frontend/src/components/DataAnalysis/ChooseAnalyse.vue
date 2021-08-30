@@ -29,6 +29,12 @@
           label="数量"
           sortable>
       </el-table-column>
+
+      <el-table-column v-if="QuestionnaireType===4"
+          prop="Answer"
+          label="答案">
+      </el-table-column>
+
     </el-table>
     <div class="RightDiv">
       <el-checkbox-group v-model="DataTable" class="RightElement" :max="1">
@@ -74,6 +80,7 @@ export default {
       },
       ChooseData: [],
       BasicData: [],
+      TrueAnswer: [],
       AnswerData: [],
       TableTypes:['数据表'],
       DataTable:['数据表'],
@@ -85,7 +92,8 @@ export default {
   props:[
     'id',
     'QuesType',
-    'number'
+    'number',
+      'QuestionnaireType'
   ],
   methods:{
     Tab:function (type){
@@ -296,6 +304,7 @@ export default {
       option && myChart.setOption(option);
     },
     getData(){
+      console.log('问卷类型',this.QuestionnaireType)
       request({
         url: '/submit/qesrep',
         method: 'post',
@@ -308,8 +317,24 @@ export default {
         if (res.data.Message !== 'No Such Questionnaire'){
           // this.Questionnaire = res.data.Questionnaire
           this.QesData=res.data.QesData,
-          this.ChooseData=res.data.ChooseData,
+          this.ChooseData=res.data.ChooseData;
+
+          if (this.QuestionnaireType === 4) {
+            this.TrueAnswer = res.data.QesData.TrueAns
+            let k=0;
+            for (let i = 0; i < this.ChooseData.length; i++) {
+              let chooseDatum = this.ChooseData[i];
+              if (chooseDatum.id===this.TrueAnswer[k]){
+                chooseDatum.Answer = '是';
+                k++;
+              }
+              else {
+                chooseDatum.Answer = '否';
+              }
+            }
+          }
           this.AnswerData=res.data.AnswerData
+
           this.BasicData = res.data.ChooseData
         }
       }).catch(err=>{
