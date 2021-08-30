@@ -55,9 +55,9 @@
   <el-form-item class="left">
     <el-checkbox v-model="QesData.Must">必答题</el-checkbox>
   </el-form-item>
-  <el-form-item label="多选数量限制">
+  <el-form-item label="数量限制" v-if="QesData.Must==true">
     <el-row :gutter="10" class="InnerElement" type="flex"  justify="left" >
-      <el-col :span="8">
+      <el-col :span="10">
         <el-select v-model="QesData.min" @change="changeMin" placeholder="最少选择">
           <el-option v-for="(choice,i) in QesData.choices" :label="i+1" :value="i+1" v-if="i+1<=QesData.max" ></el-option>
           <el-option v-for="(choice,i) in QesData.choices" :label="i+1" :value="i+1" v-if="i+1>QesData.max" :disabled="true" ></el-option>
@@ -66,7 +66,7 @@
       <el-col :span="2" class="centerElement">
         <label>-</label>
       </el-col>
-      <el-col :span="8" >
+      <el-col :span="10" >
         <el-select v-model="QesData.max" @change="changeMax"  placeholder="最多选择">
           <el-option v-for="(choice,i) in QesData.choices" :label="i+1" :value="i+1" v-if="i+1>=QesData.min" ></el-option>
           <el-option v-for="(choice,i) in QesData.choices" :label="i+1" :value="i+1" v-if="i+1<QesData.min" :disabled="true" ></el-option>

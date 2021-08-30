@@ -8,8 +8,8 @@
         <div  >
           <!-- 题号题干 -->
           <span style="font-weight: 800;font-size: 20px;color: gray">{{ item.Stem }}</span>
-          <label v-if="item.Type === 1" class="type">[单选题] </label>
-          <label v-if="item.Type === 2" class="type">[多选题]</label>
+          <label v-if="item.Type === 6" class="type">[单选题] </label>
+          <label v-if="item.Type === 7" class="type">[多选题]</label>
           <!-- 描述 -->
           <div>
             <label style="font-size: 12px; color: darkgrey">
@@ -33,7 +33,39 @@
             </div>
           </div>
         </div>
+      </el-card>
 
+      <el-card class="box-card" v-if="Type===4" v-for="(item, index) in Question">
+        <div  >
+          <!-- 题号题干 -->
+          <span style="font-weight: 800;font-size: 20px;color: gray">{{ item.Stem }}</span>
+          <label v-if="item.Type === 10" class="type">[单选题] </label>
+          <label v-if="item.Type === 11" class="type">[多选题]</label>
+          <!-- 描述 -->
+          <div>
+            <label style="font-size: 12px; color: darkgrey">
+              {{ item.Describe }}
+            </label>
+          </div>
+        </div>
+
+        <!-- 投票题 -->
+        <div class="SingleChoice">
+          <div>{{item.answerScore}}</div>
+          <div>{{item.gradeStatusChoices}}</div>
+          <!--          <div v-for="(choice,i) in item.Choice" class="choice">-->
+<!--            <div class="orderOut"><span class="order">{{orderCount(item.Choice,i)[i]}}</span></div>-->
+<!--            <div class="choiceTop">-->
+<!--              <label style="float:left;">{{ choice.name}}</label>-->
+<!--              <label style="float: right"><span style="color: #2eaaff;font-weight: 800">{{choice.value}}</span>&nbsp&nbsp分</label>-->
+<!--              <label></label>-->
+<!--            </div>-->
+<!--            <div class="bar">-->
+<!--              <div class="occupy" :style="{width:percentWith(choice.value,item.Total)+'px'}"></div>-->
+<!--              <label class="percent">{{percent(choice.value,item.Total)}}%</label>-->
+<!--            </div>-->
+<!--          </div>-->
+        </div>
       </el-card>
 
     </div>
@@ -89,8 +121,76 @@ export default {
       }
       return j;
     },
+    async getRepExam(q){
+      if (q.Type === 10) {
+        console.log(q)
+        var c = [];
+        request({
+          url: '/submit/qesrep',
+          method: 'post',
+          data: {
+            'questionID': q.id,
+          }
+        }).then(res=>{
+          request({
+            url: '/submit/qetsorce',
+            method: 'post',
+            data: {
+              'submissionID':this.$route.query.submissionID,
+              'questionID': q.id,
+            }
+          }).then(res2=>{
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: 1,
+              Must: q.Must,
+              Number: q.Number,
+              Total:res.data.QesData.Total,
+              AnswerScore:res2.data.answerScore,
+              GradeStatusChoices :res2.data.gradeStatusChoices,
+              RadioValue: 0,
+            })
+          })
+        })
+      }
+      else if (q.Type === 11) {
+        console.log(q)
+        var c = [];
+        request({
+          url: '/submit/qesrep',
+          method: 'post',
+          data: {
+            'questionID': q.id,
+          }
+        }).then(res=>{
+          request({
+            url: '/submit/qetsorce',
+            method: 'post',
+            data: {
+              'submissionID':this.$route.query.submissionID,
+              'questionID': q.id,
+            }
+          }).then(res2=>{
+            this.Question.push({
+              id: q.id,
+              Stem: q.Stem,
+              Describe: q.Describe,
+              Type: 1,
+              Must: q.Must,
+              Number: q.Number,
+              Total:res.data.QesData.Total,
+              AnswerScore:res2.data.answerScore,
+              GradeStatusChoices :res2.data.gradeStatusChoices,
+              RadioValue: 0,
+            })
+          })
+        })
+      }
+    },
     async getRep(q){
-      if (q.Type === 1) {
+      if (q.Type === 6) {
         console.log(q)
         var c = [];
         request({
@@ -116,7 +216,7 @@ export default {
           });
         })
       }
-      else if (q.Type === 2) {
+      else if (q.Type === 7) {
         var c = [];
         console.log(q)
         request({
@@ -180,7 +280,10 @@ export default {
         //对this.Question[]赋值
         for (var i=0;i<Questionnaire.Question.length;i++) {
           var q = Questionnaire.Question[i];
-          this.getRep(q)
+          if(this.Type===2)
+            this.getRep(q)
+          else if(this.Type===4)
+            this.getRepExam(q)
         }
         this.Question.sort(this.sortRule);
       })

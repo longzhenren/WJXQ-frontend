@@ -1,6 +1,6 @@
 <template>
   <div class="questionnaireRelease">
-<!--    侧边菜单-->
+    <!--    侧边菜单-->
     <div class="releaseMenu">
       <ul class="menuItems">
         <li class="menuItem"
@@ -21,22 +21,22 @@
           <div>问卷发布</div>
         </li>
 
-<!--        <li class="menuItem"-->
-<!--            :class="{horzontalActive: $store.state.leftMenuCurrent===1}"-->
-<!--            @click="changeLeft(1)">-->
-<!--          <span class="sendLogo"></span>-->
-<!--          <div>问卷发送</div>-->
-<!--        </li>-->
+        <!--        <li class="menuItem"-->
+        <!--            :class="{horzontalActive: $store.state.leftMenuCurrent===1}"-->
+        <!--            @click="changeLeft(1)">-->
+        <!--          <span class="sendLogo"></span>-->
+        <!--          <div>问卷发送</div>-->
+        <!--        </li>-->
 
 
 
-<!--        <li class="menuItem">-->
+        <!--        <li class="menuItem">-->
 
-<!--        </li>-->
+        <!--        </li>-->
       </ul>
     </div>
 
-<!--    顶部导航栏-->
+    <!--    顶部导航栏-->
     <div class="topNav">
       <ul v-if="$store.state.leftMenuCurrent===0">
         <!--      问卷状态-->
@@ -50,15 +50,15 @@
         </li>
       </ul>
 
-<!--      <ul v-else-if="$store.state.leftMenuCurrent===1">-->
-<!--        <li v-for="(item,index) in sendTopNavData"-->
-<!--            :class="{ active: topNavCurrent===index}"-->
-<!--            @click="changeTop(index)" >-->
-<!--          <span v-if="index===0" class="linkLogo"></span>-->
-<!--          <span v-if="index===1" class="prev2Logo"></span>-->
-<!--          <div>{{ item.title }}</div>-->
-<!--        </li>-->
-<!--      </ul>-->
+      <!--      <ul v-else-if="$store.state.leftMenuCurrent===1">-->
+      <!--        <li v-for="(item,index) in sendTopNavData"-->
+      <!--            :class="{ active: topNavCurrent===index}"-->
+      <!--            @click="changeTop(index)" >-->
+      <!--          <span v-if="index===0" class="linkLogo"></span>-->
+      <!--          <span v-if="index===1" class="prev2Logo"></span>-->
+      <!--          <div>{{ item.title }}</div>-->
+      <!--        </li>-->
+      <!--      </ul>-->
 
       <div class="quesTitle">
         {{DesignedQuestionnaire.Title}}
@@ -80,28 +80,28 @@
           或者现在<button @click="getLink">获取链接</button>
         </div>
 
-          <div class="link" v-if="isGetLink">
-            <div class="erweima">
-<!--              <div class="intro">点击二维码即可下载分享</div>-->
-              <div class="code">
-                <QRCode ref="Myqrcode"
-                        :urlpath="QuesLink"
-                        :code-height="150"
-                        :code-width="150"></QRCode>
-              </div>
+        <div class="link" v-if="isGetLink">
+          <div class="erweima">
+            <!--              <div class="intro">点击二维码即可下载分享</div>-->
+            <div class="code">
+              <QRCode ref="Myqrcode"
+                      :urlpath="QuesLink"
+                      :code-height="150"
+                      :code-width="150"></QRCode>
             </div>
+          </div>
 
-            <div class="generateLink">
-              <div class="title">问卷链接</div>
-              <div class="quesLink">
-                <input id="links" type="text" v-model="QuesLink" style="width: 400px;">
-                <div class="operations">
-                  <button @click="copyLink" class="button-3d">复制</button>
-                  <button @click="openQuesLink" class="button-3d">打开</button>
-                </div>
+          <div class="generateLink">
+            <div class="title">问卷链接</div>
+            <div class="quesLink">
+              <input id="links" type="text" v-model="QuesLink" style="width: 400px;">
+              <div class="operations">
+                <button @click="copyLink" class="button-3d">复制</button>
+                <button @click="openQuesLink" class="button-3d">打开</button>
               </div>
             </div>
           </div>
+        </div>
 
         <div class="warning" v-else>
           <div class="linksWarning">
@@ -120,7 +120,7 @@
 
         <div class="check">
 
-<!--          导出-->
+          <!--          导出-->
           <div class="export" @click="exportDocument">
             <span>导出到word</span>
             <span>可以将编辑好的问卷导出word</span>
@@ -141,9 +141,9 @@
 
 
     <el-dialog
-        title="提示"
-        :visible.sync="dialogVisible"
-        width="30%">
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="30%">
       <span>现在返回设计页面会关闭问卷，确认返回吗？</span>
       <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
@@ -183,7 +183,7 @@ export default {
       QuesId: 0,
 
       // 得到的问卷
-        DesignedQuestionnaire: {},
+      DesignedQuestionnaire: {},
 
       // 顶部菜单计数器
       topNavCurrent: 0,
@@ -450,7 +450,7 @@ export default {
       this.DesignedQuestionnaire = Questionnaire
       this.QuesId = Number(params.id)===0?Questionnaire.id:Number(params.id);
       // this.QuesId = ===0?Number(params.id):Questionnaire.id
-       localStorage.QuesId = this.QuesId
+      localStorage.QuesId = this.QuesId
     },
     // 向后端发送请求接受问卷信息
     getDesignedQuestionnaire(){
@@ -505,394 +505,394 @@ export default {
 </script>
 
 <style scoped>
-  body {
-    background:#F2F2F2;
+body {
+  background:#F2F2F2;
   /*!important;*/
-  }
+}
 
-  .questionnaireRelease {
-    width: 100vw;
-    /*height: 100vh;*/
-    background-color: #F2F2F2;
-  }
-  .releaseMenu {
-    width: 80px;
-    height: 100%;
-    background-color: #2a3a4a;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 5;
-  }
+.questionnaireRelease {
+  width: 100vw;
+  /*height: 100vh;*/
+  background-color: #F2F2F2;
+}
+.releaseMenu {
+  width: 80px;
+  height: 100%;
+  background-color: #2a3a4a;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
 
-  .releaseMenu .menuItems {
-    width: 100%;
-  }
-
-
-  .releaseMenu .menuItems .menuItem {
-    height: 13vh;
-    /*background-color: pink;*/
-    width: 100%;
-    font-weight: 500;
-    font-size: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #BDBDBD;
-  }
-
-  .releaseMenu .menuItems .menuItem:hover {
-    cursor: pointer;
-    background-color: #3f4f5f;
-  }
-
-  .releaseMenu .menuItems .menuItem span {
-    font-size: 40px;
-    margin-bottom: 10px;
-  }
+.releaseMenu .menuItems {
+  width: 100%;
+}
 
 
-  .topNav {
-    width: 100%;
-    height: 8%;
-    position: fixed;
-    background-color: white;
-    box-shadow: 0 0 5px rgba(0,0,0,.2);
-    top: 0;
-    left: 0;
-    z-index: 4;
-  }
+.releaseMenu .menuItems .menuItem {
+  height: 13vh;
+  /*background-color: pink;*/
+  width: 100%;
+  font-weight: 500;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #BDBDBD;
+}
 
-  .topNav .quesTitle {
-    width: 10%;
-    height: 100%;
-    /*line-height: 13vh;*/
-    position: absolute;
-    font-size: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 600;
-    color: #848484;
-    right: 10%;
-    bottom: 0;
-  }
+.releaseMenu .menuItems .menuItem:hover {
+  cursor: pointer;
+  background-color: #3f4f5f;
+}
 
-  .topNav ul {
-    width: 20%;
-    height: 100%;
-    /*background-color: pink;*/
-    margin-left: 250px;
-    display: flex;
-    justify-content: space-around;
-  }
-
-  .topNav ul li {
-    height: 100%;
-    width: 25%;
-    /*background-color: white;*/
-    /*color: #848484;*/
-    font-weight: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-  }
-
-  .topNav ul li:hover {
-    cursor: pointer;
-  }
-
-  .topNav ul li span {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
+.releaseMenu .menuItems .menuItem span {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
 
 
+.topNav {
+  width: 100%;
+  height: 8%;
+  position: fixed;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,.2);
+  top: 0;
+  left: 0;
+  z-index: 4;
+}
 
-   .active {
-    background-color: #58ACFA;
-    color: white;
-  }
+.topNav .quesTitle {
+  width: 10%;
+  height: 100%;
+  /*line-height: 13vh;*/
+  position: absolute;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  color: #848484;
+  right: 10%;
+  bottom: 0;
+}
 
+.topNav ul {
+  width: 20%;
+  height: 100%;
+  /*background-color: pink;*/
+  margin-left: 250px;
+  display: flex;
+  justify-content: space-around;
+}
 
-   .horzontalActive {
-     background-color: #4f5f6f;
-     color: white;
-   }
+.topNav ul li {
+  height: 100%;
+  width: 25%;
+  /*background-color: white;*/
+  /*color: #848484;*/
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
 
-   .release {
-     width: 45%;
-     height: 80%;
-     position: absolute;
-     left: 27%;
-     /*left: calc(50% - 269px);*/
-     top: 16%;
-     /*margin: 0 auto;*/
-     /*transform: translateX(-50%);*/
-   }
-  .release>div {
-    width: 100%;
-    height: 100%;
-  }
+.topNav ul li:hover {
+  cursor: pointer;
+}
 
-  .release .status div:first-child {
-    background-color: white;
-    width: 100%;
-    height: 15%;
-    display: flex;
-    box-sizing: border-box;
-    justify-content: start;
-    padding-left: 10% ;
-    align-items: center;
-    margin-bottom: 20px;
-    box-shadow: 0 0 6px rgba(2,2,2,.1);
-  }
-  .release .status div:first-child button {
-    border: 0;
-    outline: none;
-    background-color: #FE9A2E;
-    color: #F2F2F2;
-    height: 30%;
-    width: 100px;
-    margin-left: 10px;
-    transition: all .4s ease-in-out;
-  }
-
-  .release .status div:first-child button:hover {
-    cursor: pointer;
-    background-color: #FFBF00;
-  }
-
-  .release .status .link div {
-    box-shadow: none;
-  }
-  .release .status .check {
-    background-color: white;
-    width: 100%;
-    height: 50%;
-    box-shadow: 0 0 10px rgba(0,0,0,.1);
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-    justify-content: space-between;
-    padding: 30px 20px;
-  }
-
-  .release .status .check .export {
-    padding-left: 10% ;
-    box-shadow: none;
-    display: flex;
-    height: 70px;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: start;
-  }
-
-  .release .settings {
-    background-color: #F2F2F2;
-  }
-
-  .release .status .check div span:first-child {
-    color: #58ACFA;
-  }
-
-  .release .status .check div span:first-child:hover {
-    cursor: pointer;
-  }
-
-  .send {
-    background-color: white;
-    width: 50%;
-    height: 80%;
-    position: absolute;
-    left: 50%;
-    top: 16%;
-    transform: translateX(-50%);
-  }
-
-  .release .status  .link {
-    width: 100%;
-    /*background-color: pink;*/
-    height: 180px;
-    box-shadow: 0 0 5px rgba(0,0,0,.1);
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 20px;
-    justify-content: space-between;
-    padding-left: 0;
-  }
-
-  .release .status  .warning {
-    width: 100%;
-    /*background-color: pink;*/
-    height: 180px;
-    box-shadow: 0 0 5px rgba(0,0,0,.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-left: 0;
-  }
-
-  .release .status  .warning .tims {
-    box-shadow: none;
-    height: 100px;
-    padding: 0 63px;
-    text-align: left;
-    color: #A4A4A4;
-  }
-
-  .release .status  .warning .linksWarning {
-    box-shadow: none;
-    height: 100px;
-  }
-
-  .release .status  .link .generateLink {
-    background-color: white;
-    width: 80%;
-    height: 100%;
-    box-sizing: border-box;
-  }
-
-  .release .status  .link .generateLink .title {
-    /*background-color: #58ACFA;*/
-    width: 100%;
-    height: 30%;
-    font-size: 20px;
-    font-weight: 600;
-    text-align: left;
-    color: #1C1C1C;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-  }
-
-  .release .status  .link .generateLink .quesLink {
-    /*background-color: purple;*/
-    width: 100%;
-    height: 60%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: start;
-  }
-
-  .release .status  .link .generateLink .quesLink input {
-    border: 0;
-    outline: none;
-    width: 60%;
-    height: 30%;
-    margin-bottom: 20px;
-    background-color: #E6E6E6;
-    padding-left: 20px;
-  }
-
-  .release .status  .link .generateLink .quesLink .operations {
-    /*background-color: #F2F2F2;*/
-    width: 85%;
-    height: 30%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .release .status  .link .generateLink .quesLink .operations button {
-    width: 20%;
-    height: 80%;
-    background-color: rgba(46,154,254,.5);
-    color: white;
-    font-weight: 600;
-  }
+.topNav ul li span {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
 
 
-  .release .status  .link .erweima {
-    width: 38%;
-    height: 100%;
-    margin-left: 0;
-  }
 
-  .release .status  .link  .erweima div {
-    padding: 0;
-    margin: 0;
-  }
+.active {
+  background-color: #58ACFA;
+  color: white;
+}
 
-  .release .status  .link  .generateLink div {
-    padding: 0;
-    margin: 0;
-  }
 
-  .release .status  .link .erweima .code {
-    width: 170px;
-    height: 170px;
-    display: flex;
-    padding: 0;
-    justify-content: center;
-    margin-left: -50px;
-    align-items: center;
-    border: 2px solid #f2f2f2;
-  }
+.horzontalActive {
+  background-color: #4f5f6f;
+  color: white;
+}
 
-  .backLogo{
-    font-family: icomoon;
-    content: '\e90e';
-  }
-  .releaseLogo{
-    font-family: icomoon;
-    content: '\e935';
-  }
-  .sendLogo{
-    font-family: icomoon;
-    content: '\e006';
-  }
-  .homeLogo{
-    font-family: icomoon;
-    content: '\e902';
-  }
-  span[class=stateLogo]::after{
-    font-size: 30px;
-    line-height: 30px;
-    vertical-align: middle;
-    font-family: icomoon;
-    content: '\e937';
-  }
-  span[class=prevLogo]::after{
-    font-size: 30px;
-    line-height: 30px;
-    vertical-align: middle;
-    font-family: icomoon;
-    content: '\e9ce';
-  }
-  span[class=setLogo]::after{
-    font-size: 30px;
-    line-height: 30px;
-    vertical-align: middle;
-    font-family: icomoon;
-    content: '\e939';
-  }
-  span[class=linkLogo]::after{
-     font-size: 50px;
-     line-height: 70px;
-     vertical-align: middle;
-     font-family: icomoon;
-     content: '\e93b';
-  }
-  span[class=prev2Logo]::after{
-      font-size: 50px;
-      line-height: 70px;
-      vertical-align: middle;
-      font-family: icomoon;
-      content: '\e9ce';
-    }
-  {
-    font-family: icomoon;
-    content: 'e93b';
-  }
-  {
-    font-family: icomoon;
-    content: '\e935';
-  }
+.release {
+  width: 45%;
+  height: 80%;
+  position: absolute;
+  left: 27%;
+  /*left: calc(50% - 269px);*/
+  top: 16%;
+  /*margin: 0 auto;*/
+  /*transform: translateX(-50%);*/
+}
+.release>div {
+  width: 100%;
+  height: 100%;
+}
+
+.release .status div:first-child {
+  background-color: white;
+  width: 100%;
+  height: 15%;
+  display: flex;
+  box-sizing: border-box;
+  justify-content: start;
+  padding-left: 10% ;
+  align-items: center;
+  margin-bottom: 20px;
+  box-shadow: 0 0 6px rgba(2,2,2,.1);
+}
+.release .status div:first-child button {
+  border: 0;
+  outline: none;
+  background-color: #FE9A2E;
+  color: #F2F2F2;
+  height: 30%;
+  width: 100px;
+  margin-left: 10px;
+  transition: all .4s ease-in-out;
+}
+
+.release .status div:first-child button:hover {
+  cursor: pointer;
+  background-color: #FFBF00;
+}
+
+.release .status .link div {
+  box-shadow: none;
+}
+.release .status .check {
+  background-color: white;
+  width: 100%;
+  height: 50%;
+  box-shadow: 0 0 10px rgba(0,0,0,.1);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  justify-content: space-between;
+  padding: 30px 20px;
+}
+
+.release .status .check .export {
+  padding-left: 10% ;
+  box-shadow: none;
+  display: flex;
+  height: 70px;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: start;
+}
+
+.release .settings {
+  background-color: #F2F2F2;
+}
+
+.release .status .check div span:first-child {
+  color: #58ACFA;
+}
+
+.release .status .check div span:first-child:hover {
+  cursor: pointer;
+}
+
+.send {
+  background-color: white;
+  width: 50%;
+  height: 80%;
+  position: absolute;
+  left: 50%;
+  top: 16%;
+  transform: translateX(-50%);
+}
+
+.release .status  .link {
+  width: 100%;
+  /*background-color: pink;*/
+  height: 180px;
+  box-shadow: 0 0 5px rgba(0,0,0,.1);
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+  justify-content: space-between;
+  padding-left: 0;
+}
+
+.release .status  .warning {
+  width: 100%;
+  /*background-color: pink;*/
+  height: 180px;
+  box-shadow: 0 0 5px rgba(0,0,0,.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-left: 0;
+}
+
+.release .status  .warning .tims {
+  box-shadow: none;
+  height: 100px;
+  padding: 0 63px;
+  text-align: left;
+  color: #A4A4A4;
+}
+
+.release .status  .warning .linksWarning {
+  box-shadow: none;
+  height: 100px;
+}
+
+.release .status  .link .generateLink {
+  background-color: white;
+  width: 80%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.release .status  .link .generateLink .title {
+  /*background-color: #58ACFA;*/
+  width: 100%;
+  height: 30%;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: left;
+  color: #1C1C1C;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.release .status  .link .generateLink .quesLink {
+  /*background-color: purple;*/
+  width: 100%;
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+
+.release .status  .link .generateLink .quesLink input {
+  border: 0;
+  outline: none;
+  width: 60%;
+  height: 30%;
+  margin-bottom: 20px;
+  background-color: #E6E6E6;
+  padding-left: 20px;
+}
+
+.release .status  .link .generateLink .quesLink .operations {
+  /*background-color: #F2F2F2;*/
+  width: 85%;
+  height: 30%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.release .status  .link .generateLink .quesLink .operations button {
+  width: 20%;
+  height: 80%;
+  background-color: rgba(46,154,254,.5);
+  color: white;
+  font-weight: 600;
+}
+
+
+.release .status  .link .erweima {
+  width: 38%;
+  height: 100%;
+  margin-left: 0;
+}
+
+.release .status  .link  .erweima div {
+  padding: 0;
+  margin: 0;
+}
+
+.release .status  .link  .generateLink div {
+  padding: 0;
+  margin: 0;
+}
+
+.release .status  .link .erweima .code {
+  width: 170px;
+  height: 170px;
+  display: flex;
+  padding: 0;
+  justify-content: center;
+  margin-left: -50px;
+  align-items: center;
+  border: 2px solid #f2f2f2;
+}
+
+.backLogo{
+  font-family: icomoon;
+  content: '\e90e';
+}
+.releaseLogo{
+  font-family: icomoon;
+  content: '\e935';
+}
+.sendLogo{
+  font-family: icomoon;
+  content: '\e006';
+}
+.homeLogo{
+  font-family: icomoon;
+  content: '\e902';
+}
+span[class=stateLogo]::after{
+  font-size: 30px;
+  line-height: 30px;
+  vertical-align: middle;
+  font-family: icomoon;
+  content: '\e937';
+}
+span[class=prevLogo]::after{
+  font-size: 30px;
+  line-height: 30px;
+  vertical-align: middle;
+  font-family: icomoon;
+  content: '\e9ce';
+}
+span[class=setLogo]::after{
+  font-size: 30px;
+  line-height: 30px;
+  vertical-align: middle;
+  font-family: icomoon;
+  content: '\e939';
+}
+span[class=linkLogo]::after{
+  font-size: 50px;
+  line-height: 70px;
+  vertical-align: middle;
+  font-family: icomoon;
+  content: '\e93b';
+}
+span[class=prev2Logo]::after{
+  font-size: 50px;
+  line-height: 70px;
+  vertical-align: middle;
+  font-family: icomoon;
+  content: '\e9ce';
+}
+{
+  font-family: icomoon;
+  content: 'e93b';
+}
+{
+  font-family: icomoon;
+  content: '\e935';
+}
 
 
 

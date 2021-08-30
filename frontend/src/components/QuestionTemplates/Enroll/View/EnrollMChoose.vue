@@ -56,7 +56,7 @@ export default {
         describe: "这是一个描述",
         question:"",
         choices:["选项1","选项2"],
-        radio: 0,
+        radio: [],
 
         //settings
         max:1,
@@ -100,7 +100,7 @@ export default {
           describe: "这是一个描述",
           question:"",
           choices:["选项1","选项2"],
-          radio: 0,
+          radio: [],
 
           //settings
           max:1,

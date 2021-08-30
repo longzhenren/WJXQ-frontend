@@ -1,5 +1,5 @@
 <template>
-  <div class="AnswerQuestionnaire">
+  <div :class="{AnswerQuestionnaire:true,btnDis:this.model==='preview'}">
     <MyMk v-if="myMkShow" :id="id"></MyMk>
     <Time
       :remainTime.default="this.ExamTime"
@@ -340,7 +340,24 @@ export default {
         path: psthH,
         query: {
           Mode: "preview",
+          submissionID:this.submissionID
         },
+      });
+    },
+    //未使用
+    getQesInfo() {
+      //type6投票单选，type7投票多选
+      //console.log(this.Question[0].id);
+      request({
+        url: "/submit/qesrep",
+        method: "post",
+        data: {
+          questionID: this.Question[0].id,
+        },
+      }).then((res) => {
+        //console.log(this.Question[0].id);
+        console.log("qesrep", res);
+        return res.data.ChooseData;
       });
     },
     getPosition(i) {
@@ -378,17 +395,17 @@ export default {
       if (!_.eq(val, old) && this.state != 2) {
         this.$message.success("已自动保存");
         this.save();
-        console.log("自动保存", val);
+        //console.log("自动保存", val);
       }
     }, 3000),
     //保存答案
-    save() {
+    async save() {
       let q;
       for (q in this.Question) {
         let i = this.Question[q];
         //单选
         if (i.Type == 1 || i.Type == 6 || i.Type == 8 || i.Type == 10) {
-          request({
+          await request({
             url: "/submit/savans",
             method: "post",
             headers: { "Content-Type": "application/json" },
@@ -398,12 +415,12 @@ export default {
               answerSelectionIDSet: [i.RadioValue],
             },
           }).then((res) => {
-            console.log("savans-single", res);
+            console.log(i.Stem,res.data);
           });
         }
         //多选
         if (i.Type == 2 || i.Type == 7 || i.Type == 9 || i.Type == 11)
-          request({
+          await request({
             url: "/submit/savans",
             method: "post",
             headers: { "Content-Type": "application/json" },
@@ -413,11 +430,11 @@ export default {
               answerSelectionIDSet: i.CheckList,
             },
           }).then((res) => {
-            console.log("savans-multi", res);
+            console.log(i.Stem, res.data);
           });
         //填空、定位
         if (i.Type == 3 || i.Type == 12 || i.Type == 5)
-          request({
+          await request({
             url: "/submit/savans",
             method: "post",
             headers: { "Content-Type": "application/json" },
@@ -427,11 +444,11 @@ export default {
               answerText: i.AnswerText,
             },
           }).then((res) => {
-            console.log("savans-blank", res);
+            console.log(i.Stem, res.data);
           });
         //打分
         if (i.Type == 4)
-          request({
+          await request({
             url: "/submit/savans",
             method: "post",
             headers: { "Content-Type": "application/json" },
@@ -441,83 +458,77 @@ export default {
               answerScore: i.Score,
             },
           }).then((res) => {
-            console.log("savans-score", res);
+            console.log(i.Stem, res.data);
           });
         //console.log(i.id);
       }
     },
     //点击按钮后提交
-    async submit() {
-      this.save();
-      await this.ssubmit();
-    },
     ssubmit() {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          request({
-            url: "/submit/submit",
-            method: "post",
-            headers: { "Content-Type": "application/json" },
-            data: {
-              submissionID: this.submissionID,
-            },
-          }).then((res) => {
-            console.log("总提交", res.data);
-            if (res.data.code === -1) this.$message.warning("有必答题未做");
-            else this.state = 2;
-            this.goVoteShow();//
-          });
-        }, 1000);
+      request({
+        url: "/submit/submit",
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        data: {
+          submissionID: this.submissionID,
+        },
+      }).then((res) => {
+        console.log("总提交", res.data);
+        if (res.data.code != 0) this.$message.info(res.data.msg);
+        else this.state = 2;
+        this.goVoteShow();//
+      });
+    },
+    submit() {
+      this.save().then(() => {
+        this.ssubmit();
       });
     },
     //排序
     sortRule(a, b) {
       return a.Number - b.Number;
     },
-  },
-
-  mounted() {
-    //获取客户ip
-    this.ip = localStorage.getItem("Ip");
-    // console.log(this.ip);
-    let pra;
-    if (this.qesId === undefined) {
-      if (this.$route.query.Mode === undefined) {
-        //填写时
-        console.log(this.id);
-        pra = {
-          EncodeID: this.id,
-          Mode: "",
-        };
+    async getQuestionnaire() {
+      let pra;
+      if (this.qesId === undefined) {
+        if (this.$route.query.Mode === undefined) {
+          //填写时
+          this.model='';
+          console.log(this.id);
+          pra = {
+            EncodeID: this.id,
+            Mode: "",
+          };
+        } else {
+          pra = {
+            EncodeID: this.id,
+            Mode: this.$route.query.Mode,
+          };
+        }
       } else {
         pra = {
-          EncodeID: this.id,
-          Mode: this.$route.query.Mode,
+          EncodeID: this.qesId,
+          Mode: this.model,
         };
       }
-    } else {
-      pra = {
-        EncodeID: this.qesId,
-        Mode: this.model,
-      };
-    }
-    //请求问卷数据
-    request({
-      url: "/question/answerQuestionnaire",
-      method: "post",
-      data: pra,
-    })
-      .then((res) => {
-        console.log("源数据", res);
+      await request({
+        url: "/question/answerQuestionnaire",
+        method: "post",
+        data: pra,
+      }).then((res) => {
+        console.log("源数据", res.data);
         //存储问卷信息
         if (res.data.Message === "Questionnaire is closed") this.state = 1;
         var Questionnaire = res.data.Questionnaire;
         this.Type = Questionnaire.Type;
         this.Title = Questionnaire.Title;
+        this.Settings=Questionnaire.Settings;//
         this.ShowNumber = Questionnaire.ShowNumber;
         this.Text = Questionnaire.Text;
         this.questionnaireID = Questionnaire.id;
-        this.ExamTime = Questionnaire.AnswerTime;
+        var now = new Date();
+        this.ExamTime = Questionnaire.Settings.DeadLine - now;
+        console.log('examtime',this.ExamTime);
         //存储题目数据并排序
         var i;
         for (i in Questionnaire.Question) {
@@ -617,7 +628,7 @@ export default {
               Number: q.Number,
               Choice: c,
               RadioValue: 0,
-              ShowResultBeforeVote: false//q.ShowResultBeforeVote,
+              ShowResultBeforeVote: false, //q.ShowResultBeforeVote,
             });
             this.getQesInfo();
           }
@@ -640,7 +651,7 @@ export default {
               Number: q.Number,
               Choice: c,
               CheckList: [],
-              ShowResultBeforeVote: false//q.ShowResultBeforeVote,
+              ShowResultBeforeVote: false, //q.ShowResultBeforeVote,
             });
           }
           if (q.Type == 8) {
@@ -742,72 +753,87 @@ export default {
         }
         this.Question.sort(this.sortRule);
         console.log("获取数据", this.Question);
-        //创建提交
-        request({
-          url: "/submit/crtsub",
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          data: {
-            ip: this.ip,
-            questionnaireID: this.questionnaireID,
-          },
-        }).then((res) => {
-          console.log("crtsub", res);
-          if (res.data.code == -1) this.state = 2;
-          this.submissionID = res.data.submissionID;
-          console.log("submissionID", this.submissionID);
-        });
-        //getsub
-        request({
-          url: "submit/getsub",
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          data: {
-            submissionID: this.submissionID,
-          },
-        }).then((res) => {
-          console.log("getsub", res);
-          //获取之前的提交
-          if (res.data.code === 0) {
-            let list = res.data.answerList;
-            for (let i = 0; i < list.length; i++) {
-              let ans = list[i];
-              for (let j = 0; j < this.Question.length; j++) {
-                if (this.Question[j].id === ans.answerid) break;
-              }
-              switch (this.Question[j].Type) {
-                case 1:
-                case 6:
-                case 8:
-                case 10:
-                  this.Question[j].RadioValue = ans.choiceIDList[0];
-                  break;
-                case 2:
-                case 7:
-                case 9:
-                case 11:
-                  this.Question[j].CheckList = ans.choiceIDList;
-                  break;
-                case 3:
-                case 12:
-                  this.Question[j].AnswerText = ans.answerText;
-                  break;
-                case 5:
-                  this.Question[j].Position = ans.answerText;
-                  break;
-                case 4:
-                  this.Question[j].Score = ans.answerScore;
-              }
+      }); //answerQ
+    },
+    async creatSubmit() {
+      await request({
+        url: "/submit/crtsub",
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        data: {
+          ip: this.ip,
+          questionnaireID: this.questionnaireID,
+        },
+      }).then((res) => {
+        console.log("crtsub", res.data);
+        if (res.data.code != 0) {
+          this.$message.info(res.data.msg);
+        }
+        this.submissionID = res.data.submissionID;
+        //console.log("submissionID", this.submissionID);
+      });
+    },
+    getSubmit() {
+      request({
+        url: "submit/getsub",
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        data: {
+          submissionID: this.submissionID,
+        },
+      }).then((res) => {
+        console.log("getsub", res.data);
+        if (res.data.code === 0) {
+          let list = res.data.answerList;
+          for (let i = 0; i < list.length; i++) {
+            let ans = list[i];
+            var j;
+            for (j = 0; j < this.Question.length; j++) {
+              //console.log(this.Question[j]);
+              if (this.Question[j].id === ans.questionid) break;
+            }
+            //console.log(j);
+            switch (this.Question[j].Type) {
+              case 1:
+              case 6:
+              case 8:
+              case 10:
+                this.Question[j].RadioValue = ans.choiceIDList[0];
+                break;
+              case 2:
+              case 7:
+              case 9:
+              case 11:
+                this.Question[j].CheckList = ans.choiceIDList;
+                break;
+              case 3:
+              case 12:
+                this.Question[j].AnswerText = ans.answerText;
+                break;
+              case 5:
+                this.Question[j].Position = ans.answerText;
+                break;
+              case 4:
+                this.Question[j].Score = ans.answerScore;
             }
           }
-        });
-        if(this.qesId===undefined&&window.sessionStorage.getItem('isLogin')===null&&this.Settings.Login){
-          this.myMkShow=true;
-        }//
-      })
-      .catch((err) => {
-        console.log(err);
+        }
       });
+    },
+  },
+  mounted() {
+    //获取客户ip
+    this.ip = localStorage.getItem("Ip");
+    // console.log(this.ip);
+    //初始化答卷
+    this.getQuestionnaire().then(() => {
+      this.creatSubmit().then(() => {
+        this.getSubmit();
+      });
+      if(this.qesId===undefined&&window.sessionStorage.getItem('isLogin')===null&&this.Settings.Login){
+        this.myMkShow=true;
+      }//
+    });
   },
 };
 </script>
@@ -845,5 +871,8 @@ export default {
 .bottom {
   margin: 20px 10px 20px 10px;
   color: #909399;
+}
+.btnDis{
+  pointer-events: none;
 }
 </style>

@@ -54,7 +54,7 @@
       <el-form>
         <el-form-item class="left">
           <el-checkbox v-model="QesData.Must">必答题</el-checkbox>
-          <el-checkbox v-model="QesData.Amount">显示数量</el-checkbox>
+<!--          <el-checkbox v-model="QesData.Amount">显示数量</el-checkbox>-->
         </el-form-item>
 
       </el-form>
@@ -97,7 +97,7 @@ export default {
         //settings
         edit:1,
         Must:true,
-        Amount:true
+        Amount:false
       }
 
     };

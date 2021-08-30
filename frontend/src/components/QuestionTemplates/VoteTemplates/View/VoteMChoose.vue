@@ -14,16 +14,16 @@
 
   <el-checkbox-group v-model="QesData.radio" class="InnerDiv">
     <el-row :gutter="10" class="Choice" type="flex" align="top" justify="left"  v-for="(choice,i) in QesData.choices" >
-      <el-col :span="12">
+
         <el-checkbox :label="QesData.choices[i]" :key="choice"
                      class="Choice"
         >
         </el-checkbox>
 
-      </el-col>
-      <el-col :span="2" v-if="QesData.Amount==true">
-        <label style="font-size: 12px" >0票</label>
-      </el-col>
+
+<!--      <el-col :span="2" v-if="QesData.Amount==true">-->
+<!--        <label style="font-size: 12px" >0票</label>-->
+<!--      </el-col>-->
 <!--      <el-col :span="10" v-if="QesData.Rate==true">-->
 <!--        <el-progress :percentage="0"  ></el-progress>-->
 <!--      </el-col>-->
@@ -31,7 +31,9 @@
     </el-row>
 
   </el-checkbox-group >
+
   </div>
+
 </template>
 
 <script>
@@ -60,14 +62,14 @@ export default {
         describe: "这是一个描述",
         question:"",
         choices:["选项1","选项2"],
-        radio: 0,
+        radio: [],
 
         //settings
         max:1,
         min:1,
         edit:1,
         Must:true,
-        Amount:true
+        Amount:false
       }
     };
   },
@@ -103,7 +105,7 @@ export default {
           describe: "这是一个描述",
           question:"",
           choices:["选项1","选项2"],
-          radio: 0,
+          radio: [],
 
           //settings
           max:1,
