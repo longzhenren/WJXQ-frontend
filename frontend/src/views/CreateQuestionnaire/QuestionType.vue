@@ -14,19 +14,19 @@
           </div>
 
           <div class="TypeIcon" v-if="index===1">
-            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+            <img src="../../assets/SVG/calendar.svg" alt="创建问卷">
           </div>
 
           <div class="TypeIcon" v-if="index===2">
-            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+            <img src="../../assets/SVG/cube.svg" alt="创建问卷">
           </div>
 
           <div class="TypeIcon" v-if="index===3">
-            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+            <img src="../../assets/SVG/news.svg" alt="创建问卷">
           </div>
 
           <div class="TypeIcon" v-if="index===4">
-            <img src="../../assets/SVG/search.svg" alt="创建问卷">
+            <img src="../../assets/SVG/award.svg" alt="创建问卷">
           </div>
 
           <div class="type">

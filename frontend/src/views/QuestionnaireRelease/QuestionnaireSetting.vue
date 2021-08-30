@@ -253,6 +253,7 @@ export default {
       }
     }
   },
+
   data(){
     return {
       // 是否开启时间设置
@@ -330,23 +331,41 @@ export default {
 
   },
   mounted() {
-    this.Setting.StartTime=this.NowsQuestionnaire.Setting.StartTime;
-    this.Setting.DeadLine=this.NowsQuestionnaire.Setting.DeadLine;
-    this.Setting.AnswerTime=this.NowsQuestionnaire.Setting.AnswerTime;
-    this.Setting.IPLimit=this.NowsQuestionnaire.Setting.IPLimit;
-    this.Setting.Login=this.NowsQuestionnaire.Setting.Login;
+    this.Setting.StartTime=this.NowsQuestionnaire.Settings.StartTime;
+    console.log(this.NowsQuestionnaire)
+    this.Setting.DeadLine=this.NowsQuestionnaire.Settings.DeadLine;
+    this.Setting.AnswerTime=this.NowsQuestionnaire.Settings.AnswerTime;
+    this.Setting.Times=this.NowsQuestionnaire.Settings.Times;
+    this.Setting.IPLimit=this.NowsQuestionnaire.Settings.IPLimit;
+    this.Setting.Login=this.NowsQuestionnaire.Settings.Login;
     if(this.NowsQuestionnaire.Type===2)
-      this.Setting.Times=this.NowsQuestionnaire.Setting.Times
+      this.Setting.Times=this.NowsQuestionnaire.Settings.Times
     else if(this.NowsQuestionnaire.Type===4)
-      this.Setting.Reorder=this.NowsQuestionnaire.Setting.Reorder
+      this.Setting.Reorder=this.NowsQuestionnaire.Settings.Reorder
     this.init();
   },
   methods: {
+    // 将字符串转为日期
+    changeToData(String){
+      return new Date(Date.parse(String.replace(/-/g,"/")));
+    },
+
     init(){
+      console.log(this.NowsQuestionnaire)
       this.AnswerTimeSetting.isNeedLogin=this.Setting.Login;
       this.AnswerTimeSetting.Times=this.Setting.IPLimit;
       this.AnswerTimeSetting.SelectAnswerTimes=this.Setting.Times;
+      // console.log(this.NowsQuestionnaire.Settings.StartTime)
+      console.log(this.AnswerTimeSetting)
+      // this.changeToData(this.NowsQuestionnaire.Settings.StartTime);
+      let date = this.changeToData(this.NowsQuestionnaire.Settings.DeadLine);
+      this.DeadLine = date
+      console.log(date)
+      console.log('DeadLine',this.DeadLine)
     },
+
+
+
     // 全部保存
     saveAll(){
       this.confirmTimeSetting();
@@ -381,6 +400,7 @@ export default {
             message: '保存成功',
             type: 'success'
           });
+          console.log(this.Setting)
         }
       }).catch(err=>{
         console.log(err)
