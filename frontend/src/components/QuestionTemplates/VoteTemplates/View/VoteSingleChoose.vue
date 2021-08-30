@@ -66,7 +66,7 @@ export default {
         //settings
         edit:1,
         Must:true,
-        Amount:true
+        Amount:false
       }
     };
   },
