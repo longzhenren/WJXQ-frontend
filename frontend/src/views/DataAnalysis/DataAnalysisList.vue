@@ -13,7 +13,7 @@
 
           <div class="TableContainer">
             <div v-if="Ques.Type !== 3 && Ques.Type !== 4">
-              <ChooseAnalyse :id="Qesid" :number="index" :questionnaire-type="Questionnaire.Type"></ChooseAnalyse>
+              <ChooseAnalyse :id="Qesid" :number="index" :questionnaire-type="Questionnaire.Type" :question-id="Ques.id"></ChooseAnalyse>
             </div>
 
             <div v-else>
@@ -67,7 +67,8 @@ export default {
     Questions(newQues){
       // console.log('zhege',this.Questions)
       this.NeedShowQuestions = newQues
-    }
+    },
+
   },
   created() {
     // console.log(this.Questionnaire)

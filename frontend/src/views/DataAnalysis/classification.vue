@@ -20,10 +20,32 @@
               </el-select>
               <el-input v-model="qKey.value" v-if="qKey.type==='标题'" size="middle" style="width: 223px"></el-input>
               <el-select v-model="qKey.value" placeholder="请选择查询类别" v-if="qKey.type==='题目种类'">
-                <el-option label="单选" value="1"></el-option>
-                <el-option label="多选" value="2"></el-option>
-                <el-option label="填空" value="3"></el-option>
-                <el-option label="评价" value="4"></el-option>
+                <div v-if="Questionnaire.Type!==4">
+                  <el-option label="单选" value="1"></el-option>
+                  <el-option label="多选" value="2"></el-option>
+                  <el-option label="填空" value="3"></el-option>
+                  <el-option label="评价" value="4"></el-option>
+                </div>
+
+
+                <div v-if="Questionnaire.Type === 2">
+                  <el-option label="投票单选" value="6"></el-option>
+                  <el-option label="投票多选" value="7"></el-option>
+                </div>
+
+                <div v-if="Questionnaire.Type === 3">
+                  <el-option label="报名单选" value="8"></el-option>
+                  <el-option label="报名多选" value="9"></el-option>
+                </div>
+
+                <div v-if="Questionnaire.Type === 4">
+                  <el-option label="基本信息填写" value="3"></el-option>
+                  <el-option label="单选题" value="10"></el-option>
+                  <el-option label="多选题" value="11"></el-option>
+                  <el-option label="填空题" value="12"></el-option>
+                </div>
+
+
               </el-select>
               <el-button @click.prevent="removeDomain(qKey)">删除</el-button>
             </el-form-item>
@@ -176,10 +198,21 @@ export default {
 
     // 确认查询
     submitForm(){
-      // console.log(this.queryForm)
-      this.isStartQuery = true;
-      // console.log(this.isStartQuery)
       this.getQueryTabs();
+      // if (!this.isStartQuery){
+      //   this.isStartQuery = true;
+      //
+      // }
+      //
+      // else {
+      //   this.isStartQuery = false;
+      //   this.isStartQuery = true;
+      //   // this.getQueryTabs();
+      // }
+      // console.log(this.queryForm)
+
+      // console.log(this.isStartQuery)
+
     },
 
 
@@ -196,10 +229,12 @@ export default {
         // console.log(question)
         for (let j = 0; j < queryKeys.length; j++) {
           let queryKey = queryKeys[j];
+          console.log('种类',question.Type,'题目',question.Stem);
           if (queryKey.type==='标题' && queryKey.value === question.Stem ){
             queryNum+=1;
             // console.log('标题满足')
           }
+
           else if (queryKey.type==='题目种类' && Number(queryKey.value) === question.Type ){
             queryNum++;
             // console.log(question)
@@ -209,6 +244,7 @@ export default {
         console.log('查询条件满足数',queryNum)
         if (queryNum === queryKeys.length) {
           this.QuestionnaireQues.push(question);
+          this.isStartQuery = true
         }
       }
 

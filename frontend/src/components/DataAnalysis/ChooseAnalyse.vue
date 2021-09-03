@@ -93,7 +93,8 @@ export default {
     'id',
     'QuesType',
     'number',
-      'QuestionnaireType'
+      'QuestionnaireType',
+      'QuestionId'
   ],
   methods:{
     Tab:function (type){
@@ -309,8 +310,10 @@ export default {
         url: '/submit/qesrep',
         method: 'post',
         data: {
-          questionnaireID:this.QuestionnaireId,
-          questionNumber: this.Qesid
+          // questionnaireID:this.QuestionnaireId,
+          // questionNumber: this.Qesid
+
+          questionID: this.QuestionId
         }
       }).then(res=>{
         console.log(res);
@@ -319,35 +322,45 @@ export default {
           this.QesData=res.data.QesData,
           this.ChooseData=res.data.ChooseData;
 
-          if (this.QuestionnaireType === 4) {
-            this.TrueAnswer = res.data.QesData.TrueAns
-            let k=0;
-            for (let i = 0; i < this.ChooseData.length; i++) {
-              let chooseDatum = this.ChooseData[i];
-              if (chooseDatum.id===this.TrueAnswer[k]){
-                chooseDatum.Answer = '是';
-                k++;
-              }
-              else {
-                chooseDatum.Answer = '否';
-              }
-            }
-          }
+
           this.AnswerData=res.data.AnswerData
 
           this.BasicData = res.data.ChooseData
+          console.log('答案',this.AnswerData)
+          console.log('Basic',this.BasicData)
+          if (this.QuestionnaireType === 4) {
+            // setTimeout()
+            this.HandleTrueAns(res.data.QesData.TrueAns)
+          }
         }
-      }).catch(err=>{
+      }).catch(err => {
         console.log(err)
       })
-    }
+    },
+
+
+    HandleTrueAns(Ans){
+      this.TrueAnswer = Ans
+      console.log(Ans)
+      let k=0;
+      for (let i = 0; i < this.ChooseData.length; i++) {
+        let chooseDatum = this.ChooseData[i];
+        if (chooseDatum.id===this.TrueAnswer[k]){
+          chooseDatum.Answer = '是';
+          k++;
+        }
+        else {
+          chooseDatum.Answer = '否';
+        }
+      }
+    },
   },
   mounted(){
     console.log(this.number)
     console.log(this.id)
     this.Qesid=this.number
     this.QuestionnaireId=this.id;
-    setTimeout(this.getData,200)
+    setTimeout(this.getData,100)
     // ();
   },
   watch: {
@@ -356,6 +369,10 @@ export default {
     },
     id(newId){
       this.QuestionnaireId=newId;
+    },
+    QuestionId(newId){
+      console.log('这是新的',newId)
+      this.QuestionId=newId
     }
   },
 
