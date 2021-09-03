@@ -524,6 +524,7 @@ export default {
         }
       } else {
         pra = {
+          ip: this.ip,
           EncodeID: this.qesId,
           Mode: this.model,
         };
@@ -859,6 +860,7 @@ export default {
         console.log(1111)
       }//
     });
+
   },
 };
 </script>

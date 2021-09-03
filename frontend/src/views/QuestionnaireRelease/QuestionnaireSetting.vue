@@ -96,7 +96,7 @@
           <!--              </el-input>-->
           <!--            </div>-->
 
-          <!--          </el-collapse-item>-->
+<!--          </el-collapse-item>-->
         </el-collapse>
         <div class="saveTime">
           <button @click="confirmTimeSetting">保存</button>
@@ -106,32 +106,32 @@
 
     </div>
 
-    <!--    <div class="AfterSubmit">-->
-    <!--      <div class="title">提交后显示</div>-->
-    <!--      <el-divider></el-divider>-->
-    <!--      <div class="SubmitSetContain">-->
-    <!--        <el-radio-group v-model="AfterSubmit.isJump" class="group">-->
-    <!--          <el-radio :label="false" class="item">显示默认界面</el-radio>-->
-    <!--          <el-radio :label="true" class="item">跳转到指定页面</el-radio>-->
-    <!--        </el-radio-group>-->
+<!--    <div class="AfterSubmit">-->
+<!--      <div class="title">提交后显示</div>-->
+<!--      <el-divider></el-divider>-->
+<!--      <div class="SubmitSetContain">-->
+<!--        <el-radio-group v-model="AfterSubmit.isJump" class="group">-->
+<!--          <el-radio :label="false" class="item">显示默认界面</el-radio>-->
+<!--          <el-radio :label="true" class="item">跳转到指定页面</el-radio>-->
+<!--        </el-radio-group>-->
 
 
-    <!--        <div class="setDestination" v-if="AfterSubmit.isJump">-->
-    <!--          <div class="Destination">页面目标地址：</div>-->
-    <!--          <el-input placeholder="请输入内容" class="inputH" size="small" v-model="AfterSubmit.Destination">-->
-    <!--            <template slot="prepend">http://</template>-->
-    <!--          </el-input>-->
-    <!--        </div>-->
+<!--        <div class="setDestination" v-if="AfterSubmit.isJump">-->
+<!--          <div class="Destination">页面目标地址：</div>-->
+<!--          <el-input placeholder="请输入内容" class="inputH" size="small" v-model="AfterSubmit.Destination">-->
+<!--            <template slot="prepend">http://</template>-->
+<!--          </el-input>-->
+<!--        </div>-->
 
-    <!--        <div class="setDestination" v-else>-->
-    <!--          <div class="default" @click="editMessage">您的答卷已经提交，感谢参与！</div>-->
-    <!--        </div>-->
+<!--        <div class="setDestination" v-else>-->
+<!--          <div class="default" @click="editMessage">您的答卷已经提交，感谢参与！</div>-->
+<!--        </div>-->
 
-    <!--        <div class="saveTime">-->
-    <!--          <button>保存</button>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
+<!--        <div class="saveTime">-->
+<!--          <button>保存</button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
 
     <div class="AnswerTimeControl" ref="AnswerSet">
       <div class="title">
@@ -486,6 +486,7 @@ export default {
       let m = date.getMinutes() + ':';
       let s = date.getSeconds();
       return Y+M+D+h+m+s;
+
       // return Data.format("yyyy-MM-dd hh:mm:ss")
     },
 
