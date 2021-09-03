@@ -1,5 +1,5 @@
 <template>
-  <div :class="{AnswerQuestionnaire:true,btnDis:this.model==='preview'}">
+  <div :class="{ AnswerQuestionnaire: true, btnDis: this.model === 'preview' }">
     <MyMk v-if="myMkShow" :id="id"></MyMk>
     <Time
       :remainTime.default="this.ExamTime"
@@ -17,7 +17,7 @@
 
       <!-- 问题部分 -->
       <el-card
-        :class="{ boxCard: true, filterBlur: !isLogin&&Settings.Login }"
+        :class="{ boxCard: true, filterBlur: !isLogin && Settings.Login }"
         v-for="(item, index) in Question"
       >
         <div slot="header">
@@ -199,7 +199,7 @@
                 </el-radio>
                 <el-radio v-else :label="choice.id"> </el-radio>
                 <label style="font-size: 12px;color: #6E6E6E"
-                >剩余:{{ choice.Times }}
+                  >剩余:{{ choice.Times }}
                 </label>
               </el-col>
             </el-row>
@@ -215,17 +215,13 @@
               justify="left"
               v-for="(choice, i) in item.Choice"
             >
-              <el-checkbox
-                v-if="choice.Times === 0"
-                disabled
-                :label="choice.id"
-                :key="choice.Text"
-              >
+              <el-checkbox v-if="choice.Times === 0" disabled :label="choice.id"
+                >{{ choice.Text }}
               </el-checkbox>
               <el-checkbox v-else :label="choice.id" :key="choice.Text">
               </el-checkbox>
               <label style="font-size: 12px;color: #6E6E6E"
-              >剩余:{{ choice.Times }}</label
+                >剩余:{{ choice.Times }}</label
               >
             </el-row>
           </el-checkbox-group>
@@ -257,7 +253,8 @@
               v-for="(choice, i) in item.Choice"
             >
               <el-col :span="24">
-                <el-checkbox :label="choice.id" :key="choice.Text">
+                <el-checkbox :label="choice.id">
+                  {{ choice.Text }}
                 </el-checkbox>
               </el-col>
             </el-row>
@@ -335,18 +332,18 @@ export default {
   },
   methods: {
     // 乱序排列
-    Disorder(){
+    Disorder() {
       for (let i = 0; i < this.Question.length; i++) {
         let questionElement = this.Question[i];
         questionElement.Number = this.DisOrderNumber[i];
-        console.log('答卷',this.Question);
+        console.log("答卷", this.Question);
       }
-      let Question =this.Question.sort(function(a,b){
+      let Question = this.Question.sort(function(a, b) {
         return a.Number - b.Number;
       });
-      this.Question = Question
-      console.log('排序后',Question);
-      console.log('这个排序后',this.Question)
+      this.Question = Question;
+      console.log("排序后", Question);
+      console.log("这个排序后", this.Question);
     },
     // 结果查看
     goVoteShow() {
@@ -355,7 +352,7 @@ export default {
         path: psthH,
         query: {
           Mode: "preview",
-          submissionID:this.submissionID
+          submissionID: this.submissionID,
         },
       });
     },
@@ -377,10 +374,10 @@ export default {
     },
     getPosition(i) {
       this.$confirm("是否同意获取位置？", "提示", {
-          confirmButtonText: "是",
-          cancelButtonText: "否",
-          type: "warning",
-        })
+        confirmButtonText: "是",
+        cancelButtonText: "否",
+        type: "warning",
+      })
         .then(() => {
           request({
             url: "https://restapi.amap.com/v5/ip",
@@ -430,7 +427,7 @@ export default {
               answerSelectionIDSet: [i.RadioValue],
             },
           }).then((res) => {
-            console.log(i.Stem,res.data);
+            console.log(i.Stem, res);
           });
         }
         //多选
@@ -445,7 +442,7 @@ export default {
               answerSelectionIDSet: i.CheckList,
             },
           }).then((res) => {
-            console.log(i.Stem, res.data);
+            console.log(i.Stem, res);
           });
         //填空、定位
         if (i.Type == 3 || i.Type == 12 || i.Type == 5)
@@ -459,7 +456,7 @@ export default {
               answerText: i.AnswerText,
             },
           }).then((res) => {
-            console.log(i.Stem, res.data);
+            console.log(i.Stem, res);
           });
         //打分
         if (i.Type == 4)
@@ -491,13 +488,29 @@ export default {
         console.log("总提交", res.data);
         if (res.data.code != 0) this.$message.info(res.data.msg);
         else this.state = 2;
-        this.goVoteShow();//
+        this.goVoteShow(); //
       });
     },
     submit() {
-      this.save().then(() => {
-        this.ssubmit();
-      });
+      var canSub = true;
+      for (let i = 0; i < this.Question.length; i++) {
+        let q = this.Question[i];
+        if (q.Must === true) {
+          if (q.Type === 1 || q.Type === 6 || q.Type === 8 || q.Type === 10)
+            if (q.RadioValue === 0) canSub = false;
+          if (q.Type === 2 || q.Type === 7 || q.Type === 9 || q.Type === 11)
+            if (q.CheckList.length === 0) canSub = false;
+          if (q.Type === 3 || q.Type === 12)
+            if (q.AnswerText === "") canSub = false;
+          if (q.Type === 5 && q.Position === "") canSub = false;
+          if (q.Type === 4 && q.Score === 0) canSub = false;
+        }
+      }
+      if (canSub) {
+        this.save().then(() => {
+          this.ssubmit();
+        });
+      } else this.$message.warning("有必答题未作答，无法提交");
     },
     //排序
     sortRule(a, b) {
@@ -508,16 +521,16 @@ export default {
       if (this.qesId === undefined) {
         if (this.$route.query.Mode === undefined) {
           //填写时
-          this.model='';
+          this.model = "";
           console.log(this.id);
           pra = {
-            ip:this.ip,
+            ip: this.ip,
             EncodeID: this.id,
             Mode: "",
           };
         } else {
           pra = {
-            ip:this.ip,
+            ip: this.ip,
             EncodeID: this.id,
             Mode: this.$route.query.Mode,
           };
@@ -535,22 +548,27 @@ export default {
         data: pra,
       }).then((res) => {
         console.log("源数据", res.data);
-        if (res.data.NumberList){
-          this.DisOrderNumber = res.data.NumberList
-          console.log(this.DisOrderNumber)
+        if (res.data.NumberList) {
+          this.DisOrderNumber = res.data.NumberList;
+          console.log(this.DisOrderNumber);
         }
         //存储问卷信息
         if (res.data.Message === "Questionnaire is closed") this.state = 1;
         var Questionnaire = res.data.Questionnaire;
         this.Type = Questionnaire.Type;
         this.Title = Questionnaire.Title;
-        this.Settings=Questionnaire.Settings;//
+        this.Settings = Questionnaire.Settings; //
         this.ShowNumber = Questionnaire.ShowNumber;
         this.Text = Questionnaire.Text;
         this.questionnaireID = Questionnaire.id;
-        var now = new Date();
-        this.ExamTime = Questionnaire.Settings.DeadLine - now;
-        console.log('examtime',this.ExamTime);
+        //时间设置
+        var ddl = new Date();
+        var stt = new Date();
+        if (Questionnaire.Settings.StartTime)
+          stt = new Date(Questionnaire.Settings.StartTime.replace(/-/g, "/"));
+        if (Questionnaire.Settings.DeadLine)
+          ddl = new Date(Questionnaire.Settings.DeadLine.replace(/-/g, "/"));
+        this.ExamTime = parseInt((ddl - stt) / 1000);
         //存储题目数据并排序
         var i;
         for (i in Questionnaire.Question) {
@@ -849,18 +867,21 @@ export default {
     // console.log(this.ip);
     //初始化答卷
     this.getQuestionnaire().then(() => {
-      if (this.Type === 4){
+      if (this.Type === 4) {
         this.Disorder();
       }
       this.creatSubmit().then(() => {
         this.getSubmit();
       });
-      if(this.qesId===undefined&&window.sessionStorage.getItem('isLogin')===null&&this.Settings.Login){
-        this.myMkShow=true;
-        console.log(1111)
-      }//
+      if (
+        this.qesId === undefined &&
+        window.sessionStorage.getItem("isLogin") === null &&
+        this.Settings.Login
+      ) {
+        this.myMkShow = true;
+        console.log(1111);
+      } //
     });
-
   },
 };
 </script>
@@ -899,7 +920,7 @@ export default {
   margin: 20px 10px 20px 10px;
   color: #909399;
 }
-.btnDis{
+.btnDis {
   pointer-events: none;
 }
 </style>

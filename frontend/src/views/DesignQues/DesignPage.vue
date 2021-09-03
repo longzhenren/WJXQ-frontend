@@ -2150,7 +2150,7 @@ export default {
 
 .editQuestion {
   float: left;
-  width: 300px;
+  width: 400px;
   height: 98%;
   /*background-color: pink;*/
 
@@ -2522,7 +2522,7 @@ export default {
 }
 
 .editContain {
-  width: 300px;
+  width: 350px;
   height: 80vh;
 }
 

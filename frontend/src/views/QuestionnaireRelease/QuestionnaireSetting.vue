@@ -176,7 +176,7 @@
             </div>
           </el-collapse-item>
 
-          <el-collapse-item name="3">
+          <el-collapse-item name="3" v-if="NowsQuestionnaire.Type === 3">
             <template slot="title">
               问卷收集限额
             </template>
@@ -252,16 +252,18 @@ export default {
     MyButton
   },
   props: {
-    NowsQuestionnaire: {
-      type: Object,
-      default(){
-        return {}
-      }
-    }
+    // NowsQuestionnaire: {
+    //   type: Object,
+    //   default(){
+    //     return {}
+    //   }
+    // }
   },
 
   data(){
     return {
+      NowsQuestionnaire: {},
+
       pickerOptions: {
         shortcuts: [{
           text: '今天',
@@ -360,20 +362,55 @@ export default {
 
   },
   mounted() {
-    this.Setting.StartTime=this.NowsQuestionnaire.Settings.StartTime;
-    console.log(this.NowsQuestionnaire)
-    this.Setting.DeadLine=this.NowsQuestionnaire.Settings.DeadLine;
-    this.Setting.AnswerTime=this.NowsQuestionnaire.Settings.AnswerTime;
-    this.Setting.Times=this.NowsQuestionnaire.Settings.Times;
-    this.Setting.IPLimit=this.NowsQuestionnaire.Settings.IPLimit;
-    this.Setting.Login=this.NowsQuestionnaire.Settings.Login;
-    if(this.NowsQuestionnaire.Type===2)
-      this.Setting.Times=this.NowsQuestionnaire.Settings.Times
-    else if(this.NowsQuestionnaire.Type===4)
-      this.Setting.Reorder=this.NowsQuestionnaire.Settings.Reorder
-    this.init();
+    // setTimeout(this.init,50);
+
+  },
+  beforeMount() {
+    this.getQuestionnaireSettings();
   },
   methods: {
+    // 初始化
+    getInit(){
+      this.Setting.StartTime=this.NowsQuestionnaire.Settings.StartTime;
+      // console.log(this.NowsQuestionnaire)
+      this.Setting.DeadLine=this.NowsQuestionnaire.Settings.DeadLine;
+      this.Setting.AnswerTime=this.NowsQuestionnaire.Settings.AnswerTime;
+      this.Setting.Times=this.NowsQuestionnaire.Settings.Times;
+      this.Setting.IPLimit=this.NowsQuestionnaire.Settings.IPLimit;
+      this.Setting.Login=this.NowsQuestionnaire.Settings.Login;
+      if(this.NowsQuestionnaire.Type===2)
+        this.Setting.Times=this.NowsQuestionnaire.Settings.Times
+      else if(this.NowsQuestionnaire.Type===4)
+        this.Setting.Reorder=this.NowsQuestionnaire.Settings.Reorder
+
+      this.init();
+    },
+
+    // 获取问卷设置信息
+    getQuestionnaireSettings(){
+       let  QuesId = Number(this.$route.query.id);
+      localStorage.QuesId = QuesId
+      request({
+        url: '/question/questionnaireID',
+        method: 'get',
+        params: {
+          id: QuesId
+        }
+      }).then(res=>{
+        console.log(res);
+        if (res.data.Message !== 'No Such Questionnaire'){
+          this.NowsQuestionnaire = res.data.Questionnaire
+          // console.log(this.NowsQuestionnaire)
+          // this.EncodeID = res.data.Questionnaire.EncodeID
+          // this.isGetLink = res.data.Questionnaire.Open
+          // this.getQuestionnaireLink();
+          this.getInit();
+        }
+      }).catch(err=>{
+        // console.log(err)
+      })
+    },
+
     // 判断时间是否合法
     isStartTimeValid(){
       if (new Date()>this.StartTime){
@@ -422,10 +459,12 @@ export default {
       this.SpecialSetting.isReorder = this.Setting.Reorder;
       // this.SpecialSetting.isShowResultBeforeVote = this.Setting.
       // this.changeToData(this.NowsQuestionnaire.Settings.StartTime);
-      let date = this.changeToData(this.NowsQuestionnaire.Settings.DeadLine);
-      this.DeadLine = date
-      console.log(date)
-      console.log('DeadLine',this.DeadLine)
+      let Deaddate = this.changeToData(this.NowsQuestionnaire.Settings.DeadLine);
+      let StartTime = this.changeToData(this.NowsQuestionnaire.Settings.StartTime);
+      this.DeadLine = Deaddate
+      this.StartTime = StartTime
+      // console.log(date)
+      // console.log('DeadLine',this.DeadLine)
     },
 
 

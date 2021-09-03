@@ -1,11 +1,13 @@
 <template>
   <div>
-    <span>考试时长：</span>
+    <el-tag type="danger">
+    <i class="el-icon-timer"></i>
     <span>{{
       hour
         ? hourString + ":" + minuteString + ":" + secondString
         : minuteString + ":" + secondString
     }}</span>
+    </el-tag>
   </div>
 </template>
 

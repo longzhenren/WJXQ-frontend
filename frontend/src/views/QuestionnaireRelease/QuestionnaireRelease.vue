@@ -130,7 +130,7 @@
       </div>
 
       <div class="settings" v-if="topNavCurrent===2">
-        <QuestionnaireSetting :nows-questionnaire="DesignedQuestionnaire"></QuestionnaireSetting>
+        <QuestionnaireSetting></QuestionnaireSetting>
       </div>
     </div>
 
