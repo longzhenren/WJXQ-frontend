@@ -401,6 +401,17 @@
     </div>
     <!--      编辑问卷侧边栏-->
 
+<!--    <el-dialog-->
+<!--        title="提示"-->
+<!--        :visible.sync="dialogVisible2"-->
+<!--        width="30%">-->
+<!--      <span>当前操作会不会保存您的修改，请确认您的所有题目均已保存完毕</span>-->
+<!--      <span slot="footer" class="dialog-footer">-->
+<!--    <el-button @click="BackToSave">返回保存</el-button>-->
+<!--    <el-button type="primary" @click="designDone">确认完成</el-button>-->
+<!--  </span>-->
+<!--    </el-dialog>-->
+
     <Model :show="modelShow"  @hideModal="hideModal" :QesInfoModel="Questionnaire"/>
   </div>
 
@@ -474,6 +485,8 @@ export default {
         subData: {},
         index: -1,
       },
+
+      dialogVisible2: false,
 
       dialogFormVisible: false,
       activeName: 0,
@@ -744,6 +757,12 @@ export default {
     bus.$emit('NewQuesDesigned',this.Questionnaire)
   },
   methods: {
+    // // 返回保存
+    // BackToSave(){
+    //   this.dialogVisible2 = false;
+    // },
+
+
     // 关闭弹窗
     hideModal() {
       this.modelShow = false;
@@ -776,9 +795,16 @@ export default {
       });
     },
 
+
+    // 弹出确认对话框
+    // ToConfirm(){
+    //   this.dialogVisible2 = true;
+    // },
+
     // 问卷编辑完成，转到问卷发布页面
     designDone(){
       bus.$emit('SaveEdited',this.editingQuestion.index)
+      // this.dialogVisible2 = false;
       this.Questionnaire.title = this.QuesTitle;
       this.Questionnaire.Question = this.QuesList;
       this.Questionnaire.isShowSubNum = this.isShowQuesNum
@@ -792,12 +818,14 @@ export default {
     // 创建问卷，向后端发送数据
     sendAndSaveNewQues(Ques){
       // console.log(Ques);
+
+      console.log('大问卷',Ques.Question)
       let  FinalQuestionnaire = {
         id: 0,
         // Open: false,
         Text: '',
         Title: '',
-        Question: [],
+        // Question: [],
         ShowNumber: false,
         username: this.$route.query.username,
       }
@@ -806,16 +834,16 @@ export default {
       FinalQuestionnaire.Text = Ques.Text;
       // FinalQuestionnaire.Open = Ques.Open;
       FinalQuestionnaire.ShowNumber = Ques.isShowSubNum;
-      for (let i = 0; i < Ques.Question.length; i++) {
-        console.log(Ques.Question[i])
-        let QuesItem = Ques.Question[i];
-        let Question = this.changeDataStructToBackend(QuesItem);
-        FinalQuestionnaire.Question.push(Question);
-      }
+      // for (let i = 0; i < Ques.Question.length; i++) {
+      //   console.log(Ques.Question[i])
+      //   let QuesItem = Ques.Question[i];
+      //   let Question = this.changeDataStructToBackend(QuesItem);
+      //   FinalQuestionnaire.Question.push(Question);
+      // }
 
 
 
-      // console.log(FinalQuestionnaire)
+      console.log('保存的问卷',FinalQuestionnaire)
       request({
         url: '/question/modifyQuestionnaire',
         method: 'post',
@@ -984,7 +1012,7 @@ export default {
 
       if (mode==='sendQuestion'){
          Question = {
-          id: item.id===undefined?0:item.id,
+          id: item.id===undefined?-1:item.id,
           Stem: item.Stem,
           Type: type,
            // MaxChoice: item.max===undefined?
@@ -1005,7 +1033,7 @@ export default {
       }
       else {
          Question = {
-          id: item.id===undefined?0:item.id,
+          id: item.id===undefined?-1:item.id,
           Stem: item.Stem,
           Type: type,
            MaxChoice: item.subData.max===undefined?0:item.subData.max,
@@ -1115,7 +1143,7 @@ export default {
     },
 
     // 题目数据保存
-    SaveQes(val, item){
+     SaveQes(val, item){
       item.subData = val;
       item.Stem=val.question
       console.log("SaveQes")
