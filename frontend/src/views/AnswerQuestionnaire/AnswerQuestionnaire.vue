@@ -197,7 +197,7 @@
                 >
                   {{ choice.Text }}
                 </el-radio>
-                <el-radio v-else :label="choice.id"> </el-radio>
+                <el-radio v-else :label="choice.id">{{choice.Text}}</el-radio>
                 <label style="font-size: 12px;color: #6E6E6E"
                   >剩余:{{ choice.Times }}
                 </label>
@@ -218,7 +218,8 @@
               <el-checkbox v-if="choice.Times === 0" disabled :label="choice.id"
                 >{{ choice.Text }}
               </el-checkbox>
-              <el-checkbox v-else :label="choice.id" :key="choice.Text">
+              <el-checkbox v-else :label="choice.id">
+                {{choice.Text}}
               </el-checkbox>
               <label style="font-size: 12px;color: #6E6E6E"
                 >剩余:{{ choice.Times }}</label
@@ -477,6 +478,7 @@ export default {
     },
     //点击按钮后提交
     ssubmit() {
+      console.log('subid',this.submissionID);
       request({
         url: "/submit/submit",
         method: "post",
@@ -805,7 +807,7 @@ export default {
           questionnaireID: this.questionnaireID,
         },
       }).then((res) => {
-        console.log("crtsub", res.data);
+        console.log("crtsub", res);
         if (res.data.code != 0) {
           this.$message.info(res.data.msg);
         }
@@ -822,7 +824,7 @@ export default {
           submissionID: this.submissionID,
         },
       }).then((res) => {
-        console.log("getsub", res.data);
+        console.log("getsub", res);
         if (res.data.code === 0) {
           let list = res.data.answerList;
           for (let i = 0; i < list.length; i++) {
